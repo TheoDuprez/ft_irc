@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+         #
+#    By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/03 11:48:15 by acarlott          #+#    #+#              #
-#    Updated: 2024/04/03 11:50:02 by acarlott         ###   ########lyon.fr    #
+#    Updated: 2024/04/03 16:28:07 by tduprez          ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,14 +20,22 @@ HEADER_PATH = includes/
 
 SRCS_DIR = srcs/
 
+CLASS_DIR = class/
+
 OBJS_DIR = .objs/
 
-SRCS =	main.cpp \
+SRCS_LIST =	main.cpp \
+
+CLASS_LIST = Server.cpp \
+
+SRCS = $(addprefix $(SRCS_DIR), $(SRCS_LIST))
+
+SRCS += $(addprefix $(CLASS_DIR), $(CLASS_LIST))
 
 OBJS = $(addprefix $(OBJS_DIR), ${SRCS:.cpp=.o})
 
-$(OBJS_DIR)%.o:	$(SRCS_DIR)%.cpp | $(OBJS_DIR)
-	${CC} ${CFLAGS} -I ${HEADER_PATH} -MMD -c $< -o $@ 
+$(OBJS_DIR)%.o:	%.cpp | $(OBJS_DIR)
+	${CC} ${CFLAGS} -I ${HEADER_PATH} -MMD -c $< -o $@
 
 all : ${NAME}
 
@@ -47,7 +55,7 @@ fclean: clean
 re : fclean all
 
 $(OBJS_DIR):
-	mkdir -p $(OBJS_DIR)
+	mkdir -p $(OBJS_DIR)$(SRCS_DIR) $(OBJS_DIR)$(CLASS_DIR)
 
 -include $(OBJS:.o=.d)
 
