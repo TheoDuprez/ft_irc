@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/03 17:55:15 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/04/04 13:44:14 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,18 +57,30 @@ void	Server::initServer(void)
 
 void	Server::launchServer(void)
 {
+	pollfd	fds[1];
+	int		pollRet;
+
 	if (listen(this->_serverFd, PENDING_QUEUE) == -1)
 		throw (std::runtime_error(strerror(errno)));
 	this->_clientFd = accept(this->_serverFd, reinterpret_cast<sockaddr*>(&this->_serverAddress), &this->_serverAddressSize);
 	if (this->_clientFd == -1)
 		throw (std::runtime_error(strerror(errno)));
 
+	fds[0].events = POLLIN;
+	fds[0].fd = this->_clientFd;
 	this->_isRunning = true;
 	std::signal(SIGINT, Server::stopServer);
 	while (this->_isRunning == true)
 	{
+		pollRet = poll(fds, 1, POLL_NO_TIMEOUT);
+
 		char	buffer[MESSAGE_SIZE] = {0};
-		recv(this->_clientFd, &buffer, MESSAGE_SIZE, NO_FLAG);
+		if (pollRet == 1)
+			recv(this->_clientFd, &buffer, MESSAGE_SIZE, NO_FLAG);
+		else if (pollRet == 0)
+			continue ;
+		else if (pollRet == -1 && this->_isRunning == true)
+		throw (std::runtime_error(strerror(errno)));
 		std::cout << buffer;
 	}
 	close(this->_serverFd);

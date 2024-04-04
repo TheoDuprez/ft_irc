@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/03 17:54:31 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/04/04 13:23:48 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,14 @@
 #include <cstdlib>
 #include <errno.h>
 #include <limits>
+#include <unistd.h>
+#include <poll.h>
 
 #define IP 0
 #define NO_FLAG 0
 #define MESSAGE_SIZE 512
 #define PENDING_QUEUE 5
+#define POLL_NO_TIMEOUT -1
 
 class Server
 {
