@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/04 13:23:48 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/04/04 15:37:37 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <limits>
 #include <unistd.h>
 #include <poll.h>
+#include <vector>
 
 #define IP 0
 #define NO_FLAG 0
@@ -29,16 +30,18 @@
 #define PENDING_QUEUE 5
 #define POLL_NO_TIMEOUT -1
 
+typedef std::vector<pollfd>		pollVector;
+typedef	pollVector::iterator	pollIterator;
+
 class Server
 {
 	private:
+		pollVector		_pollFds;
 		unsigned short	_port;
-		int				_serverFd;
-		int				_clientFd;
 		sockaddr_in		_serverAddress;
 		socklen_t		_serverAddressSize;
 		std::string		_password;
-		static bool		_isRunning;
+		static bool		_isServUp;
 
 		Server(void);
 		Server(const Server& obj);
@@ -51,6 +54,9 @@ class Server
 		void		initServer(void);
 		void		launchServer(void);
 		static void	stopServer(int);
+		void		createPollFd(int fd);
+		void		serverLoop(void);
+		void		acceptClient(void);
 };
 
 #endif
