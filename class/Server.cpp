@@ -41,6 +41,9 @@ Server::~Server(void)
 {
 	for (pollIterator it = this->_pollFds.begin(); it != this->_pollFds.end(); it++)
 		close(it->fd);
+    for (clientIterator it = this->_clientList.begin(); it != this->_clientList.end(); it++) {
+		delete *it;
+    }
 }
 
 void	Server::initServer(void)
@@ -94,11 +97,14 @@ void	Server::serverLoop(void)
 		else if (this->_pollFds[0].revents & POLLIN)
 			acceptClient();
 		else {
-			for (pollIterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++)
+			for (pollIterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++) {
 				if (it->revents & POLLIN) {
 					recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG);
-					
+					std::cout << buffer;
+                    std::cout << "TEST\n";
+                    std::cout << it->fd << std::endl;
 				}
+            }
 		}
 		std::cout << buffer;
 	}
@@ -112,12 +118,12 @@ void	Server::acceptClient(void)
 	if (clientFd == -1)
 		throw (std::runtime_error(strerror(errno)));
 	createPollFd(clientFd);
-	this->_clientList.push_back(*(new Client(this->getPollFd())));
+	this->_clientList.push_back(new Client(this->getPollFd()));
 }
 
 pollfd		&Server::getPollFd(void)
 {
-	return (*this->_pollFds.end());
+	return (*(this->_pollFds.end() - 1));
 }
 
 bool	Server::_isServUp;

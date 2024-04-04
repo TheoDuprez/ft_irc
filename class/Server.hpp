@@ -28,10 +28,10 @@
 #define IP 0
 #define NO_FLAG 0
 #define MESSAGE_SIZE 512
-#define PENDING_QUEUE 5
+#define PENDING_QUEUE 50
 #define POLL_NO_TIMEOUT -1
 
-typedef std::vector<Client>		clientVector;
+typedef std::vector<Client*>	clientVector;
 typedef	clientVector::iterator	clientIterator;
 
 typedef std::vector<pollfd>		pollVector;

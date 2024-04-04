@@ -20,7 +20,7 @@ class Client
 		bool			_isOperator;
 		std::string		_nickName;
 		std::string		_userName;
-		pollfd			_fd;
+		pollfd&			_fd;
 		Client(void);
 		// Client(const Client& obj);
 		Client& operator=(const Client& obj);
