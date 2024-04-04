@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/04 15:37:37 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/04 22:30:28 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <poll.h>
 #include <vector>
+#include "Client.hpp"
 
 #define IP 0
 #define NO_FLAG 0
@@ -30,12 +31,16 @@
 #define PENDING_QUEUE 5
 #define POLL_NO_TIMEOUT -1
 
+typedef std::vector<Client>		clientVector;
+typedef	clientVector::iterator	clientIterator;
+
 typedef std::vector<pollfd>		pollVector;
 typedef	pollVector::iterator	pollIterator;
 
 class Server
 {
 	private:
+		clientVector	_clientList;
 		pollVector		_pollFds;
 		unsigned short	_port;
 		sockaddr_in		_serverAddress;
@@ -57,6 +62,7 @@ class Server
 		void		createPollFd(int fd);
 		void		serverLoop(void);
 		void		acceptClient(void);
+		pollfd		&getPollFd(void);
 };
 
 #endif

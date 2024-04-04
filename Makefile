@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+         #
+#    By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/03 11:48:15 by acarlott          #+#    #+#              #
-#    Updated: 2024/04/03 16:28:07 by tduprez          ###   ########lyon.fr    #
+#    Updated: 2024/04/04 22:51:18 by acarlott         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,8 @@ OBJS_DIR = .objs/
 
 SRCS_LIST =	main.cpp \
 
-CLASS_LIST = Server.cpp \
+CLASS_LIST =	Server.cpp \
+				Client.cpp \
 
 SRCS = $(addprefix $(SRCS_DIR), $(SRCS_LIST))
 

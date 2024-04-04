@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:08:02 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/04 13:11:55 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/04/04 23:08:58 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,16 @@
 
 class Client
 {
-private:
-	pollfd	fd[1];
-	Client(const Client& obj);
-	Client& operator=(const Client& obj);
-public:
-	Client(void);
-	~Client(void);
+	private:
+		unsigned int	_isRegister;
+		bool			_isOperator;
+		std::string		_nickName;
+		std::string		_userName;
+		pollfd			_fd;
+		Client(void);
+		// Client(const Client& obj);
+		Client& operator=(const Client& obj);
+	public:
+		Client(pollfd& fd);
+		~Client(void);
 };
-
-Client::Client(/* args */)
-{
-}
-
-Client::~Client()
-{
-}

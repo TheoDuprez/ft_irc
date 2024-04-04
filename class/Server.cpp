@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/04 15:47:47 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/04 23:05:44 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,10 @@ void	Server::serverLoop(void)
 			acceptClient();
 		else {
 			for (pollIterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++)
-				if (it->revents & POLLIN)
+				if (it->revents & POLLIN) {
 					recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG);
+					
+				}
 		}
 		std::cout << buffer;
 	}
@@ -110,6 +112,12 @@ void	Server::acceptClient(void)
 	if (clientFd == -1)
 		throw (std::runtime_error(strerror(errno)));
 	createPollFd(clientFd);
+	this->_clientList.push_back(*(new Client(this->getPollFd())));
+}
+
+pollfd		&Server::getPollFd(void)
+{
+	return (*this->_pollFds.end());
 }
 
 bool	Server::_isServUp;
