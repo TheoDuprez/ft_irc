@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/04 23:05:44 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/05 09:50:18 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,14 +92,17 @@ void	Server::serverLoop(void)
 	while (this->_isServUp == true)
 	{
 		char	buffer[MESSAGE_SIZE] = {0};
-		if (poll(this->_pollFds.data(), this->_pollFds.size(), POLL_NO_TIMEOUT) == -1 && this->_isServUp == true)
-			throw (std::runtime_error(strerror(errno)));
+		if (poll(this->_pollFds.data(), this->_pollFds.size(), POLL_NO_TIMEOUT) == -1) {
+			if (this->_isServUp == true)
+				throw (std::runtime_error(strerror(errno)));
+		}
 		else if (this->_pollFds[0].revents & POLLIN)
 			acceptClient();
 		else {
 			for (pollIterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++) {
 				if (it->revents & POLLIN) {
-					recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG);
+					if (recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG) == -1)
+						throw (std::runtime_error(strerror(errno)));
 					std::cout << buffer;
                     std::cout << "TEST\n";
                     std::cout << it->fd << std::endl;
