@@ -6,7 +6,7 @@
 #    By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/03 11:48:15 by acarlott          #+#    #+#              #
-#    Updated: 2024/04/04 22:51:18 by acarlott         ###   ########lyon.fr    #
+#    Updated: 2024/04/05 14:19:57 by acarlott         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,12 +38,15 @@ OBJS = $(addprefix $(OBJS_DIR), ${SRCS:.cpp=.o})
 $(OBJS_DIR)%.o:	%.cpp | $(OBJS_DIR)
 	${CC} ${CFLAGS} -I ${HEADER_PATH} -MMD -c $< -o $@
 
-all : ${NAME}
+all : create_file ${NAME}
 
 ${NAME} : ${OBJS}
 	echo "\033[1;34mCreate: \033[1;33mircserv"
 	${CC} ${CFLAGS} ${OBJS} -o ${NAME}
 	echo "\033[1;32mSucces !"
+
+create_file:
+	touch server.log
 
 clean :
 	echo "\033[1;31mClean: \033[1;36mAll *.o"
@@ -52,6 +55,7 @@ clean :
 fclean: clean
 	echo "\033[1;31mClean: \033[1;36mexecutable"
 	rm -rf ${NAME}
+	rm server.log
 
 re : fclean all
 

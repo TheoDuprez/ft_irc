@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/05 09:50:18 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/05 14:18:28 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,9 @@ Server::Server(void)
 
 Server::Server(char* port, std::string password): _password(password)
 {
-	long double	tempPort;
-
+	long double		tempPort;
+	
+	this->_logFile.open("server.log", std::ofstream::app);
 	for (size_t i = 0; port[i]; ++i) {
 		if (!isdigit(port[i]))
 			throw (std::runtime_error("Bad port"));
@@ -39,6 +40,7 @@ Server::Server(const Server& obj)
 
 Server::~Server(void)
 {
+	this->_logFile.close();
 	for (pollIterator it = this->_pollFds.begin(); it != this->_pollFds.end(); it++)
 		close(it->fd);
     for (clientIterator it = this->_clientList.begin(); it != this->_clientList.end(); it++) {
@@ -88,6 +90,7 @@ void	Server::createPollFd(int fd)
 
 void	Server::serverLoop(void)
 {
+	int	recvReturn;
 	
 	while (this->_isServUp == true)
 	{
@@ -101,15 +104,17 @@ void	Server::serverLoop(void)
 		else {
 			for (pollIterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++) {
 				if (it->revents & POLLIN) {
-					if (recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG) == -1)
+					recvReturn = recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG);
+					if (recvReturn == -1) 
 						throw (std::runtime_error(strerror(errno)));
-					std::cout << buffer;
-                    std::cout << "TEST\n";
-                    std::cout << it->fd << std::endl;
+					else if (recvReturn == 0) {
+						break;
+					} else {
+						printLogMessage(std::string(buffer), false);
+					}
 				}
             }
 		}
-		std::cout << buffer;
 	}
 }
 
@@ -127,6 +132,36 @@ void	Server::acceptClient(void)
 pollfd		&Server::getPollFd(void)
 {
 	return (*(this->_pollFds.end() - 1));
+}
+
+void		Server::printLogMessage(std::string message, bool isError)
+{
+	this->_logFile << "[" << this->getCurrentTimeStamp() << "]" << std::flush;
+	if (isError == true)
+		this->_logFile << " ERROR: " << message << std::flush;
+	else
+		this->_logFile << " " << message << std::flush;
+}
+
+std::string	const	Server::getCurrentTimeStamp(void)
+{
+	std::string retTime;
+	std::time_t currentTime = std::time(NULL);
+	std::tm *localTime = std::localtime(&currentTime);
+	
+	retTime = SSTR(localTime->tm_year + 1900) + "/" + SSTR(localTime->tm_mon) + "/" + SSTR(localTime->tm_mday) + " ";
+	if (localTime->tm_mon < 10)
+		retTime.insert(5, "0");
+	if (localTime->tm_mday < 10)
+		retTime.insert(8, "0");	
+	retTime = retTime + SSTR(localTime->tm_hour) + ":" + SSTR(localTime->tm_min) + ":" + SSTR(localTime->tm_sec);
+	if (localTime->tm_hour < 10)
+		retTime.insert(11, "0");
+	if (localTime->tm_min < 10)
+		retTime.insert(14, "0");
+	if (localTime->tm_sec < 10)
+		retTime.insert(17, "0");	
+	return retTime;
 }
 
 bool	Server::_isServUp;

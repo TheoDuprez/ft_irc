@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/04 22:30:28 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/05 14:10:51 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,14 @@
 #include <cstring> // For memset function
 #include <csignal> // For signal function
 #include <cstdlib>
+#include <sstream>
 #include <errno.h>
 #include <limits>
 #include <unistd.h>
 #include <poll.h>
 #include <vector>
+#include <fstream> // std::ofstream
+#include <ctime> // std::localtime
 #include "Client.hpp"
 
 #define IP 0
@@ -30,6 +33,7 @@
 #define MESSAGE_SIZE 512
 #define PENDING_QUEUE 50
 #define POLL_NO_TIMEOUT -1
+#define SSTR( x ) static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x ) ).str()
 
 typedef std::vector<Client*>	clientVector;
 typedef	clientVector::iterator	clientIterator;
@@ -40,6 +44,7 @@ typedef	pollVector::iterator	pollIterator;
 class Server
 {
 	private:
+		std::ofstream	_logFile;
 		clientVector	_clientList;
 		pollVector		_pollFds;
 		unsigned short	_port;
@@ -56,13 +61,15 @@ class Server
 		Server(char* port, std::string password);
 		~Server(void);
 
-		void		initServer(void);
-		void		launchServer(void);
-		static void	stopServer(int);
-		void		createPollFd(int fd);
-		void		serverLoop(void);
-		void		acceptClient(void);
-		pollfd		&getPollFd(void);
+		void				initServer(void);
+		void				launchServer(void);
+		static void			stopServer(int);
+		void				createPollFd(int fd);
+		void				serverLoop(void);
+		void				acceptClient(void);
+		pollfd				&getPollFd(void);
+		void				printLogMessage(std::string message, bool isError);
+		std::string	const	getCurrentTimeStamp(void);
 };
 
 #endif
