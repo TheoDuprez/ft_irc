@@ -28,6 +28,7 @@ SRCS_LIST =	main.cpp \
 
 CLASS_LIST =	Server.cpp \
 				Client.cpp \
+				Channel.cpp \
 
 SRCS = $(addprefix $(SRCS_DIR), $(SRCS_LIST))
 

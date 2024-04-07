@@ -10,6 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef CLIENT_HPP
+#define CLIENT_HPP
+
 #include <iostream>
 #include <poll.h>
 
@@ -26,5 +29,9 @@ class Client
 		Client& operator=(const Client& obj);
 	public:
 		Client(pollfd& fd);
+        const std::string&  getUserName(void) const;
+        const int&          getFd(void) const;
 		~Client(void);
 };
+
+#endif

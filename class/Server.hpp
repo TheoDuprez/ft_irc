@@ -24,9 +24,11 @@
 #include <unistd.h>
 #include <poll.h>
 #include <vector>
+#include <map>
 #include <fstream> // std::ofstream
 #include <ctime> // std::localtime
 #include "Client.hpp"
+#include "Channel.hpp"
 
 #define IP 0
 #define NO_FLAG 0
@@ -41,6 +43,14 @@ typedef	clientVector::iterator	clientIterator;
 typedef std::vector<pollfd>		pollVector;
 typedef	pollVector::iterator	pollIterator;
 
+typedef std::vector<std::string> cmdVector;
+typedef cmdVector::iterator cmdVectorIterator;
+
+typedef std::map<std::string, Channel*> channelsMap;
+
+//typedef std::vector<std::string> cmdArgsVector;
+
+
 class Server
 {
 	private:
@@ -52,6 +62,7 @@ class Server
 		socklen_t		_serverAddressSize;
 		std::string		_password;
 		static bool		_isServUp;
+        channelsMap     _channelsList;
 
 		Server(void);
 		Server(const Server& obj);
@@ -70,6 +81,12 @@ class Server
 		pollfd				&getPollFd(void);
 		void				printLogMessage(std::string message, bool isError);
 		std::string	const	getCurrentTimeStamp(void);
+
+        cmdVector                   createCmdVector(std::string buffer);
+        void                        handleCommand(cmdVector cmd, Client* client);
+        void                        join(cmdVector cmd, Client* client);
+        std::vector<std::string>    split(const std::string& str, char delim);
+        void                        sendMessage(int fd, std::string msg);
 };
 
 #endif

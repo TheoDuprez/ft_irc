@@ -20,4 +20,15 @@ Client::Client(pollfd& fd) : _nickName("NA"), _userName("NA"), _fd(fd)
 
 Client::~Client(void)
 {
+
+}
+
+const std::string& Client::getUserName(void) const
+{
+    return this->_userName;
+}
+
+const int&          Client::getFd(void) const
+{
+    return this->_fd.fd;
 }
