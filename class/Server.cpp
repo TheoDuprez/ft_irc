@@ -12,11 +12,6 @@
 
 #include "Server.hpp"
 
-Server::Server(void)
-{
-
-}
-
 Server::Server(char* port, std::string password): _password(password)
 {
 	long double		tempPort;
@@ -31,11 +26,6 @@ Server::Server(char* port, std::string password): _password(password)
 		throw (std::runtime_error("Bad port"));
 	this->_port = atoi(port);
 	Server::_isServUp = false;
-}
-
-Server::Server(const Server& obj)
-{
-	static_cast<void>(obj);
 }
 
 Server::~Server(void)
@@ -147,41 +137,29 @@ void                Server::handleCommand(cmdVector cmd, Client* client) // Hand
 
 void                Server::join(cmdVector cmd, Client* client)
 {
-    std::vector<std::string>            channels(split(*cmd.begin(), ','));
-    std::vector<std::string>            channelsPassword;
+    std::vector<std::string>            channelsNameList(split(*cmd.begin(), ','));
+    std::vector<std::string>            channelsPasswordList;
     std::string                         password;
 
     if (cmd.size() > 1)
-        channelsPassword = std::vector<std::string>(split(*(cmd.begin() + 1), ','));
+        channelsPasswordList = std::vector<std::string>(split(*(cmd.begin() + 1), ','));
 
-    for (size_t i = 0; i < channels.size(); i++) { // To handle all client given to the join command
-        password = (i < channelsPassword.size()) ? channelsPassword[i] : ""; // Give a password to the channel if specified, otherwise "" is given ("" mean no password for the Channel)
+    for (size_t i = 0; i < channelsNameList.size(); i++) { // To handle all client given to the join command
+        password = (i < channelsPasswordList.size()) ? channelsPasswordList[i] : ""; // Give a password to the channel if specified, otherwise "" is given ("" mean no password for the Channel)
 
-        if (channels[i].at(0) != '#' && channels[i].at(0) != '&') // Create error if channel name isn't ok
-            sendMessage(client->getFd(), ":server 403 tduprez " + channels[i] + ": Invalid channel name");
-        else if (this->_channelsList.find(channels[i]) == this->_channelsList.end()) { // Create channel if not exist
-            this->_channelsList.insert(std::make_pair(channels[i], new Channel(channels[i], client)));
-            sendMessage(client->getFd(), ":tduprez JOIN " + channels[i]);
+        if (channelsNameList[i].at(0) != '#' && channelsNameList[i].at(0) != '&') // Create error if channel name isn't ok
+            sendMessage(client->getFd(), ":server 403 tduprez " + channelsNameList[i] + ": Invalid channel name");
+        else if (this->_channelsList.find(channelsNameList[i]) == this->_channelsList.end()) { // Create channel if not exist
+            this->_channelsList.insert(std::make_pair(channelsNameList[i], new Channel(channelsNameList[i], client)));
+            sendMessage(client->getFd(), ":tduprez JOIN " + channelsNameList[i]);
         }
-        else if (this->_channelsList.find(channels[i]) != this->_channelsList.end()) { // Join channel if exist
-            if (this->_channelsList.find(channels[i])->second->addClient(client, password))
-                sendMessage(client->getFd(), ":tduprez2 JOIN " + channels[i]);
+        else if (this->_channelsList.find(channelsNameList[i]) != this->_channelsList.end()) { // Join channel if exist
+            if (this->_channelsList.find(channelsNameList[i])->second->addClient(client, password))
+                sendMessage(client->getFd(), ":tduprez2 JOIN " + channelsNameList[i]);
             else
-            std::cout << "Error while joining the server : bad password" << std::endl;
+                std::cout << "Error while joining the server : bad password" << std::endl;
         }
     }
-}
-
-std::vector<std::string> Server::split(const std::string& str, char delim)
-{
-    std::vector<std::string>    result;
-    std::string                 token;
-    std::istringstream          tokenSource(str);
-
-    while (std::getline(tokenSource, token, delim)) {
-        result.push_back(token);
-    }
-    return result;
 }
 
 void    Server::sendMessage(int fd, std::string msg)

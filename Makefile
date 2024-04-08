@@ -25,6 +25,7 @@ CLASS_DIR = class/
 OBJS_DIR = .objs/
 
 SRCS_LIST =	main.cpp \
+			parsing.cpp \
 
 CLASS_LIST =	Server.cpp \
 				Client.cpp \

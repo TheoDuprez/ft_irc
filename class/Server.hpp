@@ -29,6 +29,7 @@
 #include <ctime> // std::localtime
 #include "Client.hpp"
 #include "Channel.hpp"
+#include "../includes/parsing.hpp"
 
 #define IP 0
 #define NO_FLAG 0
@@ -64,10 +65,6 @@ class Server
 		static bool		_isServUp;
         channelsMap     _channelsList;
 
-		Server(void);
-		Server(const Server& obj);
-		Server& operator=(const Server& obj);
-
 	public:
 		Server(char* port, std::string password);
 		~Server(void);
@@ -85,7 +82,6 @@ class Server
         cmdVector                   createCmdVector(std::string buffer);
         void                        handleCommand(cmdVector cmd, Client* client);
         void                        join(cmdVector cmd, Client* client);
-        std::vector<std::string>    split(const std::string& str, char delim);
         void                        sendMessage(int fd, std::string msg);
 };
 
