@@ -145,27 +145,43 @@ void                Server::handleCommand(std::vector<std::vector<std::string> >
 void                Server::join(cmdVector cmd, Client* client)
 {
     std::vector<std::string>            channelsNameList(split(*cmd.begin(), ','));
+    std::vector<std::string>::iterator  nameIt;
     std::vector<std::string>            channelsPasswordList;
+    std::vector<std::string>::iterator  passwordIt;
     std::string                         password;
 
     if (cmd.size() > 1)
         channelsPasswordList = std::vector<std::string>(split(*(cmd.begin() + 1), ','));
 
-    for (size_t i = 0; i < channelsNameList.size(); i++) { // To handle all client given to the join command
-        password = (i < channelsPasswordList.size()) ? channelsPasswordList[i] : ""; // Give a password to the channel if specified, otherwise "" is given ("" mean no password for the Channel)
+    nameIt = channelsNameList.begin();
+    passwordIt = channelsPasswordList.begin();
+    for (; nameIt != channelsNameList.end(); nameIt++) {
+        password = (passwordIt != channelsPasswordList.end()) ? *(passwordIt++) : "";
 
-        if (channelsNameList[i].at(0) != '#' && channelsNameList[i].at(0) != '&') // Create error if channel name isn't ok
-            sendMessage(client->getClientFd(), ":server 403 tduprez " + channelsNameList[i] + ": Invalid channel name");
-        else if (this->_channelsList.find(channelsNameList[i]) == this->_channelsList.end()) { // Create channel if not exist
-            this->_channelsList.insert(std::make_pair(channelsNameList[i], new Channel(channelsNameList[i], client)));
-            sendMessage(client->getClientFd(), ":tduprez JOIN " + channelsNameList[i]);
+        if (nameIt->at(0) != '#' && nameIt->at(0) != '&') {
+            sendMessage(client->getClientFd(), ":server 403 " + client->getNickName() + " " + *nameIt + ": Invalid channel name");
         }
-        else if (this->_channelsList.find(channelsNameList[i]) != this->_channelsList.end()) { // Join channel if exist
-            if (this->_channelsList.find(channelsNameList[i])->second->addClient(client, password))
-                sendMessage(client->getClientFd(), ":tduprez2 JOIN " + channelsNameList[i]);
-            else
+        else if (this->_channelsList.find(*nameIt) == this->_channelsList.end()) {
+            this->_channelsList.insert(std::make_pair(*nameIt, new Channel(*nameIt, client)));
+        }
+        else if (this->_channelsList.find(*nameIt) != this->_channelsList.end()) {
+            if (!this->_channelsList.find(*nameIt)->second->addClient(client, password))
                 std::cout << "Error while joining the server : bad password" << std::endl;
         }
+//    for (size_t i = 0; i < channelsNameList.size(); i++) {
+////        password =
+//
+//        if (channelsNameList[i].at(0) != '#' && channelsNameList[i].at(0) != '&') {
+//            sendMessage(client->getClientFd(), ":server 403 tduprez " + channelsNameList[i] + ": Invalid channel name");
+//        }
+//        else if (this->_channelsList.find(channelsNameList[i]) == this->_channelsList.end()) {
+//            this->_channelsList.insert(std::make_pair(channelsNameList[i], new Channel(channelsNameList[i], client)));
+//        }
+//        else if (this->_channelsList.find(channelsNameList[i]) != this->_channelsList.end()) {
+//            if (!this->_channelsList.find(channelsNameList[i])->second->addClient(client, password))
+//                std::cout << "Error while joining the server : bad password" << std::endl;
+//        }
+//    }
     }
 }
 
@@ -299,7 +315,8 @@ void	Server::nickCommand(std::vector<std::string> cmd, int fd)
 	}
 	for (clientIterator	it = this->_clients.begin(); it != this->_clients.end(); it++) {
 		if (!cmd[1].compare(it->second->getNickName())) {
-			this->printLogMessage("ERR_NICKNAMEINUSE (433)\n", ERROR);
+            sendMessage(fd, ":server 433 * nickname :" + this->_clients[fd]->getNickName() + " is already in use");
+//			this->printLogMessage("ERR_NICKNAMEINUSE (433)\n", ERROR);
 			return;
 		}
 	}

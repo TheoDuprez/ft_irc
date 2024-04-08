@@ -34,8 +34,9 @@ private:
 public:
     Channel(std::string channelName, Client* client);
     ~Channel(void);
-    bool    addClient(Client* client, std::string password);
-    bool    isClientExist(const Client* client) const;
+    bool        addClient(Client* client, std::string password);
+    bool        isClientExist(const Client* client) const;
+    std::string formatClientsListAsString(void) const;
 };
 
 #endif

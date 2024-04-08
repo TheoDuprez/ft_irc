@@ -12,17 +12,31 @@ void UserInfos::setIsOperator(bool isOperator) { this->_isOperator = isOperator;
 
 // ----- Class Channel ----- //
 
+#include <sys/socket.h>
+void    sendMessage(int fd, std::string msg)
+{
+    msg += "\r\n";
+    std::cout << "Message send to client is : " << msg << std::endl;
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+
 Channel::Channel(std::string channelName, Client* client): _usersLimit(-1), _isChannelOnInvite(false), _channelName(channelName), _channelPassword("")
 {
-    this->_clientsList.insert(std::make_pair("First client test", new UserInfos(client, true)));
+    this->_clientsList.insert(std::make_pair(client->getNickName(), new UserInfos(client, true)));
+    sendMessage(client->getClientFd(), ":" + client->getNickName() + " JOIN " + this->_channelName);
+    sendMessage(client->getClientFd(), ":server 353 " + client->getNickName() + " = " + this->_channelName + " :@" + client->getNickName());
 }
 
 Channel::~Channel(void) {}
 
 bool    Channel::addClient(Client *client, std::string password)
 {
-    if (this->_channelPassword == password) {
-        this->_clientsList.insert(std::make_pair("First client test", new UserInfos(client, false)));
+    if (this->_channelPassword == password || password != "") {
+        this->_clientsList.insert(std::make_pair(client->getNickName(), new UserInfos(client, false)));
+        for (clientsListMapIterator it = this->_clientsList.begin(); it != this->_clientsList.end(); it++) {
+            sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " JOIN " + this->_channelName);
+        }
+        sendMessage(client->getClientFd(), ":server 353 " + client->getNickName() + " = " + this->_channelName + " :" + this->formatClientsListAsString());
         return true;
     }
     return false;
@@ -35,4 +49,17 @@ bool    Channel::isClientExist(const Client* client) const
             return true;
     }
     return false;
+}
+
+std::string Channel::formatClientsListAsString(void) const
+{
+    std::string retClientsList;
+    for (clientsListMap::const_iterator it = this->_clientsList.begin(); it != this->_clientsList.end();) {
+        if (it->second->getIsOperator())
+            retClientsList += "@";
+        retClientsList += it->first;
+        if (++it != this->_clientsList.end())
+            retClientsList += " ";
+    }
+    return retClientsList;
 }
