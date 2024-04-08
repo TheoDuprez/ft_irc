@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/05 14:10:51 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/08 10:08:44 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@
 #include <unistd.h>
 #include <poll.h>
 #include <vector>
+#include <map>
+#include <locale>  // std::locale - std::isalpha
 #include <fstream> // std::ofstream
 #include <ctime> // std::localtime
 #include "Client.hpp"
@@ -33,10 +35,15 @@
 #define MESSAGE_SIZE 512
 #define PENDING_QUEUE 50
 #define POLL_NO_TIMEOUT -1
+#define USERLEN 12
+#define ERROR true
+#define OK false
 #define SSTR( x ) static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x ) ).str()
 
-typedef std::vector<Client*>	clientVector;
-typedef	clientVector::iterator	clientIterator;
+typedef std::string::iterator	stringIterator;
+
+typedef std::map<int, Client*>	clientMap;
+typedef clientMap::iterator		clientIterator;
 
 typedef std::vector<pollfd>		pollVector;
 typedef	pollVector::iterator	pollIterator;
@@ -45,7 +52,7 @@ class Server
 {
 	private:
 		std::ofstream	_logFile;
-		clientVector	_clientList;
+		clientMap		_clients;
 		pollVector		_pollFds;
 		unsigned short	_port;
 		sockaddr_in		_serverAddress;
@@ -56,6 +63,8 @@ class Server
 		Server(void);
 		Server(const Server& obj);
 		Server& operator=(const Server& obj);
+
+		bool	_isValidUserCommand(size_t i, Client  *currentClient, std::vector<std::string> *cmd);
 
 	public:
 		Server(char* port, std::string password);
@@ -70,6 +79,10 @@ class Server
 		pollfd				&getPollFd(void);
 		void				printLogMessage(std::string message, bool isError);
 		std::string	const	getCurrentTimeStamp(void);
+		void				clientManager(void);
+		void				passCommand(std::vector<std::string> cmd, int fd);
+		void				nickCommand(std::vector<std::string> cmd, int fd);
+		void				userCommand(std::vector<std::string> cmd, int fd);
 };
 
 #endif

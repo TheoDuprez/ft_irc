@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/05 14:18:28 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/08 12:06:43 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 Server::Server(void)
 {
-
 }
 
 Server::Server(char* port, std::string password): _password(password)
@@ -43,9 +42,8 @@ Server::~Server(void)
 	this->_logFile.close();
 	for (pollIterator it = this->_pollFds.begin(); it != this->_pollFds.end(); it++)
 		close(it->fd);
-    for (clientIterator it = this->_clientList.begin(); it != this->_clientList.end(); it++) {
-		delete *it;
-    }
+	for (clientIterator it = this->_clients.begin(); it != this->_clients.end(); it++)
+		delete it->second;
 }
 
 void	Server::initServer(void)
@@ -90,35 +88,20 @@ void	Server::createPollFd(int fd)
 
 void	Server::serverLoop(void)
 {
-	int	recvReturn;
-	
 	while (this->_isServUp == true)
 	{
-		char	buffer[MESSAGE_SIZE] = {0};
 		if (poll(this->_pollFds.data(), this->_pollFds.size(), POLL_NO_TIMEOUT) == -1) {
 			if (this->_isServUp == true)
 				throw (std::runtime_error(strerror(errno)));
 		}
 		else if (this->_pollFds[0].revents & POLLIN)
 			acceptClient();
-		else {
-			for (pollIterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++) {
-				if (it->revents & POLLIN) {
-					recvReturn = recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG);
-					if (recvReturn == -1) 
-						throw (std::runtime_error(strerror(errno)));
-					else if (recvReturn == 0) {
-						break;
-					} else {
-						printLogMessage(std::string(buffer), false);
-					}
-				}
-            }
-		}
+		else
+			clientManager();
 	}
 }
 
-void	Server::acceptClient(void)
+void	Server::acceptClient(void) 	
 {
 	int		clientFd;
 	
@@ -126,7 +109,7 @@ void	Server::acceptClient(void)
 	if (clientFd == -1)
 		throw (std::runtime_error(strerror(errno)));
 	createPollFd(clientFd);
-	this->_clientList.push_back(new Client(this->getPollFd()));
+	this->_clients.insert(std::make_pair(clientFd, new Client()));
 }
 
 pollfd		&Server::getPollFd(void)
@@ -137,7 +120,7 @@ pollfd		&Server::getPollFd(void)
 void		Server::printLogMessage(std::string message, bool isError)
 {
 	this->_logFile << "[" << this->getCurrentTimeStamp() << "]" << std::flush;
-	if (isError == true)
+	if (isError == ERROR)
 		this->_logFile << " ERROR: " << message << std::flush;
 	else
 		this->_logFile << " " << message << std::flush;
@@ -162,6 +145,161 @@ std::string	const	Server::getCurrentTimeStamp(void)
 	if (localTime->tm_sec < 10)
 		retTime.insert(17, "0");	
 	return retTime;
+}
+
+void	Server::clientManager(void)
+{
+	int recvReturn;
+	char	buffer[MESSAGE_SIZE] = {0};
+	
+	for (pollIterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++) {
+		if (it->revents & POLLIN) {
+			recvReturn = recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG);
+			if (recvReturn == -1) 
+				throw (std::runtime_error(strerror(errno)));
+			else if (recvReturn == 0) {
+				break;
+				//Here close the client connection with ERROR COMMAND
+			} else {
+				std::vector<std::string>	test;
+				test.push_back("USER");
+				test.push_back("testuserdelalongeur");
+				test.push_back("0");
+				test.push_back("*");
+				test.push_back("testreal");
+				// std::cout << "test\n";
+				// passCommand(test, it->fd);
+				// nickCommand(test, it->fd);
+				userCommand(test, it->fd);
+				//printLogMessage(std::string(buffer), false);
+			}
+		}
+    }
+}
+
+void	Server::passCommand(std::vector<std::string> cmd, int fd)
+{
+	// - TEST OK
+	Client	*currentClient = this->_clients[fd];
+
+	if (currentClient->getIsRegister() == true) {
+		this->printLogMessage("ERR_ALREADYREGISTERED (462)\n", ERROR);
+		return;
+	}
+	else if (cmd.size() != 2 || cmd[1].empty()) {
+		this->printLogMessage("ERR_NEEDMOREPARAMS (461)\n", ERROR);
+		return;
+	}
+	if (this->_password.compare(cmd[1].c_str())) {
+		this->printLogMessage("ERR_PASSWDMISMATCH (464)\n", ERROR);
+		//Here close the client connection with ERROR COMMAND
+	}
+	currentClient->setServerPassword(cmd[1]);
+	// std::cout << "passcmd test: pswd set as: " << currentClient->getServerPassword() << std::endl;
+}
+
+void	Server::nickCommand(std::vector<std::string> cmd, int fd)
+{
+	// NEED to test first for loop when parsing are down
+	// the rest of the function is OK
+	std::locale	loc;
+	std::string excluded = "#&: ";
+	Client	*currentClient = this->_clients[fd];
+
+	if (cmd.size() != 2 || cmd[1].empty()) {
+		this->printLogMessage("ERR_NONICKNAMEGIVEN (431)\n", ERROR);
+		return;
+	}
+	for (clientIterator	it = this->_clients.begin(); it != this->_clients.end(); it++) {
+		if (!cmd[1].compare(it->second->getNickName())) {
+			this->printLogMessage("ERR_NICKNAMEINUSE (433)\n", ERROR);
+			return;
+		}
+	}
+	// std::cout << "nickcmd test: cmd[1]: " << cmd[1] << std::endl;
+	for (stringIterator it = cmd[1].begin(); it != cmd[1].end(); it++) {
+		// std::cout << "nickcmd test: actual char: " << *it << std::endl;
+		if ((it == cmd[1].begin() && (std::isdigit(*it, loc) || cmd[1].find_first_of(excluded) != std::string::npos)) || !std::isalnum(*it, loc)) {
+			this->printLogMessage("ERR_ERRONEUSNICKNAME (432)\n", ERROR);
+			return;
+		}
+	}
+	this->printLogMessage("<past nickName> NICK <new nickName>\n", OK);
+	currentClient->setnickName(cmd[1]);
+	// std::cout << "nickcmd test: nick set as: " << currentClient->getNickName() << std::endl;
+}
+
+bool	Server::_isValidUserCommand(size_t i, Client  *currentClient, std::vector<std::string> *cmd)
+{
+	switch (i) {
+		case 1:
+			if ((*cmd)[1].empty()) {
+				this->printLogMessage("ERR_NEEDMOREPARAMS (461)\n", ERROR);
+				return false;
+			}
+			(*cmd)[1] = '~' + (*cmd)[1];
+			if ((*cmd)[1].size() > USERLEN)
+				(*cmd)[1] = (*cmd)[1].substr(0, USERLEN);
+			break;
+		case 2:
+			if ((*cmd)[2].size() != 1 || (*cmd)[2].at(0) != '0') {
+				this->printLogMessage("userCommand: invalid command, usage: USER <USERNAME> 0 * :<REALNAME>\n", ERROR);
+				return false;
+			}
+			break;
+		case 3:
+			if ((*cmd)[3].size() != 1 || (*cmd)[3].at(0) != '*') {
+				this->printLogMessage("userCommand: invalid command, usage: USER <USERNAME> 0 * :<REALNAME>\n", ERROR);
+				return false;
+			}
+			break;
+		case 4:
+			if ((*cmd)[4].empty() || ((*cmd)[4].at(0) == ':' && (*cmd)[4].size() == 1)) {
+				if (!currentClient->getNickName().empty())
+					(*cmd)[4] = currentClient->getNickName();
+				else {
+					this->printLogMessage("ERR_NEEDMOREPARAMS (461)\n", ERROR);
+					return false;
+				}
+			}
+			// necessary only if parsing return a ':'
+			// if ((*cmd)[4].at(0) == ':') {
+			// 		(*cmd)[4] = (*cmd)[4].substr(1, (*cmd)[4].size());
+			// }
+			break;
+	}
+	return (true);
+}
+
+void	Server::userCommand(std::vector<std::string> cmd, int fd)
+{
+	// TEST OK
+	Client	*currentClient = this->_clients[fd];
+	// We need to implement the Ident protocol here, but since our server is local, I don't think it's necessary.
+	
+	if (currentClient->getIsRegister() == true) {
+		this->printLogMessage("ERR_ALREADYREGISTERED (462)\n", ERROR);
+		return;
+	}
+	if (cmd.size() != 5) {
+		this->printLogMessage("userCommand function: Can't find the appropriate return\n", ERROR);
+		return;
+	}
+	for (size_t i = 1; i != cmd.size(); i++) {
+		if (this->_isValidUserCommand(i, currentClient, &cmd) == false)
+			return;
+	}
+	currentClient->setuserName(cmd[1]);
+	currentClient->setrealName(cmd[4]);
+	if (!currentClient->getServerPassword().empty() && !currentClient->getNickName().empty())
+		currentClient->setIsRegister(true);
+	// else {
+	// 	//error to handle, no pswd or nick for registration how manage this ?
+	// }
+	// std::cout << "usercmd test: username set as: " << currentClient->getUserName() << std::endl;
+	// std::cout << "usercmd test: realname set as: " << currentClient->getRealName() << std::endl;
+	// std::cout << "usercmd test: isRegister set as: " << std::string(currentClient->getIsRegister() ? "true" : "false") << std::endl;
+
 }
 
 bool	Server::_isServUp;
