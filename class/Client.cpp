@@ -6,13 +6,19 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 22:25:29 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/04 23:03:39 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/08 10:20:42 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
-Client::Client(pollfd& fd) : _nickName("NA"), _userName("NA"), _fd(fd)
+Client::Client(int clientFd): _cliendFd(clientFd)
+{
+    this->_isRegister = false;
+    this->_isOperator = false;
+}
+
+Client::Client(void)
 {
     this->_isRegister = false;
     this->_isOperator = false;
@@ -23,12 +29,56 @@ Client::~Client(void)
 
 }
 
-const std::string& Client::getUserName(void) const
+const int&          Client::getClientFd(void) const
 {
-    return this->_userName;
+    return this->_cliendFd;
 }
 
-const int&          Client::getFd(void) const
+bool	Client::getIsRegister()
 {
-    return this->_fd.fd;
+    return (this->_isRegister);
+}
+
+std::string	Client::getServerPassword()
+{
+    return (this->_serverPassword);
+}
+
+std::string	Client::getNickName()
+{
+    return (this->_nickName);
+}
+
+std::string	Client::getUserName()
+{
+    return (this->_userName);
+}
+
+std::string	Client::getRealName()
+{
+    return (this->_realName);
+}
+void	Client::setIsRegister(bool reg)
+{
+    this->_isRegister = reg;
+}
+
+void	Client::setServerPassword(std::string pswd)
+{
+    this->_serverPassword = pswd;
+}
+
+void	Client::setnickName(std::string nickName)
+{
+    this->_nickName = nickName;
+}
+
+void	Client::setuserName(std::string userName)
+{
+    this->_userName = userName;
+}
+
+void	Client::setrealName(std::string realName)
+{
+    this->_realName = realName;
 }
