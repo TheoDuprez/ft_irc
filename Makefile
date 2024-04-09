@@ -33,6 +33,9 @@ SRCS_LIST =	main.cpp \
 
 COMMANDS_LIST = joinCommand.cpp \
                 privmsgCommand.cpp \
+                passCommand.cpp \
+                nickCommand.cpp \
+                userCommand.cpp \
 
 SRCS = $(addprefix $(SRCS_DIR), $(SRCS_LIST))
 
