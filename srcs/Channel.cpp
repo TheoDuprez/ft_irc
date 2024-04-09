@@ -1,4 +1,4 @@
-#include "Channel.hpp"
+#include "../includes/Channel.hpp"
 
 // ----- Class userInfos (used by channel and only channel) ----- //
 

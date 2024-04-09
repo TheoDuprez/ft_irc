@@ -16,6 +16,6 @@
 #define RESET "\033[0m"
 #define RED "\033[31m"
 
-#include "../class/Server.hpp"
+#include "Server.hpp"
 
 #endif

@@ -20,20 +20,15 @@ HEADER_PATH = includes/
 
 SRCS_DIR = srcs/
 
-CLASS_DIR = class/
-
 OBJS_DIR = .objs/
 
 SRCS_LIST =	main.cpp \
 			parsing.cpp \
-
-CLASS_LIST =	Server.cpp \
-				Client.cpp \
-				Channel.cpp \
+			Server.cpp \
+			Client.cpp \
+			Channel.cpp \
 
 SRCS = $(addprefix $(SRCS_DIR), $(SRCS_LIST))
-
-SRCS += $(addprefix $(CLASS_DIR), $(CLASS_LIST))
 
 OBJS = $(addprefix $(OBJS_DIR), ${SRCS:.cpp=.o})
 
@@ -62,7 +57,7 @@ fclean: clean
 re : fclean all
 
 $(OBJS_DIR):
-	mkdir -p $(OBJS_DIR)$(SRCS_DIR) $(OBJS_DIR)$(CLASS_DIR)
+	mkdir -p $(OBJS_DIR)$(SRCS_DIR)
 
 -include $(OBJS:.o=.d)
 

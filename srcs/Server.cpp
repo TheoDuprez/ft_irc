@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "../includes/Server.hpp"
 
 Server::Server(char* port, std::string password): _password(password)
 {

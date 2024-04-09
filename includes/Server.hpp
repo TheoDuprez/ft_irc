@@ -30,7 +30,7 @@
 #include <ctime> // std::localtime
 #include "Client.hpp"
 #include "Channel.hpp"
-#include "../includes/parsing.hpp"
+#include "parsing.hpp"
 
 #define IP 0
 #define NO_FLAG 0
@@ -87,6 +87,8 @@ class Server
 		void				createPollFd(int fd);
 		void				serverLoop(void);
 		void				acceptClient(void);
+
+        // Join methods
 		pollfd				&getPollFd(void);
 		void				printLogMessage(std::string message, bool isError);
 		std::string	const	getCurrentTimeStamp(void);
