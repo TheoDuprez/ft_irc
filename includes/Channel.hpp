@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "Client.hpp"
+#include "utils.hpp"
 #include <map>
 #include <vector>
 

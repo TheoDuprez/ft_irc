@@ -12,14 +12,6 @@ void UserInfos::setIsOperator(bool isOperator) { this->_isOperator = isOperator;
 
 // ----- Class Channel ----- //
 
-#include <sys/socket.h>
-void    sendMessage(int fd, std::string msg)
-{
-    msg += "\r\n";
-    std::cout << "Message send to client is : " << msg << std::endl;
-    send(fd, msg.c_str(), msg.size(), 0);
-}
-
 Channel::Channel(std::string channelName, Client* client): _usersLimit(-1), _isChannelOnInvite(false), _channelName(channelName), _channelPassword("")
 {
     this->_clientsList.insert(std::make_pair(client->getNickName(), new UserInfos(client, true)));

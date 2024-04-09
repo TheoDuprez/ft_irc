@@ -30,7 +30,7 @@
 #include <ctime> // std::localtime
 #include "Client.hpp"
 #include "Channel.hpp"
-#include "parsing.hpp"
+#include "utils.hpp"
 
 #define IP 0
 #define NO_FLAG 0
@@ -42,31 +42,23 @@
 #define OK false
 #define SSTR( x ) static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x ) ).str()
 
-typedef std::string::iterator	stringIterator;
+typedef std::string::iterator	                stringIterator;
 
-typedef std::map<int, Client*>	clientMap;
-typedef clientMap::iterator		clientIterator;
+typedef std::map<int, Client*>	                clientMap;
 
-// typedef std::vector<Client*>	clientVector;
-// typedef	clientVector::iterator	clientIterator;
+typedef std::vector<pollfd>		                pollVector;
 
-typedef std::vector<pollfd>		pollVector;
-typedef	pollVector::iterator	pollIterator;
+typedef std::vector<std::vector<std::string> >  commandsVector;
 
-typedef std::vector<std::string> cmdVector;
-typedef cmdVector::iterator cmdVectorIterator;
+typedef std::vector<std::string>                commandTokensVector;
 
-typedef std::map<std::string, Channel*> channelsMap;
-
-//typedef std::vector<std::string> cmdArgsVector;
-
+typedef std::map<std::string, Channel*>         channelsMap;
 
 class Server
 {
 	private:
 		std::ofstream	_logFile;
 		clientMap		_clients;
-		// clientVector	_clientsList;
 		pollVector		_pollFds;
 		unsigned short	_port;
 		sockaddr_in		_serverAddress;
@@ -93,11 +85,10 @@ class Server
 		void				printLogMessage(std::string message, bool isError);
 		std::string	const	getCurrentTimeStamp(void);
 
-        std::vector<std::vector<std::string> >	createCmdVector(std::string buffer);
+        std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);
         void                        			handleCommand(std::vector<std::vector<std::string> > cmd, Client* client);
-        void                        			join(cmdVector cmd, Client* client);
-        void                                    privmsg(cmdVector cmd, Client* client);
-        void                        			sendMessage(int fd, std::string msg);
+        void                        			joinCommand(commandTokensVector cmd, Client* client);
+        void                                    privmsgCommand(commandTokensVector cmd, Client* client);
 		void									clientManager(void);
 		void									passCommand(std::vector<std::string> cmd, int fd);
 		void									nickCommand(std::vector<std::string> cmd, int fd);

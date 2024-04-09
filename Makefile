@@ -20,15 +20,23 @@ HEADER_PATH = includes/
 
 SRCS_DIR = srcs/
 
+COMMANDS_DIR = srcs/commands/
+
 OBJS_DIR = .objs/
 
 SRCS_LIST =	main.cpp \
-			parsing.cpp \
 			Server.cpp \
 			Client.cpp \
 			Channel.cpp \
+			utils.cpp \
+
+
+COMMANDS_LIST = joinCommand.cpp \
+                privmsgCommand.cpp \
 
 SRCS = $(addprefix $(SRCS_DIR), $(SRCS_LIST))
+
+SRCS += $(addprefix $(COMMANDS_DIR), $(COMMANDS_LIST))
 
 OBJS = $(addprefix $(OBJS_DIR), ${SRCS:.cpp=.o})
 
@@ -52,12 +60,12 @@ clean :
 fclean: clean
 	echo "\033[1;31mClean: \033[1;36mexecutable"
 	rm -rf ${NAME}
-	rm server.log
+	rm -f server.log
 
 re : fclean all
 
 $(OBJS_DIR):
-	mkdir -p $(OBJS_DIR)$(SRCS_DIR)
+	mkdir -p $(OBJS_DIR)$(SRCS_DIR) $(OBJS_DIR)$(COMMANDS_DIR)
 
 -include $(OBJS:.o=.d)
 

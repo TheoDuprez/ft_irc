@@ -31,9 +31,9 @@ Server::Server(char* port, std::string password): _password(password)
 Server::~Server(void)
 {
 	this->_logFile.close();
-	for (pollIterator it = this->_pollFds.begin(); it != this->_pollFds.end(); it++)
+	for (pollVector::iterator it = this->_pollFds.begin(); it != this->_pollFds.end(); it++)
 		close(it->fd);
-	for (clientIterator it = this->_clients.begin(); it != this->_clients.end(); it++)
+	for (clientMap::iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
 		delete it->second;
 }
 
@@ -95,25 +95,23 @@ void	Server::serverLoop(void)
 
 // ---------------------------------------------------------------------------------------------- //
 
-std::vector<std::vector<std::string> >            Server::createCmdVector(std::string buffer) // function to hard code parsing, not definitive
+commandsVector  Server::createCommandsVector(std::string buffer) // function to hard code parsing, not definitive
 {
-	std::vector<std::vector<std::string> >	retVectorCommands;
-	std::string								tempBuffer(buffer);
-	std::vector<std::string>				test(split(buffer, '\n'));
+	commandsVector              retVectorCommands;
+	std::vector<std::string>    commands(split(buffer, '\n'));
 
-	for (std::vector<std::string>::iterator it = test.begin(); it != test.end(); it++) {
+	for (std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); it++) {
 		retVectorCommands.push_back(split(it->substr(0, it->length() - 1), ' '));
 	}
-    // std::vector<std::string> vec(split(buffer.substr(0, buffer.length() - 2), ' '));
 
     return retVectorCommands;
 }
 
-void                Server::handleCommand(std::vector<std::vector<std::string> > cmd, Client* client) // Handle command function, waiting for a parsing logic to implement it correctly
+void                Server::handleCommand(commandsVector commands, Client* client)
 {
-	for (std::vector<std::vector<std::string> >::iterator it = cmd.begin(); it != cmd.end(); it++) {
+	for (commandsVector::iterator it = commands.begin(); it != commands.end(); it++) {
 		if (it->at(0) == "JOIN" && client->getIsRegister())
-			join(std::vector<std::string>(it->begin() + 1, it->end()), client);
+			joinCommand(std::vector<std::string>(it->begin() + 1, it->end()), client);
 		else if (it->at(0) == "USER")
 			userCommand(*it, client->getClientFd());
 		else if (it->at(0) == "NICK")
@@ -121,78 +119,13 @@ void                Server::handleCommand(std::vector<std::vector<std::string> >
 		else if (it->at(0) == "PASS")
 			passCommand(*it, client->getClientFd());
         else if (it->at(0) == "PRIVMSG")
-            privmsg(*it, client);
+            privmsgCommand(*it, client);
 		else
 			std::cout << "Error: " << it->at(0) << " is not a command. Full cmd is : " << std::endl;
-            for (std::vector<std::string>::iterator itTest = it->begin(); itTest != it->end(); itTest++)
+            for (commandTokensVector::iterator itTest = it->begin(); itTest != it->end(); itTest++)
                 std::cout << *itTest << " ";
             std::cout << std::endl;
 	}
-		// std::vector<std::string>	test;
-	// test.push_back("USER");
-	// test.push_back("testuserdelalongeur");
-	// test.push_back("0");
-	// test.push_back("*");
-	// test.push_back("testreal");
-	// // std::cout << "test\n";
-	// // passCommand(test, it->fd);
-	// // nickCommand(test, it->fd);
-	// userCommand(test, it->fd);
-	// //printLogMessage(std::string(buffer), false);
-    // else if (cmd.at(0) == "PRIVMSG") { // Quick implementation of PRIVMSG to test
-    //     for (size_t i = 0; i < this->_clientList.size(); i++) {
-    //         if (this->_clientList[i] != client)
-    //             sendMessage(this->_clientList[i]->getClientFd(), ":tduprez PRIVMSG #test " + cmd.at(2));
-    //     }
-    // }
-}
-
-void                Server::privmsg(cmdVector cmd, Client* client)
-{
-    std::string channelName;
-
-    if (cmd.at(1).find("#") != std::string::npos || cmd.at(1).find("&")) {// Is a channel target
-        std::cout << "Is good\n";
-        this->_channelsList.find(cmd.at(1))->second->privmsg(cmd, client);
-//        channelName = cmd.at(1).find("#")
-    }
-//    sendMessage()
-}
-
-void                Server::join(cmdVector cmd, Client* client)
-{
-    std::vector<std::string>            channelsNameList(split(*cmd.begin(), ','));
-    std::vector<std::string>::iterator  nameIt;
-    std::vector<std::string>            channelsPasswordList;
-    std::vector<std::string>::iterator  passwordIt;
-    std::string                         password;
-
-    if (cmd.size() > 1)
-        channelsPasswordList = std::vector<std::string>(split(*(cmd.begin() + 1), ','));
-
-    nameIt = channelsNameList.begin();
-    passwordIt = channelsPasswordList.begin();
-    for (; nameIt != channelsNameList.end(); nameIt++) {
-        password = (passwordIt != channelsPasswordList.end()) ? *(passwordIt++) : "";
-
-        if (nameIt->at(0) != '#' && nameIt->at(0) != '&') {
-            sendMessage(client->getClientFd(), ":server 403 " + client->getNickName() + " " + *nameIt + ": Invalid channel name");
-        }
-        else if (this->_channelsList.find(*nameIt) == this->_channelsList.end()) {
-            this->_channelsList.insert(std::make_pair(*nameIt, new Channel(*nameIt, client)));
-        }
-        else if (this->_channelsList.find(*nameIt) != this->_channelsList.end()) {
-            if (!this->_channelsList.find(*nameIt)->second->addClient(client, password))
-                std::cout << "Error while joining the server : bad password" << std::endl;
-        }
-    }
-}
-
-void    Server::sendMessage(int fd, std::string msg)
-{
-    msg += "\r\n";
-    std::cout << "Message send to client is : " << msg << std::endl;
-    send(fd, msg.c_str(), msg.size(), NO_FLAG);
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -248,7 +181,7 @@ void	Server::clientManager(void)
 	int recvReturn;
 	char	buffer[MESSAGE_SIZE] = {0};
 	
-	for (pollIterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++) {
+	for (pollVector::iterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++) {
 		if (it->revents & POLLIN) {
 			recvReturn = recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG);
 			if (recvReturn == -1)
@@ -257,7 +190,7 @@ void	Server::clientManager(void)
 				break;
 				//Here close the client connection with ERROR COMMAND
 			} else {
-				handleCommand(createCmdVector(buffer), this->_clients.at(it->fd));
+				handleCommand(createCommandsVector(buffer), this->_clients.at(it->fd));
 				// std::vector<std::string>	test;
 				// test.push_back("USER");
 				// test.push_back("testuserdelalongeur");
@@ -316,7 +249,7 @@ void	Server::nickCommand(std::vector<std::string> cmd, int fd)
 		this->printLogMessage("ERR_NONICKNAMEGIVEN (431)\n", ERROR);
 		return;
 	}
-	for (clientIterator	it = this->_clients.begin(); it != this->_clients.end(); it++) {
+	for (clientMap::iterator it = this->_clients.begin(); it != this->_clients.end(); it++) {
 		if (!cmd[1].compare(it->second->getNickName())) {
             sendMessage(fd, ":server 433 * nickname :" + cmd[1] + " is already in use");
 			this->printLogMessage("ERR_NICKNAMEINUSE (433)\n", ERROR);
