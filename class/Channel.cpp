@@ -37,6 +37,7 @@ bool    Channel::addClient(Client *client, std::string password)
             sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " JOIN " + this->_channelName);
         }
         sendMessage(client->getClientFd(), ":server 353 " + client->getNickName() + " = " + this->_channelName + " :" + this->formatClientsListAsString());
+        std::cout << "Size is : " << this->_clientsList.size() << std::endl;
         return true;
     }
     return false;
@@ -62,4 +63,13 @@ std::string Channel::formatClientsListAsString(void) const
             retClientsList += " ";
     }
     return retClientsList;
+}
+
+void        Channel::privmsg(std::vector<std::string> cmd, Client *client)
+{
+//    sendMessage(client->getClientFd())
+    for (clientsListMapIterator it = this->_clientsList.begin(); it != this->_clientsList.end(); it++) {
+        if (it->second->getClient() != client)
+            sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " PRIVMSG " + this->_channelName + " :" +  cmd.at(2).substr(1, cmd.at(2).length()));
+    }
 }

@@ -94,6 +94,7 @@ class Server
         std::vector<std::vector<std::string> >	createCmdVector(std::string buffer);
         void                        			handleCommand(std::vector<std::vector<std::string> > cmd, Client* client);
         void                        			join(cmdVector cmd, Client* client);
+        void                                    privmsg(cmdVector cmd, Client* client);
         void                        			sendMessage(int fd, std::string msg);
 		void									clientManager(void);
 		void									passCommand(std::vector<std::string> cmd, int fd);

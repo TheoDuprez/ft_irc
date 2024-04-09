@@ -112,7 +112,7 @@ std::vector<std::vector<std::string> >            Server::createCmdVector(std::s
 void                Server::handleCommand(std::vector<std::vector<std::string> > cmd, Client* client) // Handle command function, waiting for a parsing logic to implement it correctly
 {
 	for (std::vector<std::vector<std::string> >::iterator it = cmd.begin(); it != cmd.end(); it++) {
-		if (it->at(0) == "JOIN")
+		if (it->at(0) == "JOIN" && client->getIsRegister())
 			join(std::vector<std::string>(it->begin() + 1, it->end()), client);
 		else if (it->at(0) == "USER")
 			userCommand(*it, client->getClientFd());
@@ -120,8 +120,13 @@ void                Server::handleCommand(std::vector<std::vector<std::string> >
 			nickCommand(*it, client->getClientFd());
 		else if (it->at(0) == "PASS")
 			passCommand(*it, client->getClientFd());
+        else if (it->at(0) == "PRIVMSG")
+            privmsg(*it, client);
 		else
-			std::cout << "Error: " << it->at(0) << " is not a command" << std::endl;
+			std::cout << "Error: " << it->at(0) << " is not a command. Full cmd is : " << std::endl;
+            for (std::vector<std::string>::iterator itTest = it->begin(); itTest != it->end(); itTest++)
+                std::cout << *itTest << " ";
+            std::cout << std::endl;
 	}
 		// std::vector<std::string>	test;
 	// test.push_back("USER");
@@ -140,6 +145,18 @@ void                Server::handleCommand(std::vector<std::vector<std::string> >
     //             sendMessage(this->_clientList[i]->getClientFd(), ":tduprez PRIVMSG #test " + cmd.at(2));
     //     }
     // }
+}
+
+void                Server::privmsg(cmdVector cmd, Client* client)
+{
+    std::string channelName;
+
+    if (cmd.at(1).find("#") != std::string::npos || cmd.at(1).find("&")) {// Is a channel target
+        std::cout << "Is good\n";
+        this->_channelsList.find(cmd.at(1))->second->privmsg(cmd, client);
+//        channelName = cmd.at(1).find("#")
+    }
+//    sendMessage()
 }
 
 void                Server::join(cmdVector cmd, Client* client)
@@ -168,20 +185,6 @@ void                Server::join(cmdVector cmd, Client* client)
             if (!this->_channelsList.find(*nameIt)->second->addClient(client, password))
                 std::cout << "Error while joining the server : bad password" << std::endl;
         }
-//    for (size_t i = 0; i < channelsNameList.size(); i++) {
-////        password =
-//
-//        if (channelsNameList[i].at(0) != '#' && channelsNameList[i].at(0) != '&') {
-//            sendMessage(client->getClientFd(), ":server 403 tduprez " + channelsNameList[i] + ": Invalid channel name");
-//        }
-//        else if (this->_channelsList.find(channelsNameList[i]) == this->_channelsList.end()) {
-//            this->_channelsList.insert(std::make_pair(channelsNameList[i], new Channel(channelsNameList[i], client)));
-//        }
-//        else if (this->_channelsList.find(channelsNameList[i]) != this->_channelsList.end()) {
-//            if (!this->_channelsList.find(channelsNameList[i])->second->addClient(client, password))
-//                std::cout << "Error while joining the server : bad password" << std::endl;
-//        }
-//    }
     }
 }
 
@@ -315,22 +318,28 @@ void	Server::nickCommand(std::vector<std::string> cmd, int fd)
 	}
 	for (clientIterator	it = this->_clients.begin(); it != this->_clients.end(); it++) {
 		if (!cmd[1].compare(it->second->getNickName())) {
-            sendMessage(fd, ":server 433 * nickname :" + this->_clients[fd]->getNickName() + " is already in use");
-//			this->printLogMessage("ERR_NICKNAMEINUSE (433)\n", ERROR);
+            sendMessage(fd, ":server 433 * nickname :" + cmd[1] + " is already in use");
+			this->printLogMessage("ERR_NICKNAMEINUSE (433)\n", ERROR);
 			return;
 		}
 	}
 	// std::cout << "nickcmd test: cmd[1]: " << cmd[1] << std::endl;
 	for (stringIterator it = cmd[1].begin(); it != cmd[1].end(); it++) {
 		// std::cout << "nickcmd test: actual char: " << *it << std::endl;
-		if ((it == cmd[1].begin() && (std::isdigit(*it, loc) || cmd[1].find_first_of(excluded) != std::string::npos)) || !std::isalnum(*it, loc)) {
+		if ((it == cmd[1].begin() && std::isdigit(*it, loc)) || cmd[1].find_first_of(excluded) != std::string::npos || !std::isprint(*it, loc)) {
 			this->printLogMessage("ERR_ERRONEUSNICKNAME (432)\n", ERROR);
 			return;
 		}
 	}
 	this->printLogMessage("<past nickName> NICK <new nickName>\n", OK);
 	currentClient->setnickName(cmd[1]);
-	// std::cout << "nickcmd test: nick set as: " << currentClient->getNickName() << std::endl;
+    if (!currentClient->getIsRegister() && !currentClient->getServerPassword().empty() && !currentClient->getUserName().empty() && !currentClient->getRealName().empty())
+    {
+        sendMessage(fd, ":server 001 " + currentClient->getNickName() + " :Welcome to the localhost Network, " + currentClient->getNickName() + "!" + currentClient->getUserName() + "@localhost");
+//        sendMessage(fd,  ":tduprez4 NICK tduprez_");
+        currentClient->setIsRegister(true);
+    }
+	 std::cout << "nickcmd test: nick set as: " << currentClient->getNickName() << std::endl;
 }
 
 bool	Server::_isValidUserCommand(size_t i, Client  *currentClient, std::vector<std::string> *cmd)
@@ -399,14 +408,16 @@ void	Server::userCommand(std::vector<std::string> cmd, int fd)
 	}
 	currentClient->setuserName(cmd[1]);
 	currentClient->setrealName(cmd[4]);
-	if (!currentClient->getServerPassword().empty() && !currentClient->getNickName().empty())
+	if (!currentClient->getServerPassword().empty() && !currentClient->getNickName().empty()) {
+        sendMessage(fd, currentClient->getNickName() + ":Welcome to the localhost Network, " + currentClient->getNickName() + "!" + currentClient->getUserName() + "@localhost");
 		currentClient->setIsRegister(true);
+    }
 	// else {
 	// 	//error to handle, no pswd or nick for registration how manage this ?
 	// }
-	// std::cout << "usercmd test: username set as: " << currentClient->getUserName() << std::endl;
-	// std::cout << "usercmd test: realname set as: " << currentClient->getRealName() << std::endl;
-	// std::cout << "usercmd test: isRegister set as: " << std::string(currentClient->getIsRegister() ? "true" : "false") << std::endl;
+	 std::cout << "usercmd test: username set as: " << currentClient->getUserName() << std::endl;
+	 std::cout << "usercmd test: realname set as: " << currentClient->getRealName() << std::endl;
+	 std::cout << "usercmd test: isRegister set as: " << std::string(currentClient->getIsRegister() ? "true" : "false") << std::endl;
 
 }
 
