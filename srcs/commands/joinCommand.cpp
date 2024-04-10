@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   joinCommand.cpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/10 13:03:15 by acarlott          #+#    #+#             */
+/*   Updated: 2024/04/10 16:28:05 by acarlott         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/Server.hpp"
 
 void                Server::joinCommand(commandTokensVector cmd, Client* client)

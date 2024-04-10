@@ -19,3 +19,11 @@ void    sendMessage(int fd, std::string msg)
     std::cout << "Message send to client is : " << msg << std::endl;
     send(fd, msg.c_str(), msg.size(), 0);
 }
+
+// bool    checkExcludedChar(std::string name) {
+//     std::string excluded = "#$&: ";
+
+//     if (name.find_first_of(excluded) != std::string::npos)
+//         return false;
+//     return true;
+// }

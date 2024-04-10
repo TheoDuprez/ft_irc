@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/08 10:08:44 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/10 17:13:52 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <poll.h>
 #include <vector>
 #include <map>
+#include <sstream> // std::ostringstream
 #include <locale>  // std::locale - std::isalpha
 #include <fstream> // std::ofstream
 #include <ctime> // std::localtime
@@ -67,7 +68,10 @@ class Server
 		static bool		_isServUp;
         channelsMap     _channelsList;
 
+		bool	_isValidUserName(Client  *currentClient, std::vector<std::string> *cmd);
+		bool	_isValidRealName(Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidUserCommand(size_t i, Client  *currentClient, std::vector<std::string> *cmd);
+		bool	_isValidNickCommand(Client  *currentClient, std::vector<std::string> *cmd);
 
 	public:
 		Server(char* port, std::string password);
