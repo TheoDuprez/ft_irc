@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:02 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/10 16:36:00 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/10 18:33:14 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,17 +47,26 @@ bool	Server::_isValidUserName(Client  *currentClient, std::vector<std::string> *
 
 bool	Server::_isValidRealName(Client  *currentClient, std::vector<std::string> *cmd)
 {
+    std::string excluded = "#$: ";
+
     // we check whether the given realname is not empty, in which case we take the nickname and substitute it as the realname.
     if ((*cmd)[4].empty() || ((*cmd)[4].at(0) == ':' && (*cmd)[4].size() == 1)) {
         if (!currentClient->getNickName().empty()) {
             (*cmd)[4] = currentClient->getNickName();
         } else {
-            this->printLogMessage("ERR_NEEDMOREPARAMS (461)\n", ERROR);
+            sendMessage(currentClient->getClientFd(), ":server 461 : ERR_NEEDMOREPARAMS");
             return false;
         }
     }
+    // remove ':' if present in the realname
     if ((*cmd)[4].at(0) == ':') {
         (*cmd)[4] = (*cmd)[4].substr(1, (*cmd)[4].size());
+    }
+    // check if char in realname is valid
+    if ((*cmd)[4].find_first_of(excluded) != std::string::npos) {
+        // custom this sendmessage for username and not nickname
+        sendMessage(currentClient->getClientFd(), "USER: \"" + (*cmd)[4] + "\" invalid character in realname");
+        return false;
     }
     return true;
 }
@@ -71,13 +80,13 @@ bool	Server::_isValidUserCommand(size_t i, Client  *currentClient, std::vector<s
             break;
         case 2:
             if ((*cmd)[2].size() != 1 || (*cmd)[2].at(0) != '0') {
-                this->printLogMessage("userCommand: invalid command, usage: USER <USERNAME> 0 * :<REALNAME>\n", ERROR);
+                sendMessage(currentClient->getClientFd(), "USER: illegal character \"" + (*cmd)[2] + "\" in command;");
                 return false;
             }
             break;
         case 3:
             if ((*cmd)[3].size() != 1 || (*cmd)[3].at(0) != '*') {
-                this->printLogMessage("userCommand: invalid command, usage: USER <USERNAME> 0 * :<REALNAME>\n", ERROR);
+                sendMessage(currentClient->getClientFd(), "USER: illegal character \"" + (*cmd)[3] + "\" in command;");
                 return false;
             }
             break;
