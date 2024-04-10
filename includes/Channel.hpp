@@ -7,36 +7,50 @@
 #include <map>
 #include <vector>
 
-class UserInfos {
+class ClientInfos {
 private:
     Client* _client;
     bool    _isOperator;
 
 public:
-    UserInfos(Client* client, bool isOperator);
+    ClientInfos(Client* client, bool isOperator);
 
     const bool&     getIsOperator(void) const;
     void            setIsOperator(bool isOperator);
     const Client*   getClient(void) const;
 };
 
-typedef std::map<std::string, UserInfos*>           clientsListMap;
-typedef clientsListMap::iterator                    clientsListMapIterator;
+typedef std::map<std::string, ClientInfos*>           clientsMap;
+typedef clientsMap::iterator                    	clientsListMapIterator;
 
 class Channel {
 private:
-    int									_usersLimit;
-    bool                                _isChannelOnInvite;
+    size_t								_usersLimit;
+	bool								_hasUsersLimit;
+	bool								_hasPassword;
+	bool								_isOnInvite;
     std::string                         _channelName;
-    std::string                         _channelPassword;
-    clientsListMap                      _clientsList;
+    std::string                         _password;
+    clientsMap                      	_clientsDataMap;
 	std::string 						_modes;
 
 public:
     Channel(std::string channelName, Client* client);
     ~Channel(void);
-    void        setPassword(const std::string& password);
-	void		setUsersLimit(const int usersLimit);
+    void        				setPassword(const std::string& password);
+	void						setUsersLimit(const int usersLimit);
+	void						setHasPassword(const bool hasPassword);
+	void						setHasUsersLimit(const bool hasUsersLimit);
+	void						setIsOnInvite(const bool isOnInvite);
+	const std::string&			getPassword(void) const;
+	bool						getHasPassword(void) const;
+	bool						getHasUsersLimit(void) const;
+	bool						getIsOnInvite(void) const;
+	const clientsMap&			getClientsDataMap(void) const;
+	const std::string&			getModes(void) const;
+	const std::string&			getChannelName(void) const;
+	void						setModes(const std::string modes);
+
     bool        addClient(Client* client, std::string password);
     bool        isClientExist(const Client* client) const;
     std::string formatClientsListAsString(void) const;

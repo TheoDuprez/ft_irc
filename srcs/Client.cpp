@@ -39,22 +39,22 @@ bool	Client::getIsRegister()
     return (this->_isRegister);
 }
 
-std::string	Client::getServerPassword()
+const std::string&	Client::getServerPassword() const
 {
     return (this->_serverPassword);
 }
 
-std::string	Client::getNickName()
+const std::string&	Client::getNickName() const
 {
     return (this->_nickName);
 }
 
-std::string	Client::getUserName()
+const std::string&	Client::getUserName() const
 {
     return (this->_userName);
 }
 
-std::string	Client::getRealName()
+const std::string&	Client::getRealName() const
 {
     return (this->_realName);
 }

@@ -19,11 +19,11 @@ void	Server::joinCommand(commandTokensVector cmd, Client* client)
 		if (nameIt->at(0) != '#' && nameIt->at(0) != '&') {
 			sendMessage(client->getClientFd(), ":server 403 " + client->getNickName() + " " + *nameIt + ": Invalid channel name");
 		}
-		else if (this->_channelsList.find(*nameIt) == this->_channelsList.end()) {
-			this->_channelsList.insert(std::make_pair(*nameIt, new Channel(*nameIt, client)));
+		else if (this->_channelsMap.find(*nameIt) == this->_channelsMap.end()) {
+			this->_channelsMap.insert(std::make_pair(*nameIt, new Channel(*nameIt, client)));
 		}
-		else if (this->_channelsList.find(*nameIt) != this->_channelsList.end()) {
-			if (!this->_channelsList.find(*nameIt)->second->addClient(client, password))
+		else if (this->_channelsMap.find(*nameIt) != this->_channelsMap.end()) {
+			if (!this->_channelsMap.find(*nameIt)->second->addClient(client, password))
 				std::cout << "Error while joining the server : bad password" << std::endl;
 		}
 	}

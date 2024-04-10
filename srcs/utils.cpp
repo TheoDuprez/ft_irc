@@ -19,3 +19,23 @@ void    sendMessage(int fd, std::string msg)
     std::cout << "Message send to client is : " << msg << std::endl;
     send(fd, msg.c_str(), msg.size(), 0);
 }
+
+bool	isStringContainOnlyNumbers(const std::string& str)
+{
+	for (std::string::const_iterator it = str.begin(); it != str.end(); it++) {
+		if (!isdigit(*it))
+			return false;
+	}
+	return true;
+}
+
+size_t strtost(const std::string& str)
+{
+	std::istringstream iss(str);
+	size_t retNumber;
+
+	if (!isStringContainOnlyNumbers(str) || !(iss >> retNumber))
+		throw std::runtime_error("Error converting std::string into size_t");
+
+	return retNumber;
+}

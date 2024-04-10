@@ -111,7 +111,7 @@ void                Server::handleCommand(commandsVector commands, Client* clien
 		if (it->at(0) == "JOIN" && client->getIsRegister())
 			joinCommand(*it, client);
         else if (it->at(0) == "MODE")
-            modeCommand(*it, client->getClientFd());
+            modeCommand(*it, client);
 		else if (it->at(0) == "USER")
 			userCommand(*it, client->getClientFd());
 		else if (it->at(0) == "NICK")

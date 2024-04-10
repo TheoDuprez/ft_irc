@@ -33,10 +33,10 @@ class Client
 		~Client(void);
 		
         const int&          getClientFd(void) const;
-		std::string	getNickName(void);
-		std::string	getUserName(void);
-		std::string	getRealName(void);
-		std::string	getServerPassword(void);
+		const std::string&	getNickName(void) const;
+		const std::string&	getUserName(void) const;
+		const std::string&	getRealName(void) const;
+		const std::string&	getServerPassword(void) const;
 		bool		getIsRegister(void);
 		void		setIsRegister(bool reg);
 		void		setServerPassword(std::string pswd);

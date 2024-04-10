@@ -65,14 +65,17 @@ class Server
 		socklen_t		_serverAddressSize;
 		std::string		_password;
 		static bool		_isServUp;
-        channelsMap     _channelsList;
+        channelsMap     _channelsMap;
 
 		bool	_isValidUserCommand(size_t i, Client  *currentClient, std::vector<std::string> *cmd);
 
         // modeCommand methods
-		void						addModeToChannel(std::string modeString, std::vector<std::string> modeArguments, int clientFd, Channel* channelPtr);
-		void						modeCommandChannel(std::string modeString, std::vector<std::string> modeArguments, int clientFd, Channel* channelPtr);
+		void						manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode);
+		void						modeCommandChannel(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr);
 		std::vector<std::string>	fillModeArguments(commandTokensVector& cmd);
+		void						manageKey(Channel* channelPtr, Client* client, std::vector<std::string>& modeArguments, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						manageUsersLimit(Channel* channelPtr, Client* client, std::vector<std::string>& modeArguments, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						manageOperator(Channel* channelPtr, Client* client, std::vector<std::string>& modeArguments, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
 
 	public:
 		Server(char* port, std::string password);
@@ -91,7 +94,7 @@ class Server
 		std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);
 		void									handleCommand(std::vector<std::vector<std::string> > cmd, Client* client);
 		void									joinCommand(commandTokensVector cmd, Client* client);
-		void									modeCommand(commandTokensVector cmd, int clientFd);
+		void									modeCommand(commandTokensVector cmd, Client* client);
 		void									privmsgCommand(commandTokensVector cmd, Client* client);
 		void									clientManager(void);
 		void									passCommand(std::vector<std::string> cmd, int fd);
