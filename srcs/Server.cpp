@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/10 01:24:09 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/10 19:48:27 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,11 +181,15 @@ void	Server::clientManager(void) {
             recvReturn = recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG);
             if (recvReturn == -1)
                 throw (std::runtime_error(strerror(errno)));
-            else if (recvReturn == 0) {
+            else if (recvReturn == 0)
                 break;
-                //Here close the client connection with ERROR COMMAND
-            } else {
-                handleCommand(createCommandsVector(buffer), this->_clients.at(it->fd));
+            else {
+				try {
+                	handleCommand(createCommandsVector(buffer), this->_clients.at(it->fd));
+				} catch (const std::runtime_error &e) {
+					this->printLogMessage(e.what(), ERROR);
+					break ;
+				}
             }
         }
     }

@@ -20,6 +20,16 @@ void    sendMessage(int fd, std::string msg)
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
+std::string iToString(int valueToConvert)
+{
+    std::string convertedValue;
+    std::ostringstream osStr;
+
+    osStr << valueToConvert;
+    convertedValue = osStr.str();
+    return (convertedValue);
+}
+
 // bool    checkExcludedChar(std::string name) {
 //     std::string excluded = "#$&: ";
 

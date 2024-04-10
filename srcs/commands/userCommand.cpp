@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:02 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/10 18:33:14 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/10 19:31:56 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,9 @@ bool	Server::_isValidUserName(Client  *currentClient, std::vector<std::string> *
     // check if the username is valid, if it's not we add a suffix until we have a username that doesn't already exist
     for (clientMap::iterator it = this->_clients.begin(); it != this->_clients.end(); it++) {
         if (!it->second->getUserName().empty() && !(*cmd)[1].compare(it->second->getUserName().substr(1))) {
+            std::string suffix = "$" + iToString(i);
             (*cmd)[1] = initialUserName;
-            std::ostringstream iToStr;
-            iToStr << i;
-            (*cmd)[1] += ("$" + iToStr.str());
+            (*cmd)[1] += suffix;
             i++;
         }
     }

@@ -6,7 +6,7 @@
 #    By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/03 11:48:15 by acarlott          #+#    #+#              #
-#    Updated: 2024/04/05 14:19:57 by acarlott         ###   ########lyon.fr    #
+#    Updated: 2024/04/10 19:00:05 by acarlott         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,7 @@ COMMANDS_LIST = joinCommand.cpp \
                 passCommand.cpp \
                 nickCommand.cpp \
                 userCommand.cpp \
+				errorCommand.cpp \
 
 SRCS = $(addprefix $(SRCS_DIR), $(SRCS_LIST))
 

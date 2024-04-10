@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/10 17:13:52 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/10 19:23:41 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ class Server
 		void									passCommand(std::vector<std::string> cmd, int fd);
 		void									nickCommand(std::vector<std::string> cmd, int fd);
 		void									userCommand(std::vector<std::string> cmd, int fd);
+		void									errorCommand(int clientFd, std::string error, std::string reason);
 };
 
 #endif
