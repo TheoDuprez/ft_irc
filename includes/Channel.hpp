@@ -29,6 +29,7 @@ private:
     bool                                _isChannelOnInvite;
     std::string                         _channelName;
     std::string                         _channelPassword;
+    std::string                         _topic;
     clientsListMap                      _clientsList;
 
 public:
@@ -40,6 +41,8 @@ public:
     void            privmsg(std::vector<std::string> cmd, Client* client);
     clientsListMap  *getClientsList(void);
     const std::string     &getChannelName(void) const;
+    const std::string     &getTopic(void) const;
+    void                  setTopic(std::string topic);
 };
 
 #endif

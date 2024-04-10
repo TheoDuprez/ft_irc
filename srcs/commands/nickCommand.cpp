@@ -39,7 +39,7 @@ void	Server::nickCommand(std::vector<std::string> cmd, int fd)
                 for (clientsListMapIterator clientIt = it->second->getClientsList()->begin(); clientIt != it->second->getClientsList()->end(); clientIt++) {
                     if (clientIt->second->getClient()->getClientFd() != currentClient->getClientFd())
                     sendMessage(clientIt->second->getClient()->getClientFd(), clientIt->second->getClient()->getNickName() + "!" + clientIt->second->getClient()->getUserName() + "@localhost NICK " + cmd[1]);
-                }
+                } 
             }
             //Need to put here : sendMessage for all customers who communicate by private message with the currentClient
         }

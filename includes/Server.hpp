@@ -93,7 +93,7 @@ class Server
 		void									passCommand(std::vector<std::string> cmd, int fd);
 		void									nickCommand(std::vector<std::string> cmd, int fd);
 		void									userCommand(std::vector<std::string> cmd, int fd);
-		void									topicCommand(std::vector<std::string> cmd, int fd);
+		void									topicCommand(std::vector<std::string> cmd, Client *client);
 };
 
 #endif

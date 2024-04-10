@@ -12,7 +12,7 @@ void UserInfos::setIsOperator(bool isOperator) { this->_isOperator = isOperator;
 
 // ----- Class Channel ----- //
 
-Channel::Channel(std::string channelName, Client* client): _usersLimit(-1), _isChannelOnInvite(false), _channelName(channelName), _channelPassword("")
+Channel::Channel(std::string channelName, Client* client): _usersLimit(-1), _isChannelOnInvite(false), _channelName(channelName), _channelPassword(""), _topic("")
 {
     this->_clientsList.insert(std::make_pair(client->getNickName(), new UserInfos(client, true)));
     sendMessage(client->getClientFd(), ":" + client->getNickName() + " JOIN " + this->_channelName);
@@ -71,4 +71,9 @@ clientsListMap  *Channel::getClientsList(void)
     return (&this->_clientsList);
 }
 
-const std::string     &Channel::getChannelName(void) const { return this->_channelName; }
+const std::string   &Channel::getChannelName(void) const { return this->_channelName; }
+
+const std::string   &Channel::getTopic(void) const { return this->_topic; }
+
+void    Channel::setTopic(std::string topic) { this->_topic = topic; }
+
