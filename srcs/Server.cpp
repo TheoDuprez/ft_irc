@@ -109,7 +109,9 @@ void                Server::handleCommand(commandsVector commands, Client* clien
 {
 	for (commandsVector::iterator it = commands.begin(); it != commands.end(); it++) {
 		if (it->at(0) == "JOIN" && client->getIsRegister())
-			joinCommand(std::vector<std::string>(it->begin() + 1, it->end()), client);
+			joinCommand(*it, client);
+        else if (it->at(0) == "MODE")
+            modeCommand(*it, client->getClientFd());
 		else if (it->at(0) == "USER")
 			userCommand(*it, client->getClientFd());
 		else if (it->at(0) == "NICK")

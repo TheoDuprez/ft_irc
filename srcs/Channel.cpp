@@ -21,9 +21,20 @@ Channel::Channel(std::string channelName, Client* client): _usersLimit(-1), _isC
 
 Channel::~Channel(void) {}
 
+void    Channel::setPassword(const std::string& password)
+{
+    this->_channelPassword = password;
+}
+
+void		Channel::setUsersLimit(const int usersLimit)
+{
+	this->_usersLimit = usersLimit;
+}
+
 bool    Channel::addClient(Client *client, std::string password)
 {
-    if (this->_channelPassword == password || password != "") {
+    std::cout << "User limit = " << this->_usersLimit << " | pass = " << this->_channelPassword << std::endl;
+    if (this->_channelPassword == password && (this->_usersLimit == -1 || this->_usersLimit > static_cast<int>(this->_clientsList.size()))) {
         this->_clientsList.insert(std::make_pair(client->getNickName(), new UserInfos(client, false)));
         for (clientsListMapIterator it = this->_clientsList.begin(); it != this->_clientsList.end(); it++) {
             sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " JOIN " + this->_channelName);

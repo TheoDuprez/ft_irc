@@ -32,6 +32,7 @@ SRCS_LIST =	main.cpp \
 
 
 COMMANDS_LIST = joinCommand.cpp \
+				modeCommand.cpp \
                 privmsgCommand.cpp \
                 passCommand.cpp \
                 nickCommand.cpp \

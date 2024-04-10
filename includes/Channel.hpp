@@ -25,15 +25,18 @@ typedef clientsListMap::iterator                    clientsListMapIterator;
 
 class Channel {
 private:
-    int                                 _usersLimit;
+    int									_usersLimit;
     bool                                _isChannelOnInvite;
     std::string                         _channelName;
     std::string                         _channelPassword;
     clientsListMap                      _clientsList;
+	std::string 						_modes;
 
 public:
     Channel(std::string channelName, Client* client);
     ~Channel(void);
+    void        setPassword(const std::string& password);
+	void		setUsersLimit(const int usersLimit);
     bool        addClient(Client* client, std::string password);
     bool        isClientExist(const Client* client) const;
     std::string formatClientsListAsString(void) const;

@@ -1,4 +1,4 @@
-#include "../includes/Server.hpp"
+#include "Server.hpp"
 
 void                Server::privmsgCommand(commandTokensVector cmd, Client* client)
 {
