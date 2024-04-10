@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/10 19:48:27 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/10 21:52:03 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,8 @@ void	Server::handleCommand(commandsVector commands, Client* client)
 			nickCommand(*it, client->getClientFd());
 		else if (it->at(0) == "PASS")
 			passCommand(*it, client->getClientFd());
+		else if (it->at(0) == "KICK")
+            kickCommand(*it, client->getClientFd());
         else if (it->at(0) == "PRIVMSG")
             privmsgCommand(*it, client);
 		else

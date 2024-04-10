@@ -34,11 +34,12 @@ private:
 public:
     Channel(std::string channelName, Client* client);
     ~Channel(void);
-    bool            addClient(Client* client, std::string password);
-    bool            isClientExist(const Client* client) const;
-    std::string     formatClientsListAsString(void) const;
-    void            privmsg(std::vector<std::string> cmd, Client* client);
-    clientsListMap  *getClientsList(void);
+    bool                  addClient(Client* client, std::string password);
+    bool                  isClientExist(const Client* client) const;
+    std::string           formatClientsListAsString(void) const;
+    void                  privmsg(std::vector<std::string> cmd, Client* client);
+    const std::string     &getchannelName() const;
+    clientsListMap        *getClientsList(void);
 };
 
 #endif
