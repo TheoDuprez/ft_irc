@@ -65,3 +65,8 @@ void        Channel::privmsg(std::vector<std::string> cmd, Client *client)
             sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " PRIVMSG " + this->_channelName + " :" +  cmd.at(2).substr(1, cmd.at(2).length()));
     }
 }
+
+clientsListMap  *Channel::getClientsList(void)
+{
+    return (&this->_clientsList);
+}

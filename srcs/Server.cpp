@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/08 12:06:43 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/10 01:24:09 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ commandsVector  Server::createCommandsVector(std::string buffer) // function to 
     return retVectorCommands;
 }
 
-void                Server::handleCommand(commandsVector commands, Client* client)
+void	Server::handleCommand(commandsVector commands, Client* client)
 {
 	for (commandsVector::iterator it = commands.begin(); it != commands.end(); it++) {
 		if (it->at(0) == "JOIN" && client->getIsRegister())

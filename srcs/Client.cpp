@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 22:25:29 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/08 10:20:42 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/10 01:50:42 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,27 +34,27 @@ const int&          Client::getClientFd(void) const
     return this->_cliendFd;
 }
 
-bool	Client::getIsRegister()
+bool	Client::getIsRegister() const
 {
     return (this->_isRegister);
 }
 
-std::string	Client::getServerPassword()
+std::string	Client::getServerPassword() const
 {
     return (this->_serverPassword);
 }
 
-std::string	Client::getNickName()
+std::string	Client::getNickName() const
 {
     return (this->_nickName);
 }
 
-std::string	Client::getUserName()
+std::string	Client::getUserName() const
 {
     return (this->_userName);
 }
 
-std::string	Client::getRealName()
+std::string	Client::getRealName() const
 {
     return (this->_realName);
 }
