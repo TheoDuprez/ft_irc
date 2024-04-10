@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:08:02 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/10 01:50:24 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/10 02:14:17 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ class Client
 		void		setnickName(std::string nickName);
 		void		setuserName(std::string userName);
 		void		setrealName(std::string realName);
-		void		setNewActiveChannels(std::string realName);
 };
 
 #endif
