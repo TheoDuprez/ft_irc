@@ -70,3 +70,5 @@ clientsListMap  *Channel::getClientsList(void)
 {
     return (&this->_clientsList);
 }
+
+const std::string     &Channel::getChannelName(void) const { return this->_channelName; }
