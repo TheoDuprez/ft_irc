@@ -9,41 +9,30 @@ void	Server::modeCommand(commandTokensVector cmd, Client* client)
 		sendMessage(client->getClientFd(), ":server 461 " + client->getNickName() + " MODE :Not enough parameters");
 		return ;
 	}
-	if (this->_channelsMap.find(cmd.at(1)) == this->_channelsMap.end()) {
+	if (!getChannelByName(cmd[1])) {
 		sendMessage(client->getClientFd(), ":server 403 " + client->getNickName() + " " + cmd.at(1) + " :No such channel");
 		return ;
 	}
 	if (cmd.size() < 3) {
-		sendMessage(client->getClientFd(), ":server 324 " + client->getNickName() + " " + this->_channelsMap.find(cmd.at(1))->second->getChannelName() + " " + this->_channelsMap.find(cmd.at(1))->second->createModesString());
+		sendMessage(client->getClientFd(), ":server 324 " + client->getNickName() + " " + getChannelByName(cmd[1])->getChannelName() + " " + getChannelByName(cmd[1])->createModesString());
 		return ;
 	}
 
 	modeString = cmd.at(2);
 	modeArguments = fillModeArguments(cmd);
-	if (cmd.at(1)[0] == '#' || cmd.at(1)[0] == '&') {
-		if (this->_channelsMap.find(cmd.at(1)) != this->_channelsMap.end())
-			modeCommandChannel(modeString, modeArguments, client, this->_channelsMap.find(cmd.at(1))->second);
-		else
-			sendMessage(client->getClientFd(), ":server 403 " + client->getNickName() + " " + cmd.at(1) + ":No such channel");
+	if (cmd[1].at(0) == '#' || cmd[1].at(0) == '&') {
+		modeCommandChannel(modeString, modeArguments, client, getChannelByName(cmd[1]));
 	}
-	else
-		std::cout << "Error 403 no such channel" << std::endl;
 }
 
 void	Server::modeCommandChannel(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr)
 {
-	bool	isOperator = channelPtr->getClientsDataMap().find(client->getNickName())->second->getIsOperator();
+	bool	isOperator = channelPtr->getClientsInfoByNick(client->getNickName())->getIsOperator();
 
-	if (modeString.at(0) == '+' && isOperator) {
+	if (modeString[0] == '+' && isOperator)
 		manageModes(modeString, modeArguments, client, channelPtr, true);
-	}
-	else if (modeString.at(0) == '-' && isOperator) {
-		std::cout << "Delete mode" << std::endl;
+	else if (modeString[0] == '-' && isOperator)
 		manageModes(modeString, modeArguments, client, channelPtr, false);
-	}
-	else
-		std::cout << "Cannot mod" << std::endl;
-		// deleteModeChannel
 }
 
 void	Server::manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode)
@@ -94,7 +83,6 @@ void	Server::manageUsersLimit(Channel* channelPtr, Client* client, std::vector<s
 		return ;
 	if (adjustMode) {
 		if (channelPtr->getHasUsersLimit() && ullToString(channelPtr->getUsersLimit()) == *argumentsIt) {
-			std::cout << "Oui\n";
 			argumentsIt++;
 			return ;
 		}
@@ -118,7 +106,6 @@ void	Server::manageUsersLimit(Channel* channelPtr, Client* client, std::vector<s
 
 void	Server::manageOperator(Channel* channelPtr, Client* client, std::vector<std::string>& modeArguments, std::vector<std::string>::iterator& argumentsIt, bool adjustMode)
 {
-	std::cout << "Manage ops = " << adjustMode << " " << *argumentsIt << std::endl;
 	if (argumentsIt == modeArguments.end())
 		return ;
 	if (adjustMode) {

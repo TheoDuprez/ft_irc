@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   passCommand.cpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/10 13:03:09 by acarlott          #+#    #+#             */
+/*   Updated: 2024/04/11 14:40:14 by acarlott         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Server.hpp"
 
 void	Server::passCommand(std::vector<std::string> cmd, int fd)
@@ -19,8 +31,8 @@ void	Server::passCommand(std::vector<std::string> cmd, int fd)
         return;
     }
     if (this->_password.compare(cmd[1].c_str())) {
-        this->printLogMessage("ERR_PASSWDMISMATCH (464)\n", ERROR);
-        //Here close the client connection with ERROR COMMAND
+        this->errorCommand(currentClient->getClientFd(), ":server 464 ", "Password incorrect");
+        throw (std::runtime_error(strerror(errno)));
     }
     currentClient->setServerPassword(cmd[1]);
     // --- Debug message ---

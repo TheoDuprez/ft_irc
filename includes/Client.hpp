@@ -18,13 +18,13 @@
 class Client
 {
 	private:
-		bool			_isRegister;
-		bool			_isOperator;
-		int				_cliendFd;
-		std::string		_nickName;
-		std::string		_userName;
-		std::string		_realName;
-		std::string		_serverPassword;
+		bool					_isRegister;
+		bool					_isOperator;
+		int						_cliendFd;
+		std::string				_nickName;
+		std::string				_userName;
+		std::string				_realName;
+		std::string				_serverPassword;
 		// Client(const Client& obj);
 		Client& operator=(const Client& obj);
 	public:
@@ -37,7 +37,7 @@ class Client
 		const std::string&	getUserName(void) const;
 		const std::string&	getRealName(void) const;
 		const std::string&	getServerPassword(void) const;
-		bool		getIsRegister(void);
+		bool		getIsRegister(void) const;
 		void		setIsRegister(bool reg);
 		void		setServerPassword(std::string pswd);
 		void		setnickName(std::string nickName);

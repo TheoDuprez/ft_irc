@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/08 12:06:43 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/11 19:27:06 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@ Server::~Server(void)
 		close(it->fd);
 	for (clientMap::iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
 		delete it->second;
+	for (channelsMap::iterator it = this->_channelsMap.begin(); it != this->_channelsMap.end(); it++) {
+		delete it->second;
+	}
 }
 
 void	Server::initServer(void)
@@ -104,7 +107,7 @@ commandsVector  Server::createCommandsVector(std::string buffer) // function to 
     return retVectorCommands;
 }
 
-void                Server::handleCommand(commandsVector commands, Client* client)
+void	Server::handleCommand(commandsVector commands, Client* client)
 {
 	for (commandsVector::iterator it = commands.begin(); it != commands.end(); it++) {
 		if (it->at(0) == "JOIN" && client->getIsRegister())
@@ -117,6 +120,8 @@ void                Server::handleCommand(commandsVector commands, Client* clien
 			nickCommand(*it, client->getClientFd());
 		else if (it->at(0) == "PASS")
 			passCommand(*it, client->getClientFd());
+		else if (it->at(0) == "KICK")
+            kickCommand(*it, client);
         else if (it->at(0) == "PRIVMSG")
             privmsgCommand(*it, client);
 		else
@@ -182,14 +187,37 @@ void	Server::clientManager(void) {
             recvReturn = recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG);
             if (recvReturn == -1)
                 throw (std::runtime_error(strerror(errno)));
-            else if (recvReturn == 0) {
+            else if (recvReturn == 0)
                 break;
-                //Here close the client connection with ERROR COMMAND
-            } else {
-                handleCommand(createCommandsVector(buffer), this->_clients.at(it->fd));
+            else {
+				try {
+                	handleCommand(createCommandsVector(buffer), this->_clients.at(it->fd));
+				} catch (const std::runtime_error &e) {
+					this->printLogMessage(e.what(), ERROR);
+					break ;
+				}
             }
         }
     }
+}
+
+Channel				*Server::getChannelByName(std::string const &name)
+{
+	channelsMap::iterator	channelIt;
+
+	channelIt = this->_channelsMap.find(name);
+	if (channelIt != this->_channelsMap.end())
+		return (channelIt->second);
+	return (NULL);
+}
+
+const Client*				Server::getClientByName(const std::string& name)
+{
+	for (clientMap::iterator it = this->_clients.begin(); it != this->_clients.end(); it++) {
+		if (it->second->getNickName() == name)
+			return it->second;
+	}
+	return NULL;
 }
 
 bool	Server::_isServUp;

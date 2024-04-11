@@ -11,7 +11,6 @@ std::vector<std::string> split(const std::string& str, char delim)
 		if (token[0] != 0)
 			result.push_back(token);
     }
-	std::cout << "Okay\n";
     return result;
 }
 
@@ -51,3 +50,21 @@ std::string	ullToString(size_t valueToConvert)
 	convertValue = osStr.str();
 	return (convertValue);
 }
+
+std::string iToString(int valueToConvert)
+{
+    std::string			convertedValue;
+    std::ostringstream	osStr;
+
+    osStr << valueToConvert;
+    convertedValue = osStr.str();
+    return (convertedValue);
+}
+
+// bool    checkExcludedChar(std::string name) {
+//     std::string excluded = "#$&: ";
+
+//     if (name.find_first_of(excluded) != std::string::npos)
+//         return false;
+//     return true;
+// }

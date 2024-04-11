@@ -37,6 +37,10 @@ private:
 public:
     Channel(std::string channelName, Client* client);
     ~Channel(void);
+
+    const std::string     		&getchannelName() const;
+    ClientInfos             	*getClientsInfoByNick(std::string nick);
+    clientsMap        			*getClientsList(void);
     void        				setPassword(const std::string& password);
 	void						setUsersLimit(const int usersLimit);
 	void						setHasPassword(const bool hasPassword);
@@ -52,8 +56,8 @@ public:
 	const std::string&			getChannelName(void) const;
 	void						setModes(const std::string modes);
 
-    bool        addClient(Client* client, std::string password);
     bool        isClientExist(const Client* client) const;
+    bool        addClient(Client* client, std::string password);
     std::string formatClientsListAsString(void) const;
     void        privmsg(std::vector<std::string> cmd, Client* client);
 	std::string createModesString(void) const;

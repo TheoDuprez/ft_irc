@@ -19,7 +19,10 @@ Channel::Channel(std::string channelName, Client* client): _hasUsersLimit(false)
     sendMessage(client->getClientFd(), ":server 353 " + client->getNickName() + " = " + this->_channelName + " :@" + client->getNickName());
 }
 
-Channel::~Channel(void) {}
+Channel::~Channel(void) {
+    for (clientsMap::iterator clientIt = this->_clientsDataMap.begin(); clientIt != this->_clientsDataMap.end(); clientIt++)
+        delete (clientIt->second);
+}
 
 void    			Channel::setPassword(const std::string& password) { this->_password = password; }
 
@@ -92,6 +95,26 @@ void        Channel::privmsg(std::vector<std::string> cmd, Client *client)
         if (it->second->getClient() != client)
             sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " PRIVMSG " + this->_channelName + " :" +  cmd.at(2).substr(1, cmd.at(2).length()));
     }
+}
+
+clientsMap  *Channel::getClientsList(void)
+{
+    return (&this->_clientsDataMap);
+}
+
+ClientInfos   *Channel::getClientsInfoByNick(std::string nick)
+{
+    clientsMap::iterator    clientIt;
+
+    clientIt = this->_clientsDataMap.find(nick);
+    if (clientIt != this->_clientsDataMap.end())
+        return (clientIt->second);
+    return (NULL);
+}
+
+const std::string    &Channel::getchannelName() const
+{
+    return (this->_channelName);
 }
 
 std::string Channel::createModesString(void) const
