@@ -19,6 +19,5 @@ void                Server::privmsgCommand(commandTokensVector cmd, Client* clie
     }
 	else if (getClientByName(cmd.at(1))) {
 		sendMessage(getClientByName(cmd.at(1))->getClientFd(), ":" + client->getNickName() + " PRIVMSG " + getClientByName(cmd.at(1))->getNickName() + " :" + cmd.at(2));
-		sendMessage(client->getClientFd(), ":" + client->getNickName() + " PRIVMSG " + getClientByName(cmd.at(1))->getNickName() + " :" + cmd.at(2));
 	}
 }

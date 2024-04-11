@@ -31,6 +31,7 @@
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "utils.hpp"
+#include "macro.hpp"
 
 #define IP 0
 #define NO_FLAG 0
@@ -42,11 +43,6 @@
 #define ERROR true
 #define OK false
 #define SSTR( NUMBER ) static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << NUMBER ) ).str()
-// ERR_RPLY Macro
-#define ERR_USERNOTINCHANNEL( USER, CHANNEL ) currentClient->getClientFd(), ":server 441 " + currentClient->getNickName() + " " + CHANNEL + " " + USER + " :They aren't on that channel"
-// KICK Macro
-#define KICK_MESSAGE_OPS( USER, CHANNEL, MESSAGE ) currentClient->getClientFd(), ":" + currentClient->getNickName() + " KICK " + CHANNEL + " " + USER + " " + MESSAGE
-#define KICK_MESSAGE_USERS( USER, CHANNEL, MESSAGE ) clientIt->second->getClient()->getClientFd(), ":" + currentClient->getNickName() + "!" + currentClient->getUserName() + "@localhost KICK " + CHANNEL + " " + USER + " " + MESSAGE
 
 typedef std::string::iterator					stringIterator;
 
@@ -83,9 +79,10 @@ class Server
 		void						manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode);
 		void						modeCommandChannel(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr);
 		std::vector<std::string>	fillModeArguments(commandTokensVector& cmd);
-		void						manageKey(Channel* channelPtr, Client* client, std::vector<std::string>& modeArguments, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
-		void						manageUsersLimit(Channel* channelPtr, Client* client, std::vector<std::string>& modeArguments, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
-		void						manageOperator(Channel* channelPtr, Client* client, std::vector<std::string>& modeArguments, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						manageKey(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						manageUsersLimit(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						manageOperator(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						sendMessageToAllClients(const Channel* channelPtr, const std::string& message) const;
 
 	public:
 		Server(char* port, std::string password);
