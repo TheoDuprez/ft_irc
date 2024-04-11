@@ -14,6 +14,8 @@ void UserInfos::setIsOperator(bool isOperator) { this->_isOperator = isOperator;
 
 Channel::Channel(std::string channelName, Client* client): _usersLimit(-1), _isChannelOnInvite(false), _channelName(channelName), _channelPassword("")
 {
+    (void)_usersLimit;
+    (void)_isChannelOnInvite;
     this->_clientsList.insert(std::make_pair(client->getNickName(), new UserInfos(client, true)));
     sendMessage(client->getClientFd(), ":" + client->getNickName() + " JOIN " + this->_channelName);
     sendMessage(client->getClientFd(), ":server 353 " + client->getNickName() + " = " + this->_channelName + " :@" + client->getNickName());
@@ -69,6 +71,19 @@ void        Channel::privmsg(std::vector<std::string> cmd, Client *client)
 clientsListMap  *Channel::getClientsList(void)
 {
     return (&this->_clientsList);
+}
+
+UserInfos   *Channel::getClientsInfoByNick(std::string nick)
+{
+    clientsListMap::iterator    clientIt;
+
+    for (clientsListMap::iterator it = this->_clientsList.begin(); it != this->_clientsList.end(); it++) {
+        std::cout << "nickclient:" << it->second->getClient()->getNickName() << std::endl;
+    }
+    clientIt = this->_clientsList.find(nick);
+    if (clientIt != this->_clientsList.end())
+        return (clientIt->second);
+    return (NULL);
 }
 
 const std::string    &Channel::getchannelName() const

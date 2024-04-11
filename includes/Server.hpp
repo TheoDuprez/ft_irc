@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/10 21:29:24 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/11 18:19:15 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include <cstring> // For memset function
 #include <csignal> // For signal function
 #include <cstdlib>
-#include <sstream>
 #include <errno.h>
 #include <limits>
 #include <unistd.h>
@@ -42,7 +41,12 @@
 #define TARGMAX 4
 #define ERROR true
 #define OK false
-#define SSTR( x ) static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x ) ).str()
+#define SSTR( NUMBER ) static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << NUMBER ) ).str()
+// ERR_RPLY Macro
+#define ERR_USERNOTINCHANNEL( USER, CHANNEL ) currentClient->getClientFd(), ":server 441 " + currentClient->getNickName() + " " + CHANNEL + " " + USER + " :They aren't on that channel"
+// KICK Macro
+#define KICK_MESSAGE_OPS( USER, CHANNEL, MESSAGE ) currentClient->getClientFd(), ":" + currentClient->getNickName() + " KICK " + CHANNEL + " " + USER + " " + MESSAGE
+#define KICK_MESSAGE_USERS( USER, CHANNEL, MESSAGE ) clientIt->second->getClient()->getClientFd(), ":" + currentClient->getNickName() + "!" + currentClient->getUserName() + "@localhost KICK " + CHANNEL + " " + USER + " " + MESSAGE
 
 typedef std::string::iterator	                stringIterator;
 
@@ -73,6 +77,7 @@ class Server
 		bool	_isValidRealName(Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidUserCommand(size_t i, Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidNickCommand(Client  *currentClient, std::vector<std::string> *cmd);
+		bool    _isValidKickCommand(std::vector<std::string> cmd, Client *currentClient, UserInfos *&targetOp, UserInfos *&targetUser, Channel *&targetChannel);
 
 	public:
 		Server(char* port, std::string password);
@@ -85,6 +90,7 @@ class Server
 		void				serverLoop(void);
 		void				acceptClient(void);
 
+		Channel				*getChannelByName(std::string const &name);
         // Join methods
 		pollfd				&getPollFd(void);
 		void				printLogMessage(std::string message, bool isError);
@@ -98,7 +104,7 @@ class Server
 		void									passCommand(std::vector<std::string> cmd, int fd);
 		void									nickCommand(std::vector<std::string> cmd, int fd);
 		void									userCommand(std::vector<std::string> cmd, int fd);
-		void									kickCommand(std::vector<std::string> cmd, int fd);
+		void									kickCommand(std::vector<std::string> cmd, Client *currentClient);
 		void									errorCommand(int clientFd, std::string error, std::string reason);
 };
 

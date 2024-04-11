@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:09 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/10 21:48:00 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/11 14:40:14 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	Server::passCommand(std::vector<std::string> cmd, int fd)
         return;
     }
     if (this->_password.compare(cmd[1].c_str())) {
-        this->errorCommand(currentClient->getClientFd(), ":server 464 ", ":Password incorrect");
+        this->errorCommand(currentClient->getClientFd(), ":server 464 ", "Password incorrect");
         throw (std::runtime_error(strerror(errno)));
     }
     currentClient->setServerPassword(cmd[1]);

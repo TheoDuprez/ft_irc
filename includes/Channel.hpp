@@ -39,6 +39,7 @@ public:
     std::string           formatClientsListAsString(void) const;
     void                  privmsg(std::vector<std::string> cmd, Client* client);
     const std::string     &getchannelName() const;
+    UserInfos             *getClientsInfoByNick(std::string nick);
     clientsListMap        *getClientsList(void);
 };
 

@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/10 21:52:03 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/11 16:15:06 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void	Server::handleCommand(commandsVector commands, Client* client)
 		else if (it->at(0) == "PASS")
 			passCommand(*it, client->getClientFd());
 		else if (it->at(0) == "KICK")
-            kickCommand(*it, client->getClientFd());
+            kickCommand(*it, client);
         else if (it->at(0) == "PRIVMSG")
             privmsgCommand(*it, client);
 		else
@@ -195,6 +195,16 @@ void	Server::clientManager(void) {
             }
         }
     }
+}
+
+Channel				*Server::getChannelByName(std::string const &name)
+{
+	channelsMap::iterator	channelIt;
+
+	channelIt = this->_channelsList.find(name);
+	if (channelIt != this->_channelsList.end())
+		return (channelIt->second);
+	return (NULL);
 }
 
 bool	Server::_isServUp;
