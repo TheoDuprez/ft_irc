@@ -33,6 +33,8 @@ void				Channel::setIsOnInvite(const bool isOnInvite) { this->_isOnInvite = isOn
 
 const std::string&	Channel::getPassword(void) const { return this->_password; }
 
+size_t				Channel::getUsersLimit(void) const { return this->_usersLimit; }
+
 bool				Channel::getHasPassword(void) const { return this->_hasPassword; }
 
 bool				Channel::getHasUsersLimit(void) const { return this->_hasUsersLimit; }
@@ -50,6 +52,7 @@ void				Channel::setModes(const std::string modes) { this->_modes = modes; }
 bool    Channel::addClient(Client *client, std::string password)
 {
     if ( (!this->_hasPassword || this->_password == password) && (!this->_hasUsersLimit || this->_usersLimit > this->_clientsDataMap.size()) ) {
+
         this->_clientsDataMap.insert(std::make_pair(client->getNickName(), new ClientInfos(client, false)));
         for (clientsMap::iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++) {
             sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " JOIN " + this->_channelName);
@@ -89,4 +92,15 @@ void        Channel::privmsg(std::vector<std::string> cmd, Client *client)
         if (it->second->getClient() != client)
             sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " PRIVMSG " + this->_channelName + " :" +  cmd.at(2).substr(1, cmd.at(2).length()));
     }
+}
+
+std::string Channel::createModesString(void) const
+{
+	std::string modesString("+");
+
+	if (this->_hasPassword)
+		modesString += "k";
+	if (this->_hasUsersLimit)
+		modesString += "l";
+	return modesString;
 }

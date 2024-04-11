@@ -8,8 +8,10 @@ std::vector<std::string> split(const std::string& str, char delim)
     std::istringstream          tokenSource(str);
 
     while (std::getline(tokenSource, token, delim)) {
-        result.push_back(token);
+		if (token[0] != 0)
+			result.push_back(token);
     }
+	std::cout << "Okay\n";
     return result;
 }
 
@@ -38,4 +40,14 @@ size_t strtost(const std::string& str)
 		throw std::runtime_error("Error converting std::string into size_t");
 
 	return retNumber;
+}
+
+std::string	ullToString(size_t valueToConvert)
+{
+	std::string			convertValue;
+	std::ostringstream	osStr;
+
+	osStr << valueToConvert;
+	convertValue = osStr.str();
+	return (convertValue);
 }

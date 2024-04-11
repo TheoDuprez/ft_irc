@@ -43,6 +43,7 @@ public:
 	void						setHasUsersLimit(const bool hasUsersLimit);
 	void						setIsOnInvite(const bool isOnInvite);
 	const std::string&			getPassword(void) const;
+	size_t						getUsersLimit(void) const;
 	bool						getHasPassword(void) const;
 	bool						getHasUsersLimit(void) const;
 	bool						getIsOnInvite(void) const;
@@ -55,6 +56,7 @@ public:
     bool        isClientExist(const Client* client) const;
     std::string formatClientsListAsString(void) const;
     void        privmsg(std::vector<std::string> cmd, Client* client);
+	std::string createModesString(void) const;
 };
 
 #endif

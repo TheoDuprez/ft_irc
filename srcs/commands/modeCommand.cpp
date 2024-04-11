@@ -5,15 +5,27 @@ void	Server::modeCommand(commandTokensVector cmd, Client* client)
 	std::vector<std::string>	modeArguments;
 	std::string					modeString;
 
+	if (cmd.size() < 2) {
+		sendMessage(client->getClientFd(), ":server 461 " + client->getNickName() + " MODE :Not enough parameters");
+		return ;
+	}
+	if (this->_channelsMap.find(cmd.at(1)) == this->_channelsMap.end()) {
+		sendMessage(client->getClientFd(), ":server 403 " + client->getNickName() + " " + cmd.at(1) + " :No such channel");
+		return ;
+	}
 	if (cmd.size() < 3) {
-		std::cout << "Reply ERR_NEEDMOREPARAMS" << std::endl;
+		sendMessage(client->getClientFd(), ":server 324 " + client->getNickName() + " " + this->_channelsMap.find(cmd.at(1))->second->getChannelName() + " " + this->_channelsMap.find(cmd.at(1))->second->createModesString());
 		return ;
 	}
 
 	modeString = cmd.at(2);
 	modeArguments = fillModeArguments(cmd);
-	if ((cmd.at(1)[0] == '#' || cmd.at(1)[0] == '&') && this->_channelsMap.find(cmd.at(1)) != this->_channelsMap.end())
-		modeCommandChannel(modeString, modeArguments, client, this->_channelsMap.find(cmd.at(1))->second);
+	if (cmd.at(1)[0] == '#' || cmd.at(1)[0] == '&') {
+		if (this->_channelsMap.find(cmd.at(1)) != this->_channelsMap.end())
+			modeCommandChannel(modeString, modeArguments, client, this->_channelsMap.find(cmd.at(1))->second);
+		else
+			sendMessage(client->getClientFd(), ":server 403 " + client->getNickName() + " " + cmd.at(1) + ":No such channel");
+	}
 	else
 		std::cout << "Error 403 no such channel" << std::endl;
 }
@@ -64,7 +76,6 @@ void	Server::manageKey(Channel* channelPtr, Client* client, std::vector<std::str
 			for (clientsMap::const_iterator it = channelPtr->getClientsDataMap().begin(); it != channelPtr->getClientsDataMap().end(); it++) {
 				sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " +k " + *argumentsIt);
 			}
-			argumentsIt++;
 		}
 	}
 	else if (channelPtr->getPassword() == *argumentsIt) {
@@ -73,35 +84,41 @@ void	Server::manageKey(Channel* channelPtr, Client* client, std::vector<std::str
 		for (clientsMap::const_iterator it = channelPtr->getClientsDataMap().begin(); it != channelPtr->getClientsDataMap().end(); it++) {
 			sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " -k ");
 		}
-		argumentsIt++;
 	}
+	argumentsIt++;
 }
 
 void	Server::manageUsersLimit(Channel* channelPtr, Client* client, std::vector<std::string>& modeArguments, std::vector<std::string>::iterator& argumentsIt, bool adjustMode)
 {
-	if (argumentsIt == modeArguments.end())
+	if (adjustMode && argumentsIt == modeArguments.end())
 		return ;
 	if (adjustMode) {
-		// Add condition to check if the arguments in iterator is the same of usersLimit (converted with itoa)
+		if (channelPtr->getHasUsersLimit() && ullToString(channelPtr->getUsersLimit()) == *argumentsIt) {
+			std::cout << "Oui\n";
+			argumentsIt++;
+			return ;
+		}
 		try {
 			channelPtr->setUsersLimit(strtost(*argumentsIt));
+			channelPtr->setHasUsersLimit(true);
 			for (clientsMap::const_iterator it = channelPtr->getClientsDataMap().begin(); it != channelPtr->getClientsDataMap().end(); it++) {
 				sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " +l " + *argumentsIt);
 			}
 		} catch (const std::runtime_error& e) { }
-		argumentsIt++;
 	}
-	else {
+	else if (channelPtr->getHasUsersLimit()) {
+		channelPtr->setHasUsersLimit(false);
 		for (clientsMap::const_iterator it = channelPtr->getClientsDataMap().begin(); it != channelPtr->getClientsDataMap().end(); it++) {
 			sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " -l");
 		}
 		channelPtr->setUsersLimit(-1);
-		argumentsIt++;
 	}
+	argumentsIt++;
 }
 
 void	Server::manageOperator(Channel* channelPtr, Client* client, std::vector<std::string>& modeArguments, std::vector<std::string>::iterator& argumentsIt, bool adjustMode)
 {
+	std::cout << "Manage ops = " << adjustMode << " " << *argumentsIt << std::endl;
 	if (argumentsIt == modeArguments.end())
 		return ;
 	if (adjustMode) {
@@ -111,7 +128,6 @@ void	Server::manageOperator(Channel* channelPtr, Client* client, std::vector<std
 					sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " +o " + *argumentsIt);
 			}
 		}
-		argumentsIt++;
 	}
 	else {
 		if (channelPtr->getClientsDataMap().find(*argumentsIt) != channelPtr->getClientsDataMap().end() && channelPtr->getClientsDataMap().find(*argumentsIt)->second->getIsOperator()) {
@@ -120,8 +136,8 @@ void	Server::manageOperator(Channel* channelPtr, Client* client, std::vector<std
 				sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " -o " + *argumentsIt);
 			}
 		}
-		argumentsIt++;
 	}
+	argumentsIt++;
 }
 
 

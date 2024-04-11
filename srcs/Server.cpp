@@ -101,7 +101,6 @@ commandsVector  Server::createCommandsVector(std::string buffer) // function to 
 	for (std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); it++) {
 		retVectorCommands.push_back(split(it->substr(0, it->length() - 1), ' '));
 	}
-
     return retVectorCommands;
 }
 
