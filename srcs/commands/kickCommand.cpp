@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 20:28:52 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/11 18:19:33 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/11 19:36:49 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ void	Server::kickCommand(std::vector<std::string> cmd, Client *currentClient)
         if (clientIt->first.compare(currentClient->getNickName()))
             sendMessage(KICK_MESSAGE_USERS(cmd[2], cmd[1], message));
     }
+    delete (targetUser);
     targetChannel->getClientsList()->erase(cmd[2]);
 
 }

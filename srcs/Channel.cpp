@@ -21,7 +21,10 @@ Channel::Channel(std::string channelName, Client* client): _usersLimit(-1), _isC
     sendMessage(client->getClientFd(), ":server 353 " + client->getNickName() + " = " + this->_channelName + " :@" + client->getNickName());
 }
 
-Channel::~Channel(void) {}
+Channel::~Channel(void) {
+    for (clientsListMap::iterator clientIt = this->_clientsList.begin(); clientIt != this->_clientsList.end(); clientIt++)
+        delete (clientIt->second);
+}
 
 bool    Channel::addClient(Client *client, std::string password)
 {
@@ -77,9 +80,6 @@ UserInfos   *Channel::getClientsInfoByNick(std::string nick)
 {
     clientsListMap::iterator    clientIt;
 
-    for (clientsListMap::iterator it = this->_clientsList.begin(); it != this->_clientsList.end(); it++) {
-        std::cout << "nickclient:" << it->second->getClient()->getNickName() << std::endl;
-    }
     clientIt = this->_clientsList.find(nick);
     if (clientIt != this->_clientsList.end())
         return (clientIt->second);

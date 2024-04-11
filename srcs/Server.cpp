@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/11 16:15:06 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/11 19:27:06 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@ Server::~Server(void)
 		close(it->fd);
 	for (clientMap::iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
 		delete it->second;
+	for (channelsMap::iterator it = this->_channelsList.begin(); it != this->_channelsList.end(); it++) {
+		delete it->second;
+	}
 }
 
 void	Server::initServer(void)
