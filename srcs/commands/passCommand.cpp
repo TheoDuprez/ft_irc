@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:09 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/11 14:40:14 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/11 22:18:09 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,15 @@ void	Server::passCommand(std::vector<std::string> cmd, int fd)
     Client	*currentClient = this->_clients[fd];
 
     if (currentClient->getIsRegister() == true) {
-        this->printLogMessage("ERR_ALREADYREGISTERED (462)\n", ERROR);
+        sendMessage(currentClient->getClientFd(), ERR_ALREADYREGISTERED(currentClient->getNickName()));
         return;
     }
     else if (cmd.size() != 2 || cmd[1].empty()) {
-        this->printLogMessage("ERR_NEEDMOREPARAMS (461)\n", ERROR);
+        sendMessage(currentClient->getClientFd(), ERR_NEEDMOREPARAMS(currentClient->getNickName(), "PASS"));
         return;
     }
     if (this->_password.compare(cmd[1].c_str())) {
-        this->errorCommand(currentClient->getClientFd(), ":server 464 ", "Password incorrect");
+        this->errorCommand(currentClient);
         throw (std::runtime_error(strerror(errno)));
     }
     currentClient->setServerPassword(cmd[1]);

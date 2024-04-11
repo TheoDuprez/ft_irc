@@ -6,18 +6,17 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 18:38:44 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/10 19:42:23 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/11 22:12:21 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-void	Server::errorCommand(int clientFd, std::string error, std::string reason)
+void	Server::errorCommand(Client *currentClient)
 {
-    int fd = clientFd;
-    sendMessage(clientFd, error + " ERROR :" + reason);
-    close(clientFd);
-    delete(this->_clients.find(clientFd)->second);
-    this->_clients.erase(this->_clients.find(clientFd));
-    throw (std::runtime_error("Client '" + iToString(fd) + "' has been closed: Incorrect password\n"));
+    sendMessage(currentClient->getClientFd(), ERR_PASSWDMISMATCH(currentClient->getNickName()));
+    close(currentClient->getClientFd());
+    delete(this->_clients.find(currentClient->getClientFd())->second);
+    this->_clients.erase(this->_clients.find(currentClient->getClientFd()));
+    throw (std::runtime_error("Client '" + iToString(currentClient->getClientFd()) + "' has been closed: Incorrect password\n"));
 }
