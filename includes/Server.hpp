@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/08 10:08:44 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/12 13:29:46 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ class Server
 		bool	_isValidUserCommand(size_t i, Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidNickCommand(Client  *currentClient, std::vector<std::string> *cmd);
 		bool    _isValidKickCommand(std::vector<std::string> cmd, Client *currentClient, ClientInfos *&targetOp, ClientInfos *&targetUser, Channel *&targetChannel);
+		bool    _isValidInviteCommand(std::vector<std::string> cmd, Client *currentClient, Channel *&targetChannel);
 
         // modeCommand methods
 		void						manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode);
@@ -114,6 +115,7 @@ class Server
 		void									modeCommand(commandTokensVector cmd, Client* client);
 		void									privmsgCommand(commandTokensVector cmd, Client* client);
 		void									clientManager(void);
+		void    								inviteCommand(std::vector<std::string> cmd, Client *currentClient);
 		void									passCommand(std::vector<std::string> cmd, int fd);
 		void									nickCommand(std::vector<std::string> cmd, int fd);
 		void									userCommand(std::vector<std::string> cmd, int fd);

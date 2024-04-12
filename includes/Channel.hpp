@@ -21,10 +21,11 @@ public:
 };
 
 typedef std::map<std::string, ClientInfos*>           clientsMap;
-typedef clientsMap::iterator                    	clientsMapIterator;
+typedef clientsMap::iterator                    	  clientsMapIterator;
 
 class Channel {
 private:
+    std::vector<std::string>            _invitedVector;
     size_t								_usersLimit;
 	bool								_hasUsersLimit;
 	bool								_hasPassword;
@@ -33,7 +34,6 @@ private:
     std::string                         _password;
     clientsMap                      	_clientsDataMap;
 	std::string 						_modes;
-    std::string                         _channelPassword;
     std::string                         _topic;
 
 public:
@@ -56,6 +56,8 @@ public:
 	const clientsMap&			getClientsDataMap(void) const;
 	const std::string&			getModes(void) const;
 	void						setModes(const std::string modes);
+    void	                    setNewInvitedClient(std::string const &clientNickName);
+    std::vector<std::string>    getInvitedClientVector(void) const;
 
     void        				changeClientName(std::string oldNick, std::string newNick);
     bool        				isClientExist(const Client* client) const;

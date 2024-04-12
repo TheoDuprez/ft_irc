@@ -1,4 +1,16 @@
-#include "../includes/Channel.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/12 14:57:26 by acarlott          #+#    #+#             */
+/*   Updated: 2024/04/12 14:58:20 by acarlott         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Channel.hpp"
 
 // ----- Class clientInfos (used by channel and only channel) ----- //
 
@@ -110,6 +122,15 @@ void        Channel::privmsg(std::vector<std::string> cmd, Client *client)
     }
 }
 
+void    Channel::setNewInvitedClient(std::string const &clientNickName)
+{
+    this->_invitedVector.push_back(clientNickName);
+}
+std::vector<std::string>    Channel::getInvitedClientVector(void) const
+{
+    return (this->_invitedVector);
+}
+
 clientsMap  *Channel::getClientsList(void)
 {
     return (&this->_clientsDataMap);
@@ -119,6 +140,8 @@ ClientInfos   *Channel::getClientsInfoByNick(std::string nick)
 {
     clientsMap::iterator    clientIt;
 
+    for (clientsMap::iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++)
+        std::cout << "name client :" << it->first << std::endl;
     clientIt = this->_clientsDataMap.find(nick);
     if (clientIt != this->_clientsDataMap.end())
         return (clientIt->second);
