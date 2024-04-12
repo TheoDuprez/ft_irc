@@ -49,9 +49,21 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
 
     /* TOPIC with args, set channel's new topic */
     if (cmdSize == 3) {
+        if (cmd[2].empty()) {
+            /* Clear topic and reply with 331 */
+            chanIt->second->setTopic("");
+            chanIt->second->topicTime = "";
+            chanIt->second->topicAuth = "";
+            sendMessage(fd, ":server 331 * " + cmd[1] + " :No topic is set");
+            return ;
+        }
         if (isOp) {
+            /* If operator change topic and reply with 332 */
             std::string newTopic = cmd[2].substr(1);
+            time_t timestamp = time(NULL);
             chanIt->second->setTopic(newTopic);
+            chanIt->second->topicTime = SSTR(timestamp);
+            chanIt->second->topicAuth = clientNick;
             newTopicBroadcast(chanClients, clientNick, newTopic, cmd[1]);
             return ;
         }
@@ -66,27 +78,21 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
     if (cmdSize == 2) {
         if (topic.empty()) {
             /*  RPL_NOTOPIC (331)  */
-            sendMessage(fd, ":server 331 * " + cmd[1] + " :No topic is set.");
+            sendMessage(fd, ":server 331 * " + cmd[1] + " :No topic is set");
         } else {
             /* RPL_TOPIC (332) */
             sendMessage(fd, ":server 332 * " + cmd[1] + " :" + topic);
             /* RPL_TOPICWHOTIME (333) */
-            sendMessage(fd, ":server 333 * " + cmd[1] + " :Set by.");
+            sendMessage(fd, ":server 333 * " + cmd[1] + " " + chanIt->second->topicAuth + " " + chanIt->second->topicTime);
         }
     }
 }
 
-/*  Display current topic in topic bar,
-    send reply 332: 
-    sendMessage(fd, ":server 332 * " + chan + " :" + topic);
-    try to make client NOT display this message */
-
 void    newTopicBroadcast(clientsListMap &clientsMap, const std::string &nick, const std::string &topic, const std::string &chan)
 {
+    (void)nick;
     for (clientsListMapIterator it = clientsMap.begin(); it != clientsMap.end(); it++) {
-        int fd = it->second->getClient()->getClientFd();
-        // std::string nickname = it->second->getClient()->getNickName();
-        sendMessage(fd, ":server 332 * " + chan + " :" + topic); 
-        sendMessage(fd, ": PRIVMSG " + chan + " :" + nick + " has changed the topic to: " + topic);
+        int fd = it->second->getClient()->getClientFd(); 
+        sendMessage(fd, ":" + nick + " TOPIC " + chan + " :" + topic);
     }
 }

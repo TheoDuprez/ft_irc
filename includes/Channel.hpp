@@ -43,6 +43,8 @@ public:
     const std::string     &getChannelName(void) const;
     const std::string     &getTopic(void) const;
     void                  setTopic(std::string topic);
+    std::string             topicAuth;
+    std::string             topicTime;
 };
 
 #endif
