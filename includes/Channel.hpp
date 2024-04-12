@@ -56,6 +56,7 @@ public:
 	const std::string&			getChannelName(void) const;
 	void						setModes(const std::string modes);
 
+    void        changeClientName(std::string oldNick, std::string newNick);
     bool        isClientExist(const Client* client) const;
     bool        addClient(Client* client, std::string password);
     std::string formatClientsListAsString(void) const;

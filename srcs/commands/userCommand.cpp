@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:02 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/10 19:31:56 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/11 21:58:39 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,12 @@ bool	Server::_isValidUserName(Client  *currentClient, std::vector<std::string> *
     int i = 1;
     
     if ((*cmd)[1].empty()) {
-        sendMessage(currentClient->getClientFd(), ":server 461 : ERR_NEEDMOREPARAMS");
+        sendMessage(currentClient->getClientFd(), ERR_NEEDMOREPARAMS(currentClient->getNickName(), "USER"));
         return false;
     }
     // check if char in username is valid then trunc at USERLEN size if necessary
     if ((*cmd)[1].find_first_of(excluded) != std::string::npos) {
-        // custom this sendmessage for username and not nickname
-        sendMessage(currentClient->getClientFd(), "USER: \"" + (*cmd)[1] + "\" invalid character in username");
+        sendMessage(currentClient->getClientFd(), ERR_INVALIDUSERCHAR((*cmd)[1]));
         return false;
     }
     if ((*cmd)[1].size() > USERLEN)
@@ -53,7 +52,7 @@ bool	Server::_isValidRealName(Client  *currentClient, std::vector<std::string> *
         if (!currentClient->getNickName().empty()) {
             (*cmd)[4] = currentClient->getNickName();
         } else {
-            sendMessage(currentClient->getClientFd(), ":server 461 : ERR_NEEDMOREPARAMS");
+            sendMessage(currentClient->getClientFd(), ERR_NEEDMOREPARAMS(currentClient->getNickName(), "USER"));
             return false;
         }
     }
@@ -63,8 +62,7 @@ bool	Server::_isValidRealName(Client  *currentClient, std::vector<std::string> *
     }
     // check if char in realname is valid
     if ((*cmd)[4].find_first_of(excluded) != std::string::npos) {
-        // custom this sendmessage for username and not nickname
-        sendMessage(currentClient->getClientFd(), "USER: \"" + (*cmd)[4] + "\" invalid character in realname");
+        sendMessage(currentClient->getClientFd(), ERR_INVALIDUSERCHAR((*cmd)[4]));
         return false;
     }
     return true;
@@ -79,13 +77,13 @@ bool	Server::_isValidUserCommand(size_t i, Client  *currentClient, std::vector<s
             break;
         case 2:
             if ((*cmd)[2].size() != 1 || (*cmd)[2].at(0) != '0') {
-                sendMessage(currentClient->getClientFd(), "USER: illegal character \"" + (*cmd)[2] + "\" in command;");
+                sendMessage(currentClient->getClientFd(), ERR_INVALIDUSERCHAR((*cmd)[2]));
                 return false;
             }
             break;
         case 3:
             if ((*cmd)[3].size() != 1 || (*cmd)[3].at(0) != '*') {
-                sendMessage(currentClient->getClientFd(), "USER: illegal character \"" + (*cmd)[3] + "\" in command;");
+                sendMessage(currentClient->getClientFd(), ERR_INVALIDUSERCHAR((*cmd)[3]));
                 return false;
             }
             break;
@@ -112,7 +110,7 @@ void	Server::userCommand(std::vector<std::string> cmd, int fd)
         return;
     }
     if (cmd.size() < 5) {
-        sendMessage(fd, "USER :Not enough parameters");
+        sendMessage(fd, ERR_NEEDMOREPARAMS(currentClient->getNickName(), "USER"));
         return;
     }
     for (size_t i = 1; i != cmd.size(); i++) {
@@ -122,10 +120,10 @@ void	Server::userCommand(std::vector<std::string> cmd, int fd)
     currentClient->setuserName(cmd[1]);
     currentClient->setrealName(cmd[4]);
     if (!currentClient->getServerPassword().empty() && !currentClient->getNickName().empty()) {
-        sendMessage(fd, ":server 001 " + currentClient->getNickName() + " :Welcome to the localhost Network, " + currentClient->getNickName() + "!" + currentClient->getUserName() + "@localhost");
+        sendMessage(fd, RPL_WELCOME(currentClient->getNickName(), currentClient->getUserName()));
         currentClient->setIsRegister(true);
     }
-    std::cout << "usercmd test: username set as: " << currentClient->getUserName() << std::endl;
-    std::cout << "usercmd test: realname set as: " << currentClient->getRealName() << std::endl;
-    std::cout << "usercmd test: isRegister set as: " << std::string(currentClient->getIsRegister() ? "true" : "false") << std::endl;
+    // std::cout << "usercmd test: username set as: " << currentClient->getUserName() << std::endl;
+    // std::cout << "usercmd test: realname set as: " << currentClient->getRealName() << std::endl;
+    // std::cout << "usercmd test: isRegister set as: " << std::string(currentClient->getIsRegister() ? "true" : "false") << std::endl;
 }

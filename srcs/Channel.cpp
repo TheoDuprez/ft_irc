@@ -66,6 +66,15 @@ bool    Channel::addClient(Client *client, std::string password)
     return false;
 }
 
+void        Channel::changeClientName(std::string oldNick, std::string newNick)
+{
+    clientsMap::iterator  clientIt;
+
+    clientIt = this->_clientsDataMap.find(oldNick);
+    this->_clientsDataMap.insert(std::make_pair(newNick, clientIt->second));
+    this->_clientsDataMap.erase(oldNick);
+}
+
 bool    Channel::isClientExist(const Client* client) const
 {
     for (clientsMap::const_iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++) {

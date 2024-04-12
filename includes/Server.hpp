@@ -66,6 +66,7 @@ class Server
 		sockaddr_in		_serverAddress;
 		socklen_t		_serverAddressSize;
 		std::string		_password;
+		std::string		_serverName;
 		static bool		_isServUp;
         channelsMap     _channelsMap;
 
@@ -95,8 +96,9 @@ class Server
 		void				serverLoop(void);
 		void				acceptClient(void);
 
+		std::string const	&getServerName(void) const;
 		Channel				*getChannelByName(std::string const &name);
-		const Client*				getClientByName(const std::string& name);
+		const Client		*getClientByName(const std::string& name);
         // Join methods
 		pollfd				&getPollFd(void);
 		void				printLogMessage(std::string message, bool isError);
@@ -112,7 +114,7 @@ class Server
 		void									nickCommand(std::vector<std::string> cmd, int fd);
 		void									userCommand(std::vector<std::string> cmd, int fd);
 		void									kickCommand(std::vector<std::string> cmd, Client *currentClient);
-		void									errorCommand(int clientFd, std::string error, std::string reason);
+		void									errorCommand(Client *currentClient);
 };
 
 #endif

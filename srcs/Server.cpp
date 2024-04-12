@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/11 19:27:06 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/11 22:41:25 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,6 +218,11 @@ const Client*				Server::getClientByName(const std::string& name)
 			return it->second;
 	}
 	return NULL;
+}
+
+std::string	const	&Server::getServerName(void) const
+{
+	return (this->_serverName);
 }
 
 bool	Server::_isServUp;
