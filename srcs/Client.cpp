@@ -6,11 +6,11 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 22:25:29 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/12 00:08:26 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/12 14:57:44 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Client.hpp"
+#include "Client.hpp"
 
 Client::Client(int clientFd): _cliendFd(clientFd)
 {

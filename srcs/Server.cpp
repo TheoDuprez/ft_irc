@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/11 22:41:25 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/12 13:25:13 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,8 @@ void	Server::handleCommand(commandsVector commands, Client* client)
             kickCommand(*it, client);
         else if (it->at(0) == "PRIVMSG")
             privmsgCommand(*it, client);
+		else if (it->at(0) == "INVITE")
+            inviteCommand(*it, client);
 		else
 			std::cout << "Error: " << it->at(0) << " is not a command. Full cmd is : " << std::endl;
             for (commandTokensVector::iterator itTest = it->begin(); itTest != it->end(); itTest++)

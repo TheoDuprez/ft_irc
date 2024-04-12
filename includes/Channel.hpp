@@ -1,11 +1,9 @@
 #ifndef CHANNEL_HPP
 #define CHANNEL_HPP
 
-#include <iostream>
 #include "Client.hpp"
 #include "utils.hpp"
 #include <map>
-#include <vector>
 
 class ClientInfos {
 private:
@@ -25,6 +23,7 @@ typedef clientsMap::iterator                    	clientsListMapIterator;
 
 class Channel {
 private:
+    std::vector<std::string>            _invitedVector;
     size_t								_usersLimit;
 	bool								_hasUsersLimit;
 	bool								_hasPassword;
@@ -38,23 +37,25 @@ public:
     Channel(std::string channelName, Client* client);
     ~Channel(void);
 
-    const std::string     		&getchannelName() const;
-    ClientInfos             	*getClientsInfoByNick(std::string nick);
-    clientsMap        			*getClientsList(void);
-    void        				setPassword(const std::string& password);
-	void						setUsersLimit(const int usersLimit);
-	void						setHasPassword(const bool hasPassword);
-	void						setHasUsersLimit(const bool hasUsersLimit);
-	void						setIsOnInvite(const bool isOnInvite);
-	const std::string&			getPassword(void) const;
-	size_t						getUsersLimit(void) const;
-	bool						getHasPassword(void) const;
-	bool						getHasUsersLimit(void) const;
-	bool						getIsOnInvite(void) const;
-	const clientsMap&			getClientsDataMap(void) const;
-	const std::string&			getModes(void) const;
-	const std::string&			getChannelName(void) const;
-	void						setModes(const std::string modes);
+    const std::string     		    &getchannelName() const;
+    ClientInfos             	    *getClientsInfoByNick(std::string nick);
+    clientsMap        			    *getClientsList(void);
+    void        				    setPassword(const std::string& password);
+	void						    setUsersLimit(const int usersLimit);
+	void						    setHasPassword(const bool hasPassword);
+	void						    setHasUsersLimit(const bool hasUsersLimit);
+	void						    setIsOnInvite(const bool isOnInvite);
+    void	                        setNewInvitedClient(std::string const &clientNickName);
+    std::vector<std::string>        getInvitedClientVector(void) const;
+	const std::string&			    getPassword(void) const;
+	size_t						    getUsersLimit(void) const;
+	bool						    getHasPassword(void) const;
+	bool						    getHasUsersLimit(void) const;
+	bool						    getIsOnInvite(void) const;
+	const clientsMap&			    getClientsDataMap(void) const;
+	const std::string&			    getModes(void) const;
+	const std::string&			    getChannelName(void) const;
+	void						    setModes(const std::string modes);
 
     void        changeClientName(std::string oldNick, std::string newNick);
     bool        isClientExist(const Client* client) const;

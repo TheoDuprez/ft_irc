@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   modeCommand.cpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/12 14:58:02 by acarlott          #+#    #+#             */
+/*   Updated: 2024/04/12 14:58:04 by acarlott         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Server.hpp"
 
 void	Server::modeCommand(commandTokensVector cmd, Client* client)
