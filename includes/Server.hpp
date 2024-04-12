@@ -69,6 +69,7 @@ class Server
 		std::string		_serverName;
 		static bool		_isServUp;
         channelsMap     _channelsMap;
+		std::string 	_tempBuffer;
 
 		bool	_isValidUserName(Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidRealName(Client  *currentClient, std::vector<std::string> *cmd);
@@ -95,6 +96,8 @@ class Server
 		void				createPollFd(int fd);
 		void				serverLoop(void);
 		void				acceptClient(void);
+
+		bool				isValidPaquet(std::string buffer);
 
 		std::string const	&getServerName(void) const;
 		Channel				*getChannelByName(std::string const &name);

@@ -96,13 +96,16 @@ void	Server::serverLoop(void)
 	}
 }
 
-commandsVector  Server::createCommandsVector(std::string buffer) // function to hard code parsing, not definitive
+commandsVector  Server::createCommandsVector(std::string buffer)
 {
 	commandsVector              retVectorCommands;
 	std::vector<std::string>    commands(split(buffer, '\n'));
 
 	for (std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); it++) {
-		retVectorCommands.push_back(split(it->substr(0, it->length() - 1), ' '));
+		if (it->at(it->length() - 1) != '\r')
+			retVectorCommands.push_back(split(it->substr(0, it->length()), ' '));
+		else
+			retVectorCommands.push_back(split(it->substr(0, it->length() - 1), ' '));
 	}
     return retVectorCommands;
 }
@@ -110,6 +113,8 @@ commandsVector  Server::createCommandsVector(std::string buffer) // function to 
 void	Server::handleCommand(commandsVector commands, Client* client)
 {
 	for (commandsVector::iterator it = commands.begin(); it != commands.end(); it++) {
+		if (it->empty())
+			return ;
 		if (it->at(0) == "JOIN" && client->getIsRegister())
 			joinCommand(*it, client);
         else if (it->at(0) == "MODE")
@@ -191,7 +196,7 @@ void	Server::clientManager(void) {
                 break;
             else {
 				try {
-                	handleCommand(createCommandsVector(buffer), this->_clients.at(it->fd));
+					handleCommand(createCommandsVector(buffer), this->_clients.at(it->fd));
 				} catch (const std::runtime_error &e) {
 					this->printLogMessage(e.what(), ERROR);
 					break ;
