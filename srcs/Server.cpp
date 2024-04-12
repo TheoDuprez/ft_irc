@@ -129,6 +129,8 @@ void	Server::handleCommand(commandsVector commands, Client* client)
             kickCommand(*it, client);
         else if (it->at(0) == "PRIVMSG")
             privmsgCommand(*it, client);
+        else if (it->at(0) == "TOPIC")
+            topicCommand(*it, client);
 		else
 			std::cout << "Error: " << it->at(0) << " is not a command. Full cmd is : " << std::endl;
             for (commandTokensVector::iterator itTest = it->begin(); itTest != it->end(); itTest++)

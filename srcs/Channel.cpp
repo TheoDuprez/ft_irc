@@ -12,7 +12,7 @@ void ClientInfos::setIsOperator(bool isOperator) { this->_isOperator = isOperato
 
 // ----- Class Channel ----- //
 
-Channel::Channel(std::string channelName, Client* client): _hasUsersLimit(false), _hasPassword(false), _isOnInvite(false), _channelName(channelName), _password("")
+Channel::Channel(std::string channelName, Client* client): _hasUsersLimit(false), _hasPassword(false), _isOnInvite(false), _channelName(channelName), _password(""), _topic("")
 {
     this->_clientsDataMap.insert(std::make_pair(client->getNickName(), new ClientInfos(client, true)));
     sendMessage(client->getClientFd(), ":" + client->getNickName() + " JOIN " + this->_channelName);
@@ -51,6 +51,10 @@ const std::string&	Channel::getModes(void) const { return this->_modes; }
 const std::string&	Channel::getChannelName(void) const { return this->_channelName; }
 
 void				Channel::setModes(const std::string modes) { this->_modes = modes; }
+
+const std::string   &Channel::getTopic(void) const { return this->_topic; }
+
+void    Channel::setTopic(std::string topic) { this->_topic = topic; }
 
 bool    Channel::addClient(Client *client, std::string password)
 {
@@ -121,11 +125,6 @@ ClientInfos   *Channel::getClientsInfoByNick(std::string nick)
     return (NULL);
 }
 
-const std::string    &Channel::getchannelName() const
-{
-    return (this->_channelName);
-}
-
 std::string Channel::createModesString(void) const
 {
 	std::string modesString("+");
@@ -136,3 +135,4 @@ std::string Channel::createModesString(void) const
 		modesString += "l";
 	return modesString;
 }
+

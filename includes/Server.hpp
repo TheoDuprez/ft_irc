@@ -18,6 +18,7 @@
 #include <cstring> // For memset function
 #include <csignal> // For signal function
 #include <cstdlib>
+#include <sstream>
 #include <errno.h>
 #include <limits>
 #include <unistd.h>
@@ -118,6 +119,7 @@ class Server
 		void									userCommand(std::vector<std::string> cmd, int fd);
 		void									kickCommand(std::vector<std::string> cmd, Client *currentClient);
 		void									errorCommand(Client *currentClient);
+		void									topicCommand(std::vector<std::string> cmd, Client *client);
 };
 
 #endif

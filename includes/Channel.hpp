@@ -21,7 +21,7 @@ public:
 };
 
 typedef std::map<std::string, ClientInfos*>           clientsMap;
-typedef clientsMap::iterator                    	clientsListMapIterator;
+typedef clientsMap::iterator                    	clientsMapIterator;
 
 class Channel {
 private:
@@ -33,12 +33,14 @@ private:
     std::string                         _password;
     clientsMap                      	_clientsDataMap;
 	std::string 						_modes;
+    std::string                         _channelPassword;
+    std::string                         _topic;
 
 public:
     Channel(std::string channelName, Client* client);
     ~Channel(void);
 
-    const std::string     		&getchannelName() const;
+    const std::string		    &getChannelName(void) const;
     ClientInfos             	*getClientsInfoByNick(std::string nick);
     clientsMap        			*getClientsList(void);
     void        				setPassword(const std::string& password);
@@ -53,15 +55,18 @@ public:
 	bool						getIsOnInvite(void) const;
 	const clientsMap&			getClientsDataMap(void) const;
 	const std::string&			getModes(void) const;
-	const std::string&			getChannelName(void) const;
 	void						setModes(const std::string modes);
 
-    void        changeClientName(std::string oldNick, std::string newNick);
-    bool        isClientExist(const Client* client) const;
-    bool        addClient(Client* client, std::string password);
-    std::string formatClientsListAsString(void) const;
-    void        privmsg(std::vector<std::string> cmd, Client* client);
-	std::string createModesString(void) const;
+    void        				changeClientName(std::string oldNick, std::string newNick);
+    bool        				isClientExist(const Client* client) const;
+    bool        				addClient(Client* client, std::string password);
+    std::string 				formatClientsListAsString(void) const;
+    void       					privmsg(std::vector<std::string> cmd, Client* client);
+	std::string 				createModesString(void) const;
+    const std::string     		&getTopic(void) const;
+    void                  		setTopic(std::string topic);
+    std::string             	topicAuth;
+    std::string             	topicTime;
 };
 
 #endif
