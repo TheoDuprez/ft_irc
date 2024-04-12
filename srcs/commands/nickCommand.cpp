@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:12 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/12 00:30:15 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/12 16:19:02 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ void	Server::nickCommand(std::vector<std::string> cmd, int fd)
         for (channelsMap::iterator channelIt = this->_channelsMap.begin(); channelIt != this->_channelsMap.end(); channelIt++) {
             if (channelIt->second->isClientExist(currentClient) == true)
                 channelIt->second->changeClientName(currentClient->getNickName(), cmd[1]);
+            if (channelIt->second->isInvitedClientByNick(currentClient->getNickName()) == true)
+                channelIt->second->setNewInvitedClient(currentClient->getNickName(), cmd[1]);
         }
     }
     currentClient->setnickName(cmd[1]);

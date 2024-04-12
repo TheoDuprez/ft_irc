@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:57:26 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/12 14:58:20 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/12 16:18:00 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,13 +78,22 @@ bool    Channel::addClient(Client *client, std::string password)
     return false;
 }
 
-void        Channel::changeClientName(std::string oldNick, std::string newNick)
+void        Channel::changeChannelClientName(std::string oldNick, std::string newNick)
 {
     clientsMap::iterator  clientIt;
 
     clientIt = this->_clientsDataMap.find(oldNick);
     this->_clientsDataMap.insert(std::make_pair(newNick, clientIt->second));
     this->_clientsDataMap.erase(oldNick);
+}
+
+void        Channel::changeInvitedClientName(std::string oldNick, std::string newNick)
+{
+    std::vector<std::string>::iterator  clientIt;
+
+    clientIt = this->_invitedVector.find(oldNick);
+    this->_invitedVector.erase(oldNick);
+    this->_invitedVector.push_back(newNick);
 }
 
 bool    Channel::isClientExist(const Client* client) const
@@ -127,6 +136,16 @@ std::vector<std::string>    Channel::getInvitedClientVector(void) const
     return (this->_invitedVector);
 }
 
+Client    *isInvitedClientByNick(std::string const & nick) const
+{
+    std::vector<std::string>::iterator    clientIt;
+
+    clientIt = this->_invitedVector.find(nick);
+    if (clientIt != this->_invitedVector.end())
+        return (true);
+    return (false);
+}
+
 clientsMap  *Channel::getClientsList(void)
 {
     return (&this->_clientsDataMap);
@@ -136,8 +155,6 @@ ClientInfos   *Channel::getClientsInfoByNick(std::string nick)
 {
     clientsMap::iterator    clientIt;
 
-    for (clientsMap::iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++)
-        std::cout << "name client :" << it->first << std::endl;
     clientIt = this->_clientsDataMap.find(nick);
     if (clientIt != this->_clientsDataMap.end())
         return (clientIt->second);

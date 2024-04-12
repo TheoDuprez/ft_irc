@@ -46,7 +46,8 @@ public:
 	void						    setHasUsersLimit(const bool hasUsersLimit);
 	void						    setIsOnInvite(const bool isOnInvite);
     void	                        setNewInvitedClient(std::string const &clientNickName);
-    std::vector<std::string>        getInvitedClientVector(void) const;
+    bool                            getInvitedClientByNick(std::string const & nick) const;
+    std::vector<std::string>        getInvitedClientByName(void) const;
 	const std::string&			    getPassword(void) const;
 	size_t						    getUsersLimit(void) const;
 	bool						    getHasPassword(void) const;
@@ -57,7 +58,8 @@ public:
 	const std::string&			    getChannelName(void) const;
 	void						    setModes(const std::string modes);
 
-    void        changeClientName(std::string oldNick, std::string newNick);
+    void        changeChannelClientName(std::string oldNick, std::string newNick);
+    void        changeInvitedClientName(std::string oldNick, std::string newNick);
     bool        isClientExist(const Client* client) const;
     bool        addClient(Client* client, std::string password);
     std::string formatClientsListAsString(void) const;
