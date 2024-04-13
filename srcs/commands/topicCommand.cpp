@@ -37,6 +37,7 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
     std::string clientNick = client->getNickName(); // get client's nickname for further use
     clientsMap chanClients = *(chanIt->second->getClientsList()); // access the Channel's clientsDataMap
     clientsMapIterator chanClientsIt = chanClients.find(clientNick); // create iterator that points to current client in channel
+	Channel* channel = getChannelByName(cmd[1]);
 
     /* ERR_NOTONCHANNEL (442) (this error should only occur when new topic is provided) */
     if (chanClientsIt == chanClients.end() && cmdSize == 3) {
@@ -45,7 +46,7 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
         return ;
     }
 
-    bool isOp = chanClientsIt->second->getIsOperator();
+    bool isOp = !channel->getIsTopicOperatorMode() || chanClientsIt->second->getIsOperator();
 
     /* TOPIC with args, set channel's new topic */
     if (cmdSize == 3) {
@@ -81,9 +82,11 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
             sendMessage(fd, ":server 331 * " + cmd[1] + " :No topic is set");
         } else {
             /* RPL_TOPIC (332) */
-            sendMessage(fd, ":server 332 * " + cmd[1] + " :" + topic);
+			sendMessage(fd, RPL_TOPIC(cmd[1], topic));
+//            sendMessage(fd, ":server 332 * " + cmd[1] + " :" + topic);
             /* RPL_TOPICWHOTIME (333) */
-            sendMessage(fd, ":server 333 * " + cmd[1] + " " + chanIt->second->topicAuth + " " + chanIt->second->topicTime);
+			sendMessage(fd, RPL_TOPICWHOTIME(cmd[1], chanIt->second->topicAuth, chanIt->second->topicTime));
+//            sendMessage(fd, ":server 333 * " + cmd[1] + " " + chanIt->second->topicAuth + " " + chanIt->second->topicTime);
         }
     }
 }

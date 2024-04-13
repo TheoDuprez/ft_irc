@@ -86,6 +86,8 @@ class Server
 		void						manageKey(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
 		void						manageUsersLimit(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
 		void						manageOperator(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						manageTopic(Channel* channelPtr, Client* client, bool adjustMode);
+		void						manageInvite(Channel* channelPtr, Client* client, bool adjustMode);
 		void						sendMessageToAllClients(const Channel* channelPtr, const std::string& message) const;
 
 	public:

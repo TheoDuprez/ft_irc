@@ -60,6 +60,12 @@ void	Server::manageModes(std::string modeString, std::vector<std::string> modeAr
 				if (argumentsIt != modeArguments.end())
 					manageOperator(channelPtr, client, argumentsIt, adjustMode);
 				break ;
+			case 't':
+				manageTopic(channelPtr, client, adjustMode);
+				break ;
+			case 'i':
+				manageInvite(channelPtr, client, adjustMode);
+				break ;
 		}
 	}
 }
@@ -122,6 +128,30 @@ void	Server::manageOperator(Channel* channelPtr, Client* client, std::vector<std
 	argumentsIt++;
 }
 
+void	Server::manageTopic(Channel* channelPtr, Client* client, bool adjustMode)
+{
+	if (adjustMode && !channelPtr->getIsTopicOperatorMode()) {
+		channelPtr->setIsTopicOperatorMode(true);
+		sendMessageToAllClients(channelPtr, MODE_MESSAGE_ADD_TOPIC_ON_OPERATOR);
+	}
+	else if (!adjustMode && channelPtr->getIsTopicOperatorMode()) {
+		channelPtr->setIsTopicOperatorMode(false);
+		sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_TOPIC_ON_OPERATOR);
+	}
+}
+
+void	Server::manageInvite(Channel* channelPtr, Client* client, bool adjustMode)
+{
+	if (adjustMode && !channelPtr->getIsOnInvite()) {
+		channelPtr->setIsOnInvite(true);
+		sendMessageToAllClients(channelPtr, MODE_MESSAGE_ADD_INVITE);
+	}
+	else if (!adjustMode && channelPtr->getIsOnInvite()) {
+		channelPtr->setIsOnInvite(false);
+		sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_INVITE);
+	}
+}
+
 void	Server::sendMessageToAllClients(const Channel* channelPtr, const std::string& message) const
 {
 	for (clientsMap::const_iterator it = channelPtr->getClientsDataMap().begin(); it != channelPtr->getClientsDataMap().end(); it++) {
@@ -129,6 +159,21 @@ void	Server::sendMessageToAllClients(const Channel* channelPtr, const std::strin
 	}
 }
 
+
+std::string Channel::createModesString(void) const
+{
+	std::string modesString("+");
+
+	if (this->_isTopicOperatorMode)
+		modesString += "t";
+	if (this->_isOnInvite)
+		modesString += "i";
+	if (this->_hasPassword)
+		modesString += "k";
+	if (this->_hasUsersLimit)
+		modesString += "l";
+	return modesString;
+}
 
 
 

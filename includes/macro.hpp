@@ -32,11 +32,18 @@
 #define ERR_CHANOPRIVSNEEDED( CLIENT, CHANNEL ) ":server 482 " + CLIENT + " " + CHANNEL + " :You're not channel operator"
 #define ERR_INVALIDUSERCHAR( NAME )  "USER: \"" + NAME + "\" invalid character"
 #define ERR_NOTEXTTOSEND ":server 412 * :No text to send"
+#define ERR_CHANNELISFULL( CHANNEL ) ":server 471 * " + CHANNEL + " :Cannot join channel (+l)"
+#define ERR_INVITEONLYCHAN( CHANNEL ) ":server 473 * " + CHANNEL + " :Cannot join channel (+i)"
+#define ERR_BADCHANNELKEY( CHANNEL ) ":server 475 * " + CHANNEL + " :Cannot join channel (+k)"
 #define RPLY_NEWNICKMESSAGE( PASTNICK, NEWNICK ) ":" + PASTNICK + " NICK " + NEWNICK
 #define RPL_INVITED( CLIENT, NICK, CHANNEL ) ":" + CLIENT + " INVITE " + NICK + " " + CHANNEL
 
 // RPL
 #define RPL_CHANNELMODEIS( NICKNAME, CHANNELPTR ) ":server 324 " + NICKNAME + " " + CHANNELPTR->getChannelName() + " " + CHANNELPTR->createModesString()
+
+#define JOIN_SUCCESS ":" + client->getNickName() + " JOIN " + this->_channelName
+#define JOIN_NAMERPLY ":server 353 " + client->getNickName() + " = " + this->_channelName + " :" + this->formatClientsListAsString()
+#define JOIN_ENDOFNAMES ":server 366 " + client->getNickName() + " " + this->_channelName + " :END of /NAMES list"
 
 // MODE
 #define MODE_MESSAGE_ADD_KEY ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " +k " + *argumentsIt
@@ -45,6 +52,10 @@
 #define MODE_MESSAGE_REMOVE_USERS_LIMITS ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " -l "
 #define MODE_MESSAGE_ADD_OPERATOR ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " +o " + *argumentsIt
 #define MODE_MESSAGE_REMOVE_OPERATOR ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " -o " + *argumentsIt
+#define MODE_MESSAGE_ADD_TOPIC_ON_OPERATOR ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " +t"
+#define MODE_MESSAGE_REMOVE_TOPIC_ON_OPERATOR ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " -t"
+#define MODE_MESSAGE_ADD_INVITE ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " +i"
+#define MODE_MESSAGE_REMOVE_INVITE ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " -i"
 
 // KICK
 #define KICK_USAGE "Usage: KICK <nick> [reason], kicks the nick from the current channel (needs chanop)"
@@ -53,5 +64,9 @@
 
 //INVITE
 #define INVITE_USAGE "Usage: INVITE <nick> [<channel>], invites someone to a channel, by default the current channel (needs chanop)"
+
+// TOPIC
+#define RPL_TOPIC( CHANNEL, TOPIC ) ":server 332 * " + CHANNEL + " :" + TOPIC
+#define RPL_TOPICWHOTIME( CHANNEL, NICKNAME, TIME ) ":server 333 * " + CHANNEL + " " + NICKNAME + " " + TIME
 
 #endif

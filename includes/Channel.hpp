@@ -6,6 +6,8 @@
 #include "utils.hpp"
 #include <map>
 #include <vector>
+#include <algorithm>
+#include "macro.hpp"
 
 class ClientInfos {
 private:
@@ -30,6 +32,7 @@ private:
 	bool								_hasUsersLimit;
 	bool								_hasPassword;
 	bool								_isOnInvite;
+	bool								_isTopicOperatorMode;
     std::string                         _channelName;
     std::string                         _password;
     clientsMap                      	_clientsDataMap;
@@ -48,11 +51,13 @@ public:
 	void						setHasPassword(const bool hasPassword);
 	void						setHasUsersLimit(const bool hasUsersLimit);
 	void						setIsOnInvite(const bool isOnInvite);
+	void						setIsTopicOperatorMode(const bool isTopicOperatorMode);
 	const std::string&			getPassword(void) const;
 	size_t						getUsersLimit(void) const;
 	bool						getHasPassword(void) const;
 	bool						getHasUsersLimit(void) const;
 	bool						getIsOnInvite(void) const;
+	bool						getIsTopicOperatorMode(void) const;
 	const clientsMap&			getClientsDataMap(void) const;
 	const std::string&			getModes(void) const;
 	void						setModes(const std::string modes);
@@ -61,7 +66,7 @@ public:
 
     void        				changeClientName(std::string oldNick, std::string newNick);
     bool        				isClientExist(const Client* client) const;
-    bool        				addClient(Client* client, std::string password);
+    void        				addClient(Client* client, std::string password);
     std::string 				formatClientsListAsString(void) const;
     void       					privmsg(std::vector<std::string> cmd, Client* client);
 	std::string 				createModesString(void) const;

@@ -24,11 +24,12 @@ void ClientInfos::setIsOperator(bool isOperator) { this->_isOperator = isOperato
 
 // ----- Class Channel ----- //
 
-Channel::Channel(std::string channelName, Client* client): _hasUsersLimit(false), _hasPassword(false), _isOnInvite(false), _channelName(channelName), _password(""), _topic("")
+Channel::Channel(std::string channelName, Client* client): _hasUsersLimit(false), _hasPassword(false), _isOnInvite(false), _isTopicOperatorMode(true) ,_channelName(channelName), _password(""), _topic("")
 {
     this->_clientsDataMap.insert(std::make_pair(client->getNickName(), new ClientInfos(client, true)));
-    sendMessage(client->getClientFd(), ":" + client->getNickName() + " JOIN " + this->_channelName);
-    sendMessage(client->getClientFd(), ":server 353 " + client->getNickName() + " = " + this->_channelName + " :@" + client->getNickName());
+    sendMessage(client->getClientFd(), JOIN_SUCCESS);
+    sendMessage(client->getClientFd(), JOIN_NAMERPLY);
+	sendMessage(client->getClientFd(), JOIN_ENDOFNAMES);
 }
 
 Channel::~Channel(void) {
@@ -46,6 +47,8 @@ void				Channel::setHasUsersLimit(const bool hasUsersLimit) { this->_hasUsersLim
 
 void				Channel::setIsOnInvite(const bool isOnInvite) { this->_isOnInvite = isOnInvite; }
 
+void				Channel::setIsTopicOperatorMode(const bool isTopicOperatorMode ) { this->_isTopicOperatorMode = isTopicOperatorMode; }
+
 const std::string&	Channel::getPassword(void) const { return this->_password; }
 
 size_t				Channel::getUsersLimit(void) const { return this->_usersLimit; }
@@ -55,6 +58,8 @@ bool				Channel::getHasPassword(void) const { return this->_hasPassword; }
 bool				Channel::getHasUsersLimit(void) const { return this->_hasUsersLimit; }
 
 bool				Channel::getIsOnInvite(void) const { return this->_isOnInvite; }
+
+bool				Channel::getIsTopicOperatorMode(void) const { return this->_isTopicOperatorMode; }
 
 const clientsMap&	Channel::getClientsDataMap(void) const { return this->_clientsDataMap; }
 
@@ -68,18 +73,31 @@ const std::string   &Channel::getTopic(void) const { return this->_topic; }
 
 void    Channel::setTopic(std::string topic) { this->_topic = topic; }
 
-bool    Channel::addClient(Client *client, std::string password)
+void    Channel::addClient(Client *client, std::string password)
 {
-    if ( (!this->_hasPassword || this->_password == password) && (!this->_hasUsersLimit || this->_usersLimit > this->_clientsDataMap.size()) ) {
+	if (this->_hasPassword && this->_password != password) {
+		sendMessage(client->getClientFd(), ERR_BADCHANNELKEY(this->_channelName));
+		return ;
+	}
+	if (this->_isOnInvite && std::find(this->_invitedVector.begin(), this->_invitedVector.end(), client->getNickName()) == this->_invitedVector.end()) {
+		sendMessage(client->getClientFd(), ERR_INVITEONLYCHAN(this->_channelName));
+		return ;
+	}
+	if (this->_hasUsersLimit && this->_clientsDataMap.size() >= this->_usersLimit) {
+		sendMessage(client->getClientFd(), ERR_CHANNELISFULL(this->_channelName));
+		return ;
+	}
 
-        this->_clientsDataMap.insert(std::make_pair(client->getNickName(), new ClientInfos(client, false)));
-        for (clientsMap::iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++) {
-            sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " JOIN " + this->_channelName);
-        }
-        sendMessage(client->getClientFd(), ":server 353 " + client->getNickName() + " = " + this->_channelName + " :" + this->formatClientsListAsString());
-        return true;
-    }
-    return false;
+	this->_clientsDataMap.insert(std::make_pair(client->getNickName(), new ClientInfos(client, false)));
+	for (clientsMap::iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++) {
+		sendMessage(it->second->getClient()->getClientFd(), JOIN_SUCCESS);
+	}
+	if (this->_topic != "") {
+		sendMessage(client->getClientFd(), RPL_TOPIC(this->_channelName, this->_topic));
+		sendMessage(client->getClientFd(), RPL_TOPICWHOTIME(this->_channelName, this->topicAuth, this->topicTime));
+	}
+	sendMessage(client->getClientFd(), JOIN_NAMERPLY);
+	sendMessage(client->getClientFd(), JOIN_ENDOFNAMES);
 }
 
 void        Channel::changeClientName(std::string oldNick, std::string newNick)
@@ -147,15 +165,3 @@ ClientInfos   *Channel::getClientsInfoByNick(std::string nick)
         return (clientIt->second);
     return (NULL);
 }
-
-std::string Channel::createModesString(void) const
-{
-	std::string modesString("+");
-
-	if (this->_hasPassword)
-		modesString += "k";
-	if (this->_hasUsersLimit)
-		modesString += "l";
-	return modesString;
-}
-
