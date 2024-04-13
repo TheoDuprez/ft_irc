@@ -28,7 +28,7 @@ void	Server::joinCommand(commandTokensVector cmd, Client* client)
 	for (; nameIt != channelsNameList.end(); nameIt++) {
 		password = (passwordIt != channelsPasswordList.end()) ? *(passwordIt++) : "";
 
-		if (nameIt->at(0) != '#' && nameIt->at(0) != '&') {
+		if (nameIt->at(0) != '#') {
 			sendMessage(client->getClientFd(), ":server 403 " + client->getNickName() + " " + *nameIt + ": Invalid channel name");
 		}
 		else if (this->_channelsMap.find(*nameIt) == this->_channelsMap.end()) {

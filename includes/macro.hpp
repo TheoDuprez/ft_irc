@@ -17,19 +17,21 @@
 // ERR_RPL
 #define RPL_WELCOME( CLIENT, USERNAME) ":server 001 " + CLIENT + " :Welcome to the localhost Network, " + CLIENT + "!" + USERNAME + "@localhost"
 #define RPL_INVITING( CLIENT, NICK, CHANNEL ) ":server 341 " + CLIENT + " " + NICK + " " + CHANNEL
-#define ERR_NOSUCHNICK( CLIENT, CHANNEL ) ":server 403 " + CLIENT + " " + CHANNEL + " :No such nick"
+#define ERR_NOSUCHNICK( CLIENT, CHANNEL ) ":server 401 " + CLIENT + " " + CHANNEL + " :No such nick/channel" // Should be error 401 ?
 #define ERR_NOSUCHCHANNEL( CLIENT, CHANNEL ) ":server 403 " + CLIENT + " " + CHANNEL + " :No such channel"
+#define ERR_NORECIPIENT( COMMAND ) ":server 411 * :No recipient given (" + COMMAND + ")"
 #define ERR_NONICKNAMEGIVEN( CLIENT ) ":server 431 * "  + CLIENT + " :No nickname given"
 #define ERR_ERRONEUSNICKNAME( CLIENT, NICKNAME ) ":server 432 * " + CLIENT + " " + NICKNAME + " :Erroneus nickname"
 #define ERR_NICKNAMEINUSE( CLIENT, NICKNAME ) ":server 433 * " + CLIENT + " " + NICKNAME + " :Nickname is already in use"
 #define ERR_USERNOTINCHANNEL( CLIENT, USER, CHANNEL ) ":server 441 " + CLIENT + " " + CHANNEL + " " + USER + " :They aren't on that channel"
 #define ERR_NOTONCHANNEL( CLIENT, CHANNEL ) ":server 442 " + CLIENT + " " + CHANNEL + " :You're not on that channel"
 #define ERR_USERONCHANNEL( CLIENT, NICK, CHANNEL ) ":server 443 " + CLIENT + " " + NICK + " " + CHANNEL + " :is already on channel"
-#define ERR_NEEDMOREPARAMS(NICKNAME, COMMAND) ":server 461 " + NICKNAME + " " + COMMAND + " :Not enough parameters"
+#define ERR_NEEDMOREPARAMS( NICKNAME, COMMAND ) ":server 461 " + NICKNAME + " " + COMMAND + " :Not enough parameters"
 #define ERR_ALREADYREGISTERED( CLIENT ) ":server 462 * " + CLIENT + " :You may not reregister"
 #define ERR_PASSWDMISMATCH( CLIENT ) ":server 464 * " + CLIENT + " :Password incorrect"
 #define ERR_CHANOPRIVSNEEDED( CLIENT, CHANNEL ) ":server 482 " + CLIENT + " " + CHANNEL + " :You're not channel operator"
 #define ERR_INVALIDUSERCHAR( NAME )  "USER: \"" + NAME + "\" invalid character"
+#define ERR_NOTEXTTOSEND ":server 412 * :No text to send"
 #define RPLY_NEWNICKMESSAGE( PASTNICK, NEWNICK ) ":" + PASTNICK + " NICK " + NEWNICK
 #define RPL_INVITED( CLIENT, NICK, CHANNEL ) ":" + CLIENT + " INVITE " + NICK + " " + CHANNEL
 
