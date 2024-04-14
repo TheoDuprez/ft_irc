@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:57:26 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/12 16:18:00 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/14 09:27:15 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,22 +78,26 @@ bool    Channel::addClient(Client *client, std::string password)
     return false;
 }
 
-void        Channel::changeChannelClientName(std::string oldNick, std::string newNick)
+void        Channel::changeChannelClientNick(std::string oldNick, std::string newNick)
 {
     clientsMap::iterator  clientIt;
 
     clientIt = this->_clientsDataMap.find(oldNick);
-    this->_clientsDataMap.insert(std::make_pair(newNick, clientIt->second));
-    this->_clientsDataMap.erase(oldNick);
+    if (clientIt != this->_clientsDataMap.end()) {
+        this->_clientsDataMap.insert(std::make_pair(newNick, clientIt->second));
+        this->_clientsDataMap.erase(oldNick);
+    }
 }
 
-void        Channel::changeInvitedClientName(std::string oldNick, std::string newNick)
+void        Channel::changeInvitedClientNick(std::string oldNick, std::string newNick)
 {
     std::vector<std::string>::iterator  clientIt;
 
-    clientIt = this->_invitedVector.find(oldNick);
-    this->_invitedVector.erase(oldNick);
-    this->_invitedVector.push_back(newNick);
+    clientIt = std::find(this->_invitedVector.begin(), this->_invitedVector.end(), oldNick);
+    if (clientIt != this->_invitedVector.end()) {
+        this->_invitedVector.erase(clientIt);
+        this->_invitedVector.push_back(newNick);
+    }
 }
 
 bool    Channel::isClientExist(const Client* client) const
@@ -131,16 +135,16 @@ void    Channel::setNewInvitedClient(std::string const &clientNickName)
 {
     this->_invitedVector.push_back(clientNickName);
 }
-std::vector<std::string>    Channel::getInvitedClientVector(void) const
+std::vector<std::string>    Channel::getInvitedClients(void) const
 {
     return (this->_invitedVector);
 }
 
-Client    *isInvitedClientByNick(std::string const & nick) const
+bool    Channel::isInvitedClient(std::string const & nick) const
 {
-    std::vector<std::string>::iterator    clientIt;
+    std::vector<std::string>::const_iterator    clientIt;
 
-    clientIt = this->_invitedVector.find(nick);
+    clientIt = std::find(this->_invitedVector.begin(), this->_invitedVector.end(), nick);
     if (clientIt != this->_invitedVector.end())
         return (true);
     return (false);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/12 13:29:46 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/14 11:22:54 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,8 @@ class Server
 		bool	_isValidUserCommand(size_t i, Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidNickCommand(Client  *currentClient, std::vector<std::string> *cmd);
 		bool    _isValidKickCommand(std::vector<std::string> cmd, Client *currentClient, ClientInfos *&targetOp, ClientInfos *&targetUser, Channel *&targetChannel);
-		bool    _isValidInviteCommand(std::vector<std::string> cmd, Client *currentClient, Channel *&targetChannel);
+		bool    _isValidInviteCommand(std::vector<std::string> cmd, Client *currentClient, Channel *targetChannel);
+		void    _nickApplyChange(std::vector<std::string> cmd, Client *currentClient);
 
         // modeCommand methods
 		void						manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode);
@@ -105,6 +106,7 @@ class Server
 		void				printLogMessage(std::string message, bool isError);
 		std::string	const	getCurrentTimeStamp(void);
 
+		void									sendMessageToAllChannelUsers(Client *currentClient, Channel *channel, std::string const &message) const;
 		std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);
 		void									handleCommand(std::vector<std::vector<std::string> > cmd, Client* client);
 		void									joinCommand(commandTokensVector cmd, Client* client);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/12 13:25:13 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/14 11:44:05 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ Server::Server(char* port, std::string password): _password(password)
 {
 	long double		tempPort;
 	
+	this->_serverName = "ft_irc";
 	this->_logFile.open("server.log", std::ofstream::app);
 	for (size_t i = 0; port[i]; ++i) {
 		if (!isdigit(port[i]))
@@ -225,6 +226,15 @@ const Client*				Server::getClientByName(const std::string& name)
 std::string	const	&Server::getServerName(void) const
 {
 	return (this->_serverName);
+}
+
+void	Server::sendMessageToAllChannelUsers(Client *currentClient, Channel *channel, std::string const &message) const
+{
+	for (clientsListMapIterator clientIt = channel->getClientsList()->begin(); clientIt != channel->getClientsList()->end(); clientIt++) {
+        Client const    *targetClient = clientIt->second->getClient();
+        if (targetClient->getClientFd() != currentClient->getClientFd())
+            sendMessage(targetClient->getClientFd(), message);
+    }
 }
 
 bool	Server::_isServUp;
