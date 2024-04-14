@@ -80,15 +80,18 @@ class Server
 		bool    _isValidInviteCommand(std::vector<std::string> cmd, Client *currentClient, Channel *&targetChannel);
 
         // modeCommand methods
-		void						manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode);
-		void						modeCommandChannel(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr);
-		std::vector<std::string>	fillModeArguments(commandTokensVector& cmd);
-		void						manageKey(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
-		void						manageUsersLimit(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
-		void						manageOperator(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
-		void						manageTopic(Channel* channelPtr, Client* client, bool adjustMode);
-		void						manageInvite(Channel* channelPtr, Client* client, bool adjustMode);
-		void						sendMessageToAllClients(const Channel* channelPtr, const std::string& message) const;
+		void						_manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode);
+		void						_modeCommandChannel(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr);
+		std::vector<std::string>	_fillModeArguments(commandTokensVector& cmd);
+		void						_manageKey(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						_manageUsersLimit(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						_manageOperator(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						_manageTopic(Channel* channelPtr, Client* client, bool adjustMode);
+		void						_manageInvite(Channel* channelPtr, Client* client, bool adjustMode);
+		void						_sendMessageToAllClients(const Channel* channelPtr, const std::string& message) const;
+
+		// partCommand methods
+		void									_leaveChannel(Client* clientPtr, Channel* channelPtr);
 
 	public:
 		Server(char* port, std::string password);
@@ -112,14 +115,13 @@ class Server
 		std::string	const	getCurrentTimeStamp(void);
 
 		// Part methods
-		void				leaveChannel(Client* clientPtr, Channel* channelPtr);
 
 		std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);
-		void									handleCommand(std::vector<std::vector<std::string> > cmd, Client* client);
-		void									joinCommand(commandTokensVector cmd, Client* client);
-		void									partCommand(commandTokensVector cmd, Client* client);
-		void									modeCommand(commandTokensVector cmd, Client* client);
-		void									privmsgCommand(commandTokensVector cmd, Client* client);
+		void									handleCommand(std::vector<std::vector<std::string> > cmd, Client* clientPtr);
+		void									joinCommand(commandTokensVector cmd, Client* clientPtr);
+		void									partCommand(commandTokensVector cmd, Client* clientPtr);
+		void									modeCommand(commandTokensVector cmd, Client* clientPtr);
+		void									privmsgCommand(commandTokensVector cmd, Client* clientPtr);
 		void									clientManager(void);
 		void    								inviteCommand(std::vector<std::string> cmd, Client *currentClient);
 		void									passCommand(std::vector<std::string> cmd, int fd);

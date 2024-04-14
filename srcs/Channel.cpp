@@ -14,7 +14,7 @@
 
 // ----- Class clientInfos (used by channel and only channel) ----- //
 
-ClientInfos::ClientInfos(Client *client, bool isOperator): _client(client), _isOperator(isOperator) {}
+ClientInfos::ClientInfos(Client *clientPtr, bool isOperator): _client(clientPtr), _isOperator(isOperator) {}
 
 const Client* ClientInfos::getClient(void) const { return this->_client; }
 
@@ -24,12 +24,12 @@ void ClientInfos::setIsOperator(bool isOperator) { this->_isOperator = isOperato
 
 // ----- Class Channel ----- //
 
-Channel::Channel(std::string channelName, Client* client): _hasUsersLimit(false), _hasPassword(false), _isOnInvite(false), _isTopicOperatorMode(true) ,_channelName(channelName), _password(""), _topic("")
+Channel::Channel(std::string channelName, Client* clientPtr): _hasUsersLimit(false), _hasPassword(false), _isOnInvite(false), _isTopicOperatorMode(true) ,_channelName(channelName), _password(""), _topic("")
 {
-    this->_clientsDataMap.insert(std::make_pair(client->getNickName(), new ClientInfos(client, true)));
-    sendMessage(client->getClientFd(), JOIN_SUCCESS);
-    sendMessage(client->getClientFd(), JOIN_NAMERPLY);
-	sendMessage(client->getClientFd(), JOIN_ENDOFNAMES);
+    this->_clientsDataMap.insert(std::make_pair(clientPtr->getNickName(), new ClientInfos(clientPtr, true)));
+    sendMessage(clientPtr->getClientFd(), JOIN_SUCCESS);
+    sendMessage(clientPtr->getClientFd(), JOIN_NAMERPLY);
+	sendMessage(clientPtr->getClientFd(), JOIN_ENDOFNAMES);
 }
 
 Channel::~Channel(void) {
@@ -73,31 +73,31 @@ const std::string   &Channel::getTopic(void) const { return this->_topic; }
 
 void    Channel::setTopic(std::string topic) { this->_topic = topic; }
 
-void    Channel::addClient(Client *client, std::string password)
+void    Channel::addClient(Client *clientPtr, std::string password)
 {
 	if (this->_hasPassword && this->_password != password) {
-		sendMessage(client->getClientFd(), ERR_BADCHANNELKEY(this->_channelName));
+		sendMessage(clientPtr->getClientFd(), ERR_BADCHANNELKEY(this->_channelName));
 		return ;
 	}
-	if (this->_isOnInvite && std::find(this->_invitedVector.begin(), this->_invitedVector.end(), client->getNickName()) == this->_invitedVector.end()) {
-		sendMessage(client->getClientFd(), ERR_INVITEONLYCHAN(this->_channelName));
+	if (this->_isOnInvite && std::find(this->_invitedVector.begin(), this->_invitedVector.end(), clientPtr->getNickName()) == this->_invitedVector.end()) {
+		sendMessage(clientPtr->getClientFd(), ERR_INVITEONLYCHAN(this->_channelName));
 		return ;
 	}
 	if (this->_hasUsersLimit && this->_clientsDataMap.size() >= this->_usersLimit) {
-		sendMessage(client->getClientFd(), ERR_CHANNELISFULL(this->_channelName));
+		sendMessage(clientPtr->getClientFd(), ERR_CHANNELISFULL(this->_channelName));
 		return ;
 	}
 
-	this->_clientsDataMap.insert(std::make_pair(client->getNickName(), new ClientInfos(client, false)));
+	this->_clientsDataMap.insert(std::make_pair(clientPtr->getNickName(), new ClientInfos(clientPtr, false)));
 	for (clientsMap::iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++) {
 		sendMessage(it->second->getClient()->getClientFd(), JOIN_SUCCESS);
 	}
 	if (this->_topic != "") {
-		sendMessage(client->getClientFd(), RPL_TOPIC(this->_channelName, this->_topic));
-		sendMessage(client->getClientFd(), RPL_TOPICWHOTIME(this->_channelName, this->topicAuth, this->topicTime));
+		sendMessage(clientPtr->getClientFd(), RPL_TOPIC(this->_channelName, this->_topic));
+		sendMessage(clientPtr->getClientFd(), RPL_TOPICWHOTIME(this->_channelName, this->topicAuth, this->topicTime));
 	}
-	sendMessage(client->getClientFd(), JOIN_NAMERPLY);
-	sendMessage(client->getClientFd(), JOIN_ENDOFNAMES);
+	sendMessage(clientPtr->getClientFd(), JOIN_NAMERPLY);
+	sendMessage(clientPtr->getClientFd(), JOIN_ENDOFNAMES);
 }
 
 void        Channel::changeClientName(std::string oldNick, std::string newNick)
@@ -109,10 +109,10 @@ void        Channel::changeClientName(std::string oldNick, std::string newNick)
     this->_clientsDataMap.erase(oldNick);
 }
 
-bool    Channel::isClientExist(const Client* client) const
+bool    Channel::isClientExist(const Client* clientPtr) const
 {
     for (clientsMap::const_iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++) {
-        if (it->second->getClient() == client)
+        if (it->second->getClient() == clientPtr)
             return true;
     }
     return false;
@@ -131,12 +131,12 @@ std::string Channel::formatClientsListAsString(void) const
     return retClientsList;
 }
 
-void        Channel::privmsg(std::vector<std::string> cmd, Client *client)
+void        Channel::privmsg(std::vector<std::string> cmd, Client *clientPtr)
 {
 //    sendMessage(client->getClientFd())
     for (clientsMap::iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++) {
-        if (it->second->getClient() != client)
-            sendMessage(it->second->getClient()->getClientFd(), ":" + client->getNickName() + " PRIVMSG " + this->_channelName + " :" +  cmd.at(2).substr(1, cmd.at(2).length()));
+        if (it->second->getClient() != clientPtr)
+            sendMessage(it->second->getClient()->getClientFd(), ":" + clientPtr->getNickName() + " PRIVMSG " + this->_channelName + " :" +  cmd.at(2).substr(1, cmd.at(2).length()));
     }
 }
 
@@ -166,8 +166,23 @@ ClientInfos   *Channel::getClientsInfoByNick(std::string nick)
     return (NULL);
 }
 
-void	Channel::removeClient(Client* client)
+void	Channel::removeClient(Client* clientPtr)
 {
-	delete this->_clientsDataMap.find(client->getNickName())->second;
-	this->_clientsDataMap.erase(client->getNickName());
+	delete this->_clientsDataMap.find(clientPtr->getNickName())->second;
+	this->_clientsDataMap.erase(clientPtr->getNickName());
+}
+
+std::string Channel::createModesString(void) const
+{
+	std::string modesString("+");
+
+	if (this->_isTopicOperatorMode)
+		modesString += "t";
+	if (this->_isOnInvite)
+		modesString += "i";
+	if (this->_hasPassword)
+		modesString += "k";
+	if (this->_hasUsersLimit)
+		modesString += "l";
+	return modesString;
 }

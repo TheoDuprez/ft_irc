@@ -12,37 +12,48 @@
 
 #include "Server.hpp"
 
-void	Server::modeCommand(commandTokensVector cmd, Client* client)
+void	Server::modeCommand(commandTokensVector cmd, Client* clientPtr)
 {
 	std::vector<std::string>	modeArguments;
 	std::string					modeString;
 
 	if (cmd.size() < 2) {
-    	sendMessage(client->getClientFd(), ERR_NEEDMOREPARAMS(client->getNickName(), "MODE"));
+    	sendMessage(clientPtr->getClientFd(), ERR_NEEDMOREPARAMS(clientPtr->getNickName(), "MODE"));
 		return ;
 	}
 	if (!getChannelByName(cmd[1])) {
-		sendMessage(client->getClientFd(), ERR_NOSUCHCHANNEL(client->getNickName(), cmd[1]));
+		sendMessage(clientPtr->getClientFd(), ERR_NOSUCHCHANNEL(clientPtr->getNickName(), cmd[1]));
 		return ;
 	}
 	if (cmd.size() < 3) {
-		sendMessage(client->getClientFd(), RPL_CHANNELMODEIS(client->getNickName(), getChannelByName(cmd[1])));
+		sendMessage(clientPtr->getClientFd(), RPL_CHANNELMODEIS(clientPtr->getNickName(), getChannelByName(cmd[1])));
 		return ;
 	}
-	if (!getChannelByName(cmd[1])->getClientsInfoByNick(client->getNickName())->getIsOperator()) {
-		sendMessage(client->getClientFd(), ERR_CHANOPRIVSNEEDED(client->getNickName(), cmd[1]));
+	if (!getChannelByName(cmd[1])->getClientsInfoByNick(clientPtr->getNickName())->getIsOperator()) {
+		sendMessage(clientPtr->getClientFd(), ERR_CHANOPRIVSNEEDED(clientPtr->getNickName(), cmd[1]));
 		return ;
 	}
 
 	modeString = cmd[2];
-	modeArguments = fillModeArguments(cmd);
+	modeArguments = _fillModeArguments(cmd);
 	if (modeString[0] == '+')
-		manageModes(modeString, modeArguments, client, getChannelByName(cmd[1]), true);
+		_manageModes(modeString, modeArguments, clientPtr, getChannelByName(cmd[1]), true);
 	else if (modeString[0] == '-')
-		manageModes(modeString, modeArguments, client, getChannelByName(cmd[1]), false);
+		_manageModes(modeString, modeArguments, clientPtr, getChannelByName(cmd[1]), false);
 }
 
-void	Server::manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode)
+std::vector<std::string>	Server::_fillModeArguments(commandTokensVector& cmd)
+{
+	std::vector<std::string> retModeArguments;
+
+	if (cmd.size() > 3) {
+		for (std::vector<std::string>::iterator it = cmd.begin() + 3; it != cmd.end(); it++)
+			retModeArguments.push_back(*it);
+	}
+	return retModeArguments;
+}
+
+void	Server::_manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* clientPtr, Channel* channelPtr, bool adjustMode)
 {
 	std::vector<std::string>::iterator argumentsIt = modeArguments.begin();
 
@@ -50,42 +61,42 @@ void	Server::manageModes(std::string modeString, std::vector<std::string> modeAr
 		switch (modeString[i]) {
 			case 'k':
 				if (argumentsIt != modeArguments.end())
-					manageKey(channelPtr, client, argumentsIt, adjustMode);
+					_manageKey(channelPtr, clientPtr, argumentsIt, adjustMode);
 				break;
 			case 'l':
 				if (!adjustMode || argumentsIt != modeArguments.end())
-					manageUsersLimit(channelPtr, client, argumentsIt, adjustMode);
+					_manageUsersLimit(channelPtr, clientPtr, argumentsIt, adjustMode);
 				break ;
 			case 'o':
 				if (argumentsIt != modeArguments.end())
-					manageOperator(channelPtr, client, argumentsIt, adjustMode);
+					_manageOperator(channelPtr, clientPtr, argumentsIt, adjustMode);
 				break ;
 			case 't':
-				manageTopic(channelPtr, client, adjustMode);
+					_manageTopic(channelPtr, clientPtr, adjustMode);
 				break ;
 			case 'i':
-				manageInvite(channelPtr, client, adjustMode);
+					_manageInvite(channelPtr, clientPtr, adjustMode);
 				break ;
 		}
 	}
 }
 
-void	Server::manageKey(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode)
+void	Server::_manageKey(Channel* channelPtr, Client* clientPtr, std::vector<std::string>::iterator& argumentsIt, bool adjustMode)
 {
 	if (adjustMode && (!channelPtr->getHasPassword() || channelPtr->getPassword() != *argumentsIt)) {
-			channelPtr->setPassword(*argumentsIt);
-			channelPtr->setHasPassword(true);
-			sendMessageToAllClients(channelPtr, MODE_MESSAGE_ADD_KEY);
+		channelPtr->setPassword(*argumentsIt);
+		channelPtr->setHasPassword(true);
+		_sendMessageToAllClients(channelPtr, MODE_MESSAGE_ADD_KEY);
 	}
 	else if (!adjustMode && channelPtr->getPassword() == *argumentsIt) {
 		channelPtr->setPassword("");
 		channelPtr->setHasPassword(false);
-		sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_KEY);
+		_sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_KEY);
 	}
 	argumentsIt++;
 }
 
-void	Server::manageUsersLimit(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode)
+void	Server::_manageUsersLimit(Channel* channelPtr, Client* clientPtr, std::vector<std::string>::iterator& argumentsIt, bool adjustMode)
 {
 	if (adjustMode) {
 		if (channelPtr->getHasUsersLimit() && ullToString(channelPtr->getUsersLimit()) == *argumentsIt) {
@@ -95,17 +106,17 @@ void	Server::manageUsersLimit(Channel* channelPtr, Client* client, std::vector<s
 		try {
 			channelPtr->setUsersLimit(strtost(*argumentsIt));
 			channelPtr->setHasUsersLimit(true);
-			sendMessageToAllClients(channelPtr, MODE_MESSAGE_ADD_USERS_LIMITS);
+			_sendMessageToAllClients(channelPtr, MODE_MESSAGE_ADD_USERS_LIMITS);
 		} catch (const std::runtime_error& e) { }
 	}
 	else if (channelPtr->getHasUsersLimit()) {
 		channelPtr->setHasUsersLimit(false);
-		sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_USERS_LIMITS);
+		_sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_USERS_LIMITS);
 	}
 	argumentsIt++;
 }
 
-void	Server::manageOperator(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode)
+void	Server::_manageOperator(Channel* channelPtr, Client* clientPtr, std::vector<std::string>::iterator& argumentsIt, bool adjustMode)
 {
 	ClientInfos* clientPrivilege;
 
@@ -116,84 +127,45 @@ void	Server::manageOperator(Channel* channelPtr, Client* client, std::vector<std
 	if (adjustMode) {
 		if (!clientPrivilege->getIsOperator()) {
 			clientPrivilege->setIsOperator(true);
-			sendMessageToAllClients(channelPtr, MODE_MESSAGE_ADD_OPERATOR);
+			_sendMessageToAllClients(channelPtr, MODE_MESSAGE_ADD_OPERATOR);
 		}
 	}
 	else {
 		if (clientPrivilege->getIsOperator()) {
 			clientPrivilege->setIsOperator(false);
-			sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_OPERATOR);
+			_sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_OPERATOR);
 		}
 	}
 	argumentsIt++;
 }
 
-void	Server::manageTopic(Channel* channelPtr, Client* client, bool adjustMode)
+void	Server::_manageTopic(Channel* channelPtr, Client* clientPtr, bool adjustMode)
 {
 	if (adjustMode && !channelPtr->getIsTopicOperatorMode()) {
 		channelPtr->setIsTopicOperatorMode(true);
-		sendMessageToAllClients(channelPtr, MODE_MESSAGE_ADD_TOPIC_ON_OPERATOR);
+		_sendMessageToAllClients(channelPtr, MODE_MESSAGE_ADD_TOPIC_ON_OPERATOR);
 	}
 	else if (!adjustMode && channelPtr->getIsTopicOperatorMode()) {
 		channelPtr->setIsTopicOperatorMode(false);
-		sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_TOPIC_ON_OPERATOR);
+		_sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_TOPIC_ON_OPERATOR);
 	}
 }
 
-void	Server::manageInvite(Channel* channelPtr, Client* client, bool adjustMode)
+void	Server::_manageInvite(Channel* channelPtr, Client* clientPtr, bool adjustMode)
 {
 	if (adjustMode && !channelPtr->getIsOnInvite()) {
 		channelPtr->setIsOnInvite(true);
-		sendMessageToAllClients(channelPtr, MODE_MESSAGE_ADD_INVITE);
+		_sendMessageToAllClients(channelPtr, MODE_MESSAGE_ADD_INVITE);
 	}
 	else if (!adjustMode && channelPtr->getIsOnInvite()) {
 		channelPtr->setIsOnInvite(false);
-		sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_INVITE);
+		_sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_INVITE);
 	}
 }
 
-void	Server::sendMessageToAllClients(const Channel* channelPtr, const std::string& message) const
+void	Server::_sendMessageToAllClients(const Channel* channelPtr, const std::string& message) const
 {
 	for (clientsMap::const_iterator it = channelPtr->getClientsDataMap().begin(); it != channelPtr->getClientsDataMap().end(); it++) {
 		sendMessage(it->second->getClient()->getClientFd(), message);
 	}
-}
-
-
-std::string Channel::createModesString(void) const
-{
-	std::string modesString("+");
-
-	if (this->_isTopicOperatorMode)
-		modesString += "t";
-	if (this->_isOnInvite)
-		modesString += "i";
-	if (this->_hasPassword)
-		modesString += "k";
-	if (this->_hasUsersLimit)
-		modesString += "l";
-	return modesString;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-std::vector<std::string>	Server::fillModeArguments(commandTokensVector& cmd)
-{
-	std::vector<std::string> retModeArguments;
-	
-	if (cmd.size() > 3) {
-		for (std::vector<std::string>::iterator it = cmd.begin() + 3; it != cmd.end(); it++)
-			retModeArguments.push_back(*it);
-	}
-	return retModeArguments;
 }

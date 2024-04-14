@@ -41,21 +41,21 @@
 // RPL
 #define RPL_CHANNELMODEIS( NICKNAME, CHANNELPTR ) ":server 324 " + NICKNAME + " " + CHANNELPTR->getChannelName() + " " + CHANNELPTR->createModesString()
 
-#define JOIN_SUCCESS ":" + client->getNickName() + " JOIN " + this->_channelName
-#define JOIN_NAMERPLY ":server 353 " + client->getNickName() + " = " + this->_channelName + " :" + this->formatClientsListAsString()
-#define JOIN_ENDOFNAMES ":server 366 " + client->getNickName() + " " + this->_channelName + " :END of /NAMES list"
+#define JOIN_SUCCESS ":" + clientPtr->getNickName() + " JOIN " + this->_channelName
+#define JOIN_NAMERPLY ":server 353 " + clientPtr->getNickName() + " = " + this->_channelName + " :" + this->formatClientsListAsString()
+#define JOIN_ENDOFNAMES ":server 366 " + clientPtr->getNickName() + " " + this->_channelName + " :END of /NAMES list"
 
 // MODE
-#define MODE_MESSAGE_ADD_KEY ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " +k " + *argumentsIt
-#define MODE_MESSAGE_REMOVE_KEY ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " -k "
-#define MODE_MESSAGE_ADD_USERS_LIMITS ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " +l " + *argumentsIt
-#define MODE_MESSAGE_REMOVE_USERS_LIMITS ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " -l "
-#define MODE_MESSAGE_ADD_OPERATOR ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " +o " + *argumentsIt
-#define MODE_MESSAGE_REMOVE_OPERATOR ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " -o " + *argumentsIt
-#define MODE_MESSAGE_ADD_TOPIC_ON_OPERATOR ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " +t"
-#define MODE_MESSAGE_REMOVE_TOPIC_ON_OPERATOR ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " -t"
-#define MODE_MESSAGE_ADD_INVITE ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " +i"
-#define MODE_MESSAGE_REMOVE_INVITE ":" + client->getNickName() + " MODE " + channelPtr->getChannelName() + " -i"
+#define MODE_MESSAGE_ADD_KEY ":" + clientPtr->getNickName() + " MODE " + channelPtr->getChannelName() + " +k " + *argumentsIt
+#define MODE_MESSAGE_REMOVE_KEY ":" + clientPtr->getNickName() + " MODE " + channelPtr->getChannelName() + " -k "
+#define MODE_MESSAGE_ADD_USERS_LIMITS ":" + clientPtr->getNickName() + " MODE " + channelPtr->getChannelName() + " +l " + *argumentsIt
+#define MODE_MESSAGE_REMOVE_USERS_LIMITS ":" + clientPtr->getNickName() + " MODE " + channelPtr->getChannelName() + " -l "
+#define MODE_MESSAGE_ADD_OPERATOR ":" + clientPtr->getNickName() + " MODE " + channelPtr->getChannelName() + " +o " + *argumentsIt
+#define MODE_MESSAGE_REMOVE_OPERATOR ":" + clientPtr->getNickName() + " MODE " + channelPtr->getChannelName() + " -o " + *argumentsIt
+#define MODE_MESSAGE_ADD_TOPIC_ON_OPERATOR ":" + clientPtr->getNickName() + " MODE " + channelPtr->getChannelName() + " +t"
+#define MODE_MESSAGE_REMOVE_TOPIC_ON_OPERATOR ":" + clientPtr->getNickName() + " MODE " + channelPtr->getChannelName() + " -t"
+#define MODE_MESSAGE_ADD_INVITE ":" + clientPtr->getNickName() + " MODE " + channelPtr->getChannelName() + " +i"
+#define MODE_MESSAGE_REMOVE_INVITE ":" + clientPtr->getNickName() + " MODE " + channelPtr->getChannelName() + " -i"
 
 // KICK
 #define KICK_USAGE "Usage: KICK <nick> [reason], kicks the nick from the current channel (needs chanop)"

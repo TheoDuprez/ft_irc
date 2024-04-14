@@ -1,12 +1,12 @@
 #include "Server.hpp"
 
-void	Server::partCommand(commandTokensVector cmd, Client* client)
+void	Server::partCommand(commandTokensVector cmd, Client* clientPtr)
 {
 	std::vector<std::string>			channelsNameList;
 	std::string							partReason;
 
 	if (cmd.size() == 1) {
-		sendMessage(client->getClientFd(), ERR_NEEDMOREPARAMS(client->getNickName(), cmd[0]));
+		sendMessage(clientPtr->getClientFd(), ERR_NEEDMOREPARAMS(clientPtr->getNickName(), cmd[0]));
 		return ;
 	}
 	if (cmd.size() > 2) {
@@ -20,22 +20,22 @@ void	Server::partCommand(commandTokensVector cmd, Client* client)
 	channelsNameList = split(*(cmd.begin() + 1), ',');
 	for (std::vector<std::string>::iterator it = channelsNameList.begin(); it != channelsNameList.end(); it++) {
 		if (!getChannelByName(*it)) {
-			sendMessage(client->getClientFd(), ERR_NOSUCHCHANNEL(client->getNickName(), *it));
+			sendMessage(clientPtr->getClientFd(), ERR_NOSUCHCHANNEL(clientPtr->getNickName(), *it));
 		}
-		else if (!getChannelByName(*it)->isClientExist(client)) {
-			sendMessage(client->getClientFd(), ERR_NOTONCHANNEL(client->getNickName(), *it));
+		else if (!getChannelByName(*it)->isClientExist(clientPtr)) {
+			sendMessage(clientPtr->getClientFd(), ERR_NOTONCHANNEL(clientPtr->getNickName(), *it));
 		}
 		else {
 			if (partReason.empty())
-				sendMessageToAllClients(getChannelByName(*it), PART_MESSAGE(client->getNickName(), *it));
+				_sendMessageToAllClients(getChannelByName(*it), PART_MESSAGE(clientPtr->getNickName(), *it));
 			else
-				sendMessageToAllClients(getChannelByName(*it), PART_MESSAGE_REASON(client->getNickName(), *it, partReason));
-			leaveChannel(client, getChannelByName(*it));
+				_sendMessageToAllClients(getChannelByName(*it), PART_MESSAGE_REASON(clientPtr->getNickName(), *it, partReason));
+			_leaveChannel(clientPtr, getChannelByName(*it));
 		}
 	}
 }
 
-void	Server::leaveChannel(Client* clientPtr, Channel* channelPtr)
+void	Server::_leaveChannel(Client* clientPtr, Channel* channelPtr)
 {
 	if (channelPtr->getClientsDataMap().size() == 1) {
 		this->_channelsMap.erase(channelPtr->getChannelName());
