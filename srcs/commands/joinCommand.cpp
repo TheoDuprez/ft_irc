@@ -14,7 +14,7 @@
 
 void	Server::joinCommand(commandTokensVector cmd, Client* client)
 {
-	std::vector<std::string>			channelsNameList(split(*(cmd.begin() + 1), ','));
+	std::vector<std::string>			channelsNameList; // Les problemes
 	std::vector<std::string>::iterator	nameIt;
 	std::vector<std::string>			channelsPasswordList;
 	std::vector<std::string>::iterator	passwordIt;
@@ -27,13 +27,14 @@ void	Server::joinCommand(commandTokensVector cmd, Client* client)
 	if (cmd.size() > 2)
 		channelsPasswordList = std::vector<std::string>(split(*(cmd.begin() + 2), ','));
 
+	channelsNameList = split(*(cmd.begin() + 1), ',');
 	nameIt = channelsNameList.begin();
 	passwordIt = channelsPasswordList.begin();
 	for (; nameIt != channelsNameList.end(); nameIt++) {
 		password = (passwordIt != channelsPasswordList.end()) ? *(passwordIt++) : "";
 
 		if (nameIt->at(0) != '#') {
-			sendMessage(client->getClientFd(), ":server 403 " + client->getNickName() + " " + *nameIt + ": Invalid channel name");
+			sendMessage(client->getClientFd(), ERR_NOSUCHCHANNEL(client->getNickName(), *nameIt));
 		}
 		else if (this->_channelsMap.find(*nameIt) == this->_channelsMap.end()) {
 			this->_channelsMap.insert(std::make_pair(*nameIt, new Channel(*nameIt, client)));
@@ -41,7 +42,5 @@ void	Server::joinCommand(commandTokensVector cmd, Client* client)
 		else if (this->_channelsMap.find(*nameIt) != this->_channelsMap.end()) {
 			this->_channelsMap.find(*nameIt)->second->addClient(client, password);
 		}
-		else
-			std::cout << "RPL\n";
 	}
 }

@@ -117,6 +117,8 @@ void	Server::handleCommand(commandsVector commands, Client* client)
 			return ;
 		if (it->at(0) == "JOIN" && client->getIsRegister())
 			joinCommand(*it, client);
+        else if (it->at(0) == "PRIVMSG" && client->getIsRegister())
+            privmsgCommand(*it, client);
         else if (it->at(0) == "MODE")
             modeCommand(*it, client);
 		else if (it->at(0) == "USER")
@@ -127,12 +129,13 @@ void	Server::handleCommand(commandsVector commands, Client* client)
 			passCommand(*it, client->getClientFd());
 		else if (it->at(0) == "KICK")
             kickCommand(*it, client);
-        else if (it->at(0) == "PRIVMSG")
-            privmsgCommand(*it, client);
         else if (it->at(0) == "TOPIC")
             topicCommand(*it, client);
 		else if (it->at(0) == "INVITE")
             inviteCommand(*it, client);
+		else if (it->at(0) == "PART") {
+			partCommand(*it, client);
+		}
 		else
 			std::cout << "Error: " << it->at(0) << " is not a command. Full cmd is : " << std::endl;
             for (commandTokensVector::iterator itTest = it->begin(); itTest != it->end(); itTest++)

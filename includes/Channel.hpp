@@ -72,6 +72,7 @@ public:
 	std::string 				createModesString(void) const;
     const std::string     		&getTopic(void) const;
     void                  		setTopic(std::string topic);
+	void						removeClient(Client* client);
     std::string             	topicAuth;
     std::string             	topicTime;
 };

@@ -165,3 +165,9 @@ ClientInfos   *Channel::getClientsInfoByNick(std::string nick)
         return (clientIt->second);
     return (NULL);
 }
+
+void	Channel::removeClient(Client* client)
+{
+	delete this->_clientsDataMap.find(client->getNickName())->second;
+	this->_clientsDataMap.erase(client->getNickName());
+}

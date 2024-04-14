@@ -111,9 +111,13 @@ class Server
 		void				printLogMessage(std::string message, bool isError);
 		std::string	const	getCurrentTimeStamp(void);
 
+		// Part methods
+		void				leaveChannel(Client* clientPtr, Channel* channelPtr);
+
 		std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);
 		void									handleCommand(std::vector<std::vector<std::string> > cmd, Client* client);
 		void									joinCommand(commandTokensVector cmd, Client* client);
+		void									partCommand(commandTokensVector cmd, Client* client);
 		void									modeCommand(commandTokensVector cmd, Client* client);
 		void									privmsgCommand(commandTokensVector cmd, Client* client);
 		void									clientManager(void);
