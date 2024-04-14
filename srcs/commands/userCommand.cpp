@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   userCommand.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:02 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/11 21:58:39 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/14 12:51:18 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ void	Server::userCommand(std::vector<std::string> cmd, int fd)
     Client	*currentClient = this->_clients[fd];
 
     if (currentClient->getIsRegister() == true) {
-        this->printLogMessage("ERR_ALREADYREGISTERED (462)\n", ERROR);
+        sendMessage(currentClient->getClientFd(), ERR_ALREADYREGISTERED(this->_serverName));
         return;
     }
     if (cmd.size() < 5) {
@@ -123,7 +123,4 @@ void	Server::userCommand(std::vector<std::string> cmd, int fd)
         sendMessage(fd, RPL_WELCOME(currentClient->getNickName(), currentClient->getUserName()));
         currentClient->setIsRegister(true);
     }
-    // std::cout << "usercmd test: username set as: " << currentClient->getUserName() << std::endl;
-    // std::cout << "usercmd test: realname set as: " << currentClient->getRealName() << std::endl;
-    // std::cout << "usercmd test: isRegister set as: " << std::string(currentClient->getIsRegister() ? "true" : "false") << std::endl;
 }
