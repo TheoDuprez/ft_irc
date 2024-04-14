@@ -62,6 +62,7 @@ public:
     void        				changeClientName(std::string oldNick, std::string newNick);
     bool        				isClientExist(const Client* client) const;
     bool        				addClient(Client* client, std::string password);
+    bool                        removeClient(std::string nickname);
     std::string 				formatClientsListAsString(void) const;
     void       					privmsg(std::vector<std::string> cmd, Client* client);
 	std::string 				createModesString(void) const;

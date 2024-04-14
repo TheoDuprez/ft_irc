@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: hleung <hleung@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:57:26 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/12 14:58:20 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/14 15:54:50 by hleung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,3 +159,12 @@ std::string Channel::createModesString(void) const
 	return modesString;
 }
 
+bool    Channel::removeClient(std::string nickname)
+{
+    clientsMapIterator it = this->_clientsDataMap.find(nickname);
+    if (it != this->_clientsDataMap.end()) {
+        delete it->second;
+        this->_clientsDataMap.erase(it);
+    }
+    return this->_clientsDataMap.empty();
+}

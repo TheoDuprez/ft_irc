@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: hleung <hleung@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/12 13:25:13 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/14 14:58:11 by hleung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,10 @@ void	Server::handleCommand(commandsVector commands, Client* client)
             topicCommand(*it, client);
 		else if (it->at(0) == "INVITE")
             inviteCommand(*it, client);
+		else if (it->at(0) == "QUIT")
+            quitCommand(*it, client);
+		else if (it->at(0) == "print")
+			printAllChannelClients();
 		else
 			std::cout << "Error: " << it->at(0) << " is not a command. Full cmd is : " << std::endl;
             for (commandTokensVector::iterator itTest = it->begin(); itTest != it->end(); itTest++)

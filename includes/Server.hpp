@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: hleung <hleung@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/12 13:29:46 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/14 14:41:53 by hleung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,8 @@ class Server
 		void									kickCommand(std::vector<std::string> cmd, Client *currentClient);
 		void									errorCommand(Client *currentClient);
 		void									topicCommand(std::vector<std::string> cmd, Client *client);
+		void									quitCommand(std::vector<std::string> cmd, Client *client);
+		void	printAllChannelClients(void);
 };
 
 #endif

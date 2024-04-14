@@ -49,7 +49,7 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
 
     /* TOPIC with args, set channel's new topic */
     if (cmdSize == 3) {
-        if (cmd[2].empty()) {
+        if (isOp && cmd[2].empty()) {
             /* Clear topic and reply with 331 */
             chanIt->second->setTopic("");
             chanIt->second->topicTime = "";
@@ -90,7 +90,6 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
 
 void    newTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, const std::string &topic, const std::string &chan)
 {
-    (void)nick;
     for (clientsMapIterator it = clientsDataMap.begin(); it != clientsDataMap.end(); it++) {
         int fd = it->second->getClient()->getClientFd();
         sendMessage(fd, ":" + nick + " TOPIC " + chan + " :" + topic);
