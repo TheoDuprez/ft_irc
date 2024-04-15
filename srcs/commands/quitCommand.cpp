@@ -32,16 +32,9 @@ void	Server::quitCommand(std::vector<std::string> cmd, Client *client)
 	delete this->_clients.at(fd); // delete the client object
 	this->_clients.erase(fd);
 	for (pollVector::iterator it = this->_pollFds.begin(); it != this->_pollFds.end();) {
-		std::cout << "TSET = " << it->fd <<  "\n";
-		pollVector::iterator itTest = it + 1;
-		if (it->fd == fd && it->fd != this->_pollFds[0].fd) {
-			this->_pollFds.erase(it);
-			it = itTest;
-		}
-		else
-			it++;
-		// (it->fd == fd) ? this->_pollFds.erase(it++) : it++;
+		(it->fd == fd) ? it = this->_pollFds.erase(it) : it++;
 	}
+	printAllChannelClients();
 }
 
 void    quitBroadcast(const clientsMap &clientsDataMap, const std::string &reason, const std::string &chan, const std::string &nick)

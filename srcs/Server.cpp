@@ -6,7 +6,7 @@
 /*   By: hleung <hleung@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/14 14:58:11 by hleung           ###   ########.fr       */
+/*   Updated: 2024/04/15 19:11:59 by hleung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,7 +195,7 @@ void	Server::clientManager(void) {
     int recvReturn;
     char buffer[MESSAGE_SIZE] = {0};
 
-    for (pollVector::iterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++) {
+    for (pollVector::iterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end() && this->_pollFds.size() > 1; it++) {
         if (it->revents & POLLIN) {
             recvReturn = recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG);
             if (recvReturn == -1)
