@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   kickCommand.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 20:28:52 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/11 22:00:58 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/14 12:07:13 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,10 @@ bool    Server::_isValidKickCommand(std::vector<std::string> cmd, Client *curren
 
 void	Server::kickCommand(std::vector<std::string> cmd, Client *currentClient)
 {
-    std::string                 message;
-    ClientInfos                   *targetOp = NULL;
-    ClientInfos                   *targetUser = NULL;
-    Channel                     *targetChannel = NULL;
+    std::string message;
+    ClientInfos *targetOp = NULL;
+    ClientInfos *targetUser = NULL;
+    Channel     *targetChannel = NULL;
 
     // --- Debug message ---
     std::cout << " ----- Input of kickCommand ----- " << std::endl;
@@ -68,12 +68,9 @@ void	Server::kickCommand(std::vector<std::string> cmd, Client *currentClient)
     } else
         message = currentClient->getNickName();
     // send kick info to all client in channel
-    sendMessage(KICK_MESSAGE_OPS(cmd[2], cmd[1], message));
-    for (clientsMap::iterator clientIt = targetChannel->getClientsList()->begin(); clientIt != targetChannel->getClientsList()->end(); clientIt++) {
-        if (clientIt->first.compare(currentClient->getNickName()))
-            sendMessage(KICK_MESSAGE_USERS(cmd[2], cmd[1], message));
-    }
-    delete (targetUser);
+    sendMessage(currentClient->getClientFd(), KICK_MESSAGE(cmd[2], cmd[1], message));
+    sendMessageToAllChannelUsers(currentClient, targetChannel, KICK_MESSAGE(cmd[2], cmd[1], message));
     targetChannel->getClientsList()->erase(cmd[2]);
+    delete (targetUser);
 
 }

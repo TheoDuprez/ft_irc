@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   macro.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 12:46:48 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/12 15:04:41 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/14 12:03:42 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #ifndef MACRO_HPP
 #define MACRO_HPP
 
+#define ERR_CHANGEERRONEUSNICKNAME( NICKNAME ) NICKNAME + " :Erroneus nickname: Illegal characters"
+#define ERR_CHANGENICKNAMEINUSE( NICKNAME ) NICKNAME + " :Nickname is already in use"
 // ERR_RPL
 #define RPL_WELCOME( CLIENT, USERNAME) ":server 001 " + CLIENT + " :Welcome to the localhost Network, " + CLIENT + "!" + USERNAME + "@localhost"
 #define RPL_INVITING( CLIENT, NICK, CHANNEL ) ":server 341 " + CLIENT + " " + NICK + " " + CHANNEL
@@ -49,11 +51,11 @@
 
 // KICK
 #define KICK_USAGE "Usage: KICK <nick> [reason], kicks the nick from the current channel (needs chanop)"
-#define KICK_MESSAGE_OPS( USER, CHANNEL, MESSAGE ) currentClient->getClientFd(), ":" + currentClient->getNickName() + " KICK " + CHANNEL + " " + USER + " " + MESSAGE
-#define KICK_MESSAGE_USERS( USER, CHANNEL, MESSAGE ) clientIt->second->getClient()->getClientFd(), ":" + currentClient->getNickName() + "!" + currentClient->getUserName() + "@localhost KICK " + CHANNEL + " " + USER + " " + MESSAGE
+#define KICK_MESSAGE( USER, CHANNEL, MESSAGE ) ":" + currentClient->getNickName() + " KICK " + CHANNEL + " " + USER + " " + MESSAGE
 
 //INVITE
 #define INVITE_USAGE "Usage: INVITE <nick> [<channel>], invites someone to a channel, by default the current channel (needs chanop)"
+#define ALREADY_INVITE( NICK, CHANNEL ) NICK + " :already invited to " + CHANNEL
 
 //TOPIC
 #define TOPIC_USAGE "Usage: TOPIC <#channel> :<topic>"

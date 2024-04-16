@@ -40,6 +40,41 @@ public:
     Channel(std::string channelName, Client* client);
     ~Channel(void);
 
+    //METHOD
+	std::string createModesString(void) const;
+    std::string formatClientsListAsString(void) const;
+    void        privmsg(std::vector<std::string> cmd, Client* client);
+    void        changeInvitedClientNick(std::string oldNick, std::string newNick);
+    void        changeChannelClientNick(std::string oldNick, std::string newNick);
+    
+    bool        addClient(Client* client, std::string password);
+
+    //Checker
+    bool    isInvitedClient(std::string const & nick) const;
+    bool    isClientExist(const Client* client) const;
+
+    //SETTER
+	void						    setModes(const std::string modes);
+	void						    setUsersLimit(const int usersLimit);
+	void						    setIsOnInvite(const bool isOnInvite);
+	void						    setHasPassword(const bool hasPassword);
+    void        				    setPassword(const std::string& password);
+	void						    setHasUsersLimit(const bool hasUsersLimit);
+    void	                        setNewInvitedClient(std::string const &clientNickName);
+
+    //GETTER
+	const std::string&			    getModes(void) const;
+    clientsMap        			    *getClientsList(void);
+    const std::string     		    &getchannelName() const;
+	const std::string&			    getPassword(void) const;
+	bool						    getIsOnInvite(void) const;
+	size_t						    getUsersLimit(void) const;
+	bool						    getHasPassword(void) const;
+	const std::string&			    getChannelName(void) const;
+	bool						    getHasUsersLimit(void) const;
+	const clientsMap&			    getClientsDataMap(void) const;
+    std::vector<std::string>        getInvitedClients(void) const;
+    ClientInfos             	    *getClientsInfoByNick(std::string nick);
     const std::string		    &getChannelName(void) const;
     ClientInfos             	*getClientsInfoByNick(std::string nick);
     clientsMap        			*getClientsList(void);

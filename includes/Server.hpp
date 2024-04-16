@@ -77,7 +77,8 @@ class Server
 		bool	_isValidUserCommand(size_t i, Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidNickCommand(Client  *currentClient, std::vector<std::string> *cmd);
 		bool    _isValidKickCommand(std::vector<std::string> cmd, Client *currentClient, ClientInfos *&targetOp, ClientInfos *&targetUser, Channel *&targetChannel);
-		bool    _isValidInviteCommand(std::vector<std::string> cmd, Client *currentClient, Channel *&targetChannel);
+		bool    _isValidInviteCommand(std::vector<std::string> cmd, Client *currentClient, Channel *targetChannel);
+		void    _nickApplyChange(std::vector<std::string> cmd, Client *currentClient);
 
         // modeCommand methods
 		void						manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode);
@@ -109,6 +110,7 @@ class Server
 		void				printLogMessage(std::string message, bool isError);
 		std::string	const	getCurrentTimeStamp(void);
 
+		void									sendMessageToAllChannelUsers(Client *currentClient, Channel *channel, std::string const &message) const;
 		std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);
 		void									handleCommand(std::vector<std::vector<std::string> > cmd, Client* client);
 		void									joinCommand(commandTokensVector cmd, Client* client);

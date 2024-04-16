@@ -81,13 +81,26 @@ bool    Channel::addClient(Client *client, std::string password)
     return false;
 }
 
-void        Channel::changeClientName(std::string oldNick, std::string newNick)
+void        Channel::changeChannelClientNick(std::string oldNick, std::string newNick)
 {
     clientsMap::iterator  clientIt;
 
     clientIt = this->_clientsDataMap.find(oldNick);
-    this->_clientsDataMap.insert(std::make_pair(newNick, clientIt->second));
-    this->_clientsDataMap.erase(oldNick);
+    if (clientIt != this->_clientsDataMap.end()) {
+        this->_clientsDataMap.insert(std::make_pair(newNick, clientIt->second));
+        this->_clientsDataMap.erase(oldNick);
+    }
+}
+
+void        Channel::changeInvitedClientNick(std::string oldNick, std::string newNick)
+{
+    std::vector<std::string>::iterator  clientIt;
+
+    clientIt = std::find(this->_invitedVector.begin(), this->_invitedVector.end(), oldNick);
+    if (clientIt != this->_invitedVector.end()) {
+        this->_invitedVector.erase(clientIt);
+        this->_invitedVector.push_back(newNick);
+    }
 }
 
 bool    Channel::isClientExist(const Client* client) const
@@ -125,9 +138,19 @@ void    Channel::setNewInvitedClient(std::string const &clientNickName)
 {
     this->_invitedVector.push_back(clientNickName);
 }
-std::vector<std::string>    Channel::getInvitedClientVector(void) const
+std::vector<std::string>    Channel::getInvitedClients(void) const
 {
     return (this->_invitedVector);
+}
+
+bool    Channel::isInvitedClient(std::string const & nick) const
+{
+    std::vector<std::string>::const_iterator    clientIt;
+
+    clientIt = std::find(this->_invitedVector.begin(), this->_invitedVector.end(), nick);
+    if (clientIt != this->_invitedVector.end())
+        return (true);
+    return (false);
 }
 
 clientsMap  *Channel::getClientsList(void)
@@ -139,8 +162,6 @@ ClientInfos   *Channel::getClientsInfoByNick(std::string nick)
 {
     clientsMap::iterator    clientIt;
 
-    for (clientsMap::iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++)
-        std::cout << "name client :" << it->first << std::endl;
     clientIt = this->_clientsDataMap.find(nick);
     if (clientIt != this->_clientsDataMap.end())
         return (clientIt->second);

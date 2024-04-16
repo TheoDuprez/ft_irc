@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:44:47 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/12 14:45:00 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/14 09:19:06 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
