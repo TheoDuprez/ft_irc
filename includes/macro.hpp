@@ -55,4 +55,9 @@
 //INVITE
 #define INVITE_USAGE "Usage: INVITE <nick> [<channel>], invites someone to a channel, by default the current channel (needs chanop)"
 
+//TOPIC
+#define TOPIC_USAGE "Usage: TOPIC <#channel> :<topic>"
+#define TOPIC_SET( NICKNAME, CHANNEL, TOPIC) ":" + NICKNAME + " TOPIC " + CHANNEL + " :" + TOPIC
+#define TOPIC_CLEAR( NICKNAME, CHANNEL ) ":" + NICKNAME + " TOPIC " + CHANNEL + " :" + ""
+
 #endif

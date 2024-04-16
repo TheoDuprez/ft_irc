@@ -57,7 +57,7 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
     /* TOPIC with args, set channel's new topic */
     if (cmdSize > 2) {
         if (cmd[2][0] != ':') {
-            sendMessage(fd, "TOPIC <#channel> :<topic>");
+            sendMessage(fd, TOPIC_USAGE);
             return ;
         }
         cmd[2] = cmd[2].substr(1);
@@ -95,7 +95,7 @@ void    newTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, c
 {
     for (clientsMapIterator it = clientsDataMap.begin(); it != clientsDataMap.end(); it++) {
         int fd = it->second->getClient()->getClientFd();
-        sendMessage(fd, ":" + nick + " TOPIC " + chan + " :" + topic);
+        sendMessage(fd, TOPIC_SET(nick, chan, topic));
     }
 }
 
@@ -103,6 +103,6 @@ void    clearTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick,
 {
      for (clientsMapIterator it = clientsDataMap.begin(); it != clientsDataMap.end(); it++) {
         int fd = it->second->getClient()->getClientFd();
-        sendMessage(fd, ":" + nick + " TOPIC " + chan + " :" + "");
+        sendMessage(fd, TOPIC_CLEAR(nick, chan));
     }
 }
