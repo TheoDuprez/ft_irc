@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/12 13:29:46 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/17 00:39:14 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@
 #define POLL_NO_TIMEOUT -1
 #define USERLEN 12
 #define TARGMAX 4
+#define MP_UNSET false
+#define MP_SET true
 #define ERROR true
 #define OK false
 #define SSTR( NUMBER ) static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << NUMBER ) ).str()
@@ -109,7 +111,7 @@ class Server
 
 		std::string const	&getServerName(void) const;
 		Channel				*getChannelByName(std::string const &name);
-		const Client		*getClientByName(const std::string& name);
+		Client				*getClientByName(const std::string& name);
         // Join methods
 		pollfd				&getPollFd(void);
 		void				printLogMessage(std::string message, bool isError);

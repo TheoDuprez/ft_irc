@@ -6,7 +6,7 @@
 /*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:12 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/14 11:25:25 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/16 23:45:59 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,20 @@ bool	Server::_isValidNickCommand(Client  *currentClient, std::vector<std::string
 
 void    Server::_nickApplyChange(std::vector<std::string> cmd, Client *currentClient)
 {
+    Client const *mpClient = NULL;
     sendMessage(currentClient->getClientFd(), RPLY_NEWNICKMESSAGE(currentClient->getNickName(), cmd[1]));
+    //sendMessage for all user who communicate by private message with the currentClient
+    for  (std::vector<Client*>::const_iterator it = currentClient->getContactedClients().begin(); it != currentClient->getContactedClients().end(); it++) {
+        mpClient = this->getClientByName((*it)->getNickName());
+        if (mpClient)
+            sendMessage(mpClient->getClientFd(), RPLY_NEWNICKMESSAGE(currentClient->getNickName(), cmd[1]));
+    }
+    //sendMessage for all channel who currentClient is present
     for (channelsMap::iterator channelIt = this->_channelsMap.begin(); channelIt != this->_channelsMap.end(); channelIt++) {
         if (channelIt->second->isClientExist(currentClient))
             this->sendMessageToAllChannelUsers(currentClient, channelIt->second, RPLY_NEWNICKMESSAGE(currentClient->getNickName(), cmd[1]));
-        //Need to put here : sendMessage for all user who communicate by private message with the currentClient
     }
+    //operate changes everywhere currentClient is
     for (channelsMap::iterator channelIt = this->_channelsMap.begin(); channelIt != this->_channelsMap.end(); channelIt++) {
         if (channelIt->second->isClientExist(currentClient) == true)
             channelIt->second->changeChannelClientNick(currentClient->getNickName(), cmd[1]);

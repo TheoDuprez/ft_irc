@@ -6,7 +6,7 @@
 /*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 22:25:29 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/14 11:01:58 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/16 23:32:20 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,31 +59,28 @@ const std::string&	Client::getRealName() const
     return (this->_realName);
 }
 
-const std::vector<std::string>&	Client::getContactedClients(void) const
+const std::vector<Client*>&	Client::getContactedClients(void) const
 {
 	return this->_contactedClients;
 }
 
-void	Client::setContactedClient(std::string nickName, bool setClient)
+void	Client::setContactedClient(Client *targetClient, bool setClient)
 {
-	std::vector<std::string>::iterator clientIt = std::find(this->_contactedClients.begin(), this->_contactedClients.end(), nickName);
+	std::vector<Client* >::iterator clientIt = std::find(this->_contactedClients.begin(), this->_contactedClients.end(), targetClient);
 
-	if (setClient)
-		this->_contactedClients.push_back(nickName);
-	else if (clientIt != this->_contactedClients.end())
+	if (setClient && clientIt == this->_contactedClients.end()) {
+		this->_contactedClients.push_back(targetClient);
+    }
+	else if (!setClient && clientIt != this->_contactedClients.end())
 		this->_contactedClients.erase(clientIt);
 }
 
-const std::string* Client::getContactedClientByNick(const std::string& nickName)
-{
-	std::vector<std::string>::iterator clientIt = std::find(this->_contactedClients.begin(), this->_contactedClients.end(), nickName);
+Client* Client::getContactedClientByNick(const std::string& nickName) const
+{    
 	for (size_t i = 0; i < this->_contactedClients.size(); i++) {
-		if (this->_contactedClients[i] == nickName)
-			return &this->_contactedClients[i];
+		if (this->_contactedClients[i]->getNickName() == nickName)
+			return this->_contactedClients[i];
 	}
-
-	if (clientIt != this->_contactedClients.end())
-		return new std::string(clientIt->data());
 	return NULL;
 }
 

@@ -32,6 +32,11 @@ void	Server::quitCommand(std::vector<std::string> cmd, Client *client)
 			i++;
 		}
 	}
+	//erase currentclient from all mpUsers concerned
+	for (clientMap::iterator clientIt = this->_clients.begin(); clientIt != this->_clients.end(); clientIt++) {
+		if (clientIt->second->getContactedClientByNick(client->getNickName()))
+			clientIt->second->setContactedClient(client, MP_UNSET);
+	}
 	sendMessage(fd, QUIT_CONNECTION);
 	close(fd); // close the fd of the current client and disconnect the socket
 	delete this->_clients.at(fd); // delete the client object

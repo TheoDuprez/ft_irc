@@ -6,7 +6,7 @@
 /*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/14 11:44:05 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/16 23:32:33 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,7 +232,7 @@ Channel				*Server::getChannelByName(std::string const &name)
 	return (NULL);
 }
 
-const Client*				Server::getClientByName(const std::string& name)
+Client*				Server::getClientByName(const std::string& name)
 {
 	for (clientMap::iterator it = this->_clients.begin(); it != this->_clients.end(); it++) {
 		if (it->second->getNickName() == name)

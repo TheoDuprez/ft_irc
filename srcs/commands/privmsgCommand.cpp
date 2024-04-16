@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   privmsgCommand.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:06 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/10 13:03:07 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/16 23:31:18 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,11 @@ void                Server::privmsgCommand(commandTokensVector cmd, Client* clie
 	}
 
 	if (getClientByName(cmd[1])) {
+		Client *targetClient = clientPtr->getContactedClientByNick(cmd[1]);
 		std::cout << "The message is : '" << message << "'" << std::endl;
 		sendMessage(getClientByName(cmd[1])->getClientFd(), ":" + clientPtr->getNickName() + " PRIVMSG " + getClientByName(cmd[1])->getNickName() + " " + message);
-		if (clientPtr->getContactedClientByNick(cmd[1]) == NULL)
-			clientPtr->setContactedClient(cmd[1], true);
+		if (targetClient == NULL)
+			clientPtr->setContactedClient(getClientByName(cmd[1]), true);
 	}
 	else if (getChannelByName(cmd[1]))
         this->_channelsMap.find(cmd[1])->second->privmsg(cmd, clientPtr);

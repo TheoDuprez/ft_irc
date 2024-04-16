@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:08:02 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/12 00:08:20 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/16 23:23:29 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ class Client
 		std::string					_userName;
 		std::string					_realName;
 		std::string					_serverPassword;
-		std::vector<std::string>	_contactedClients;
+		std::vector<Client *>		_contactedClients;
 		// Client(const Client& obj);
 		Client& operator=(const Client& obj);
 	public:
@@ -35,20 +35,20 @@ class Client
 		Client(void);
 		~Client(void);
 		
-        const int&          			getClientFd(void) const;
-		const std::string&				getNickName(void) const;
-		const std::string&				getUserName(void) const;
-		const std::string&				getRealName(void) const;
-		const std::string&				getServerPassword(void) const;
-		const std::vector<std::string>&	getContactedClients(void) const;
-		const std::string* 				getContactedClientByNick(const std::string& nickName);
-		void							setContactedClient(std::string nickName, bool setClient);
-		bool							getIsRegister(void) const;
-		void							setIsRegister(bool reg);
-		void							setServerPassword(std::string pswd);
-		void							setnickName(std::string nickName);
-		void							setuserName(std::string userName);
-		void							setrealName(std::string realName);
+        const int&          				getClientFd(void) const;
+		const std::string&					getNickName(void) const;
+		const std::string&					getUserName(void) const;
+		const std::string&					getRealName(void) const;
+		const std::string&					getServerPassword(void) const;
+		const std::vector<Client*>&			getContactedClients(void) const;
+		Client* 							getContactedClientByNick(const std::string& nickName) const;
+		void								setContactedClient(Client* targetClient, bool setClient);
+		bool								getIsRegister(void) const;
+		void								setIsRegister(bool reg);
+		void								setServerPassword(std::string pswd);
+		void								setnickName(std::string nickName);
+		void								setuserName(std::string userName);
+		void								setrealName(std::string realName);
 };
 
 #endif
