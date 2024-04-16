@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-void    quitBroadcast(const clientsMap &clientsDataMap, const std::string &reason, const std::string &chan, const std::string &nick);
+void    quitBroadcast(const clientsMap &clientsDataMap, const std::string &reason, const std::string &nick);
 
 void	Server::quitCommand(std::vector<std::string> cmd, Client *client)
 {
@@ -13,7 +13,9 @@ void	Server::quitCommand(std::vector<std::string> cmd, Client *client)
 
 	/* QUIT without arguments */
 	int fd = client->getClientFd(); // get client's fd for further use
-	// channelsMap &channels = this->_channelsMap; // get server's channlesMap for further use
+	if (cmd.size() < 2) {
+		cmd.push_back("Leaving");
+	}
 
 	/* delete client from all channels */
 	for (channelsMap::iterator i = this->_channelsMap.begin(); i != this->_channelsMap.end();) {  // iterate through all the channels on the server
@@ -21,9 +23,10 @@ void	Server::quitCommand(std::vector<std::string> cmd, Client *client)
 
 		if (i->second->removeClient(client->getNickName())) {
 			/* if channel is empty remove from channels */
+			delete i->second;
 			this->_channelsMap.erase(i++);
 		} else {
-			quitBroadcast(clients, cmd[1], i->second->getChannelName(), client->getNickName());
+			quitBroadcast(clients, cmd[1], client->getNickName());
 			i++;
 		}
 	}
@@ -34,12 +37,10 @@ void	Server::quitCommand(std::vector<std::string> cmd, Client *client)
 	for (pollVector::iterator it = this->_pollFds.begin(); it != this->_pollFds.end();) {
 		(it->fd == fd) ? it = this->_pollFds.erase(it) : it++;
 	}
-	printAllChannelClients();
 }
 
-void    quitBroadcast(const clientsMap &clientsDataMap, const std::string &reason, const std::string &chan, const std::string &nick)
+void    quitBroadcast(const clientsMap &clientsDataMap, const std::string &reason, const std::string &nick)
 {
-	(void)chan;
     for (clientsMap::const_iterator it = clientsDataMap.begin(); it != clientsDataMap.end(); it++) {
         int fd = it->second->getClient()->getClientFd();
         sendMessage(fd, ":" + nick + " QUIT " + reason);
