@@ -34,6 +34,8 @@ void                Server::privmsgCommand(commandTokensVector cmd, Client* clie
 	if (getClientByName(cmd[1])) {
 		std::cout << "The message is : '" << message << "'" << std::endl;
 		sendMessage(getClientByName(cmd[1])->getClientFd(), ":" + clientPtr->getNickName() + " PRIVMSG " + getClientByName(cmd[1])->getNickName() + " " + message);
+		if (clientPtr->getContactedClientByNick(cmd[1]) == NULL)
+			clientPtr->setContactedClient(cmd[1], true);
 	}
 	else if (getChannelByName(cmd[1]))
         this->_channelsMap.find(cmd[1])->second->privmsg(cmd, clientPtr);

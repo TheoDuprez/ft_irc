@@ -120,10 +120,12 @@ void	Server::_manageOperator(Channel* channelPtr, Client* clientPtr, std::vector
 {
 	ClientInfos* clientPrivilege;
 
-	if (channelPtr->getClientsDataMap().find(*argumentsIt) == channelPtr->getClientsDataMap().end()) // If client not found, return
+	if (channelPtr->getClientsDataMap().find(*argumentsIt) == channelPtr->getClientsDataMap().end()) {
+		argumentsIt++;
 		return ;
+	}
 
-	clientPrivilege = channelPtr->getClientsDataMap().find(*argumentsIt)->second; // Get the client
+	clientPrivilege = channelPtr->getClientsDataMap().find(*argumentsIt)->second;
 	if (adjustMode) {
 		if (!clientPrivilege->getIsOperator()) {
 			clientPrivilege->setIsOperator(true);
