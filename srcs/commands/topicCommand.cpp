@@ -12,16 +12,22 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
     std::cout << std::endl;
 
     int cmdSize = cmd.size();
+    int fd = client->getClientFd(); // get client's fd for further use
+
+    /* ERR_NEEDMOREPARAMS (461)  */
+    if (cmdSize < 2) {
+        sendMessage(fd, ":server 461 * " + cmd[0] + " :Not enough parameters");
+        this->printLogMessage("ERR_NEEDMOREPARAMS (461)\n", ERROR);
+        return ;
+    }
 
     /* Not a channel name */
-
     if (cmd[1][0] != '#' && cmd[1][0] != '&') {
         return ;
     }
 
     /* Arg is channel name (starting with # or &), check if exist */
 
-    int fd = client->getClientFd(); // get client's fd for further use
     channelsMap channels = this->_channelsMap; // access Server's channelsMap
     channelsMap::iterator chanIt = channels.find(cmd[1]); // create iterator for channelsMap
 
