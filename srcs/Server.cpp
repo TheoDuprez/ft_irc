@@ -26,6 +26,7 @@ Server::Server(char* port, std::string password): _password(password)
 		throw (std::runtime_error("Bad port"));
 	this->_port = atoi(port);
 	Server::_isServUp = false;
+	this->_stopInc = false;
 }
 
 Server::~Server(void)
@@ -209,6 +210,9 @@ void	Server::clientManager(void) {
 					this->printLogMessage(e.what(), ERROR);
 					break ;
 				}
+				catch (const QuitClientException& e) {
+					it--;
+				}
             }
         }
     }
@@ -239,3 +243,8 @@ std::string	const	&Server::getServerName(void) const
 }
 
 bool	Server::_isServUp;
+
+const char* QuitClientException::what() const throw()
+{
+	return ("");
+}

@@ -126,4 +126,10 @@ class Server
 		void	printAllChannelClients(void);
 };
 
+class QuitClientException : public std::exception
+{
+	public:
+		virtual const char* what() const throw();
+};
+
 #endif

@@ -60,4 +60,9 @@
 #define TOPIC_SET( NICKNAME, CHANNEL, TOPIC) ":" + NICKNAME + " TOPIC " + CHANNEL + " :" + TOPIC
 #define TOPIC_CLEAR( NICKNAME, CHANNEL ) ":" + NICKNAME + " TOPIC " + CHANNEL + " :" + ""
 
+//QUIT
+#define QUIT_USAGE "Usage: QUIT :[<reason>]"
+#define QUIT_CONNECTION ":server QUIT :Connection closed by server."
+#define QUIT_BROADCAST( NICKNAME, REASON ) ":" + NICKNAME + " QUIT :" + REASON
+
 #endif

@@ -13,8 +13,9 @@ void	Server::quitCommand(std::vector<std::string> cmd, Client *client)
 
 	/* QUIT without arguments */
 	int fd = client->getClientFd(); // get client's fd for further use
-	if (cmd.size() < 2) {
-		cmd.push_back("Leaving");
+	if (cmd.size() != 2 || cmd[1][0] != ':') {
+		sendMessage(fd, QUIT_USAGE);
+		return ;
 	}
 
 	/* delete client from all channels */
@@ -26,16 +27,20 @@ void	Server::quitCommand(std::vector<std::string> cmd, Client *client)
 			delete i->second;
 			this->_channelsMap.erase(i++);
 		} else {
-			quitBroadcast(clients, cmd[1], client->getNickName());
+			std::string reason = "Quit: " + cmd[1].substr(1);
+			quitBroadcast(clients, reason, client->getNickName());
 			i++;
 		}
 	}
-	sendMessage(fd, ":server QUIT : Connection closed by server.");
+	sendMessage(fd, QUIT_CONNECTION);
 	close(fd); // close the fd of the current client and disconnect the socket
 	delete this->_clients.at(fd); // delete the client object
 	this->_clients.erase(fd);
 	for (pollVector::iterator it = this->_pollFds.begin(); it != this->_pollFds.end();) {
 		(it->fd == fd) ? it = this->_pollFds.erase(it) : it++;
+		if (it == this->_pollFds.end()) {
+			throw QuitClientException();
+		}
 	}
 }
 
@@ -43,7 +48,7 @@ void    quitBroadcast(const clientsMap &clientsDataMap, const std::string &reaso
 {
     for (clientsMap::const_iterator it = clientsDataMap.begin(); it != clientsDataMap.end(); it++) {
         int fd = it->second->getClient()->getClientFd();
-        sendMessage(fd, ":" + nick + " QUIT " + reason);
+        sendMessage(fd, QUIT_BROADCAST(nick, reason));
     }
 }
 
