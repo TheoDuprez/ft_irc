@@ -36,9 +36,11 @@ void	Server::modeCommand(commandTokensVector cmd, Client* clientPtr)
 
 	modeString = cmd[2];
 	modeArguments = _fillModeArguments(cmd);
+	if (!_isValidModeString(modeString))
+		return ;
 	if (modeString[0] == '+')
 		_manageModes(modeString, modeArguments, clientPtr, getChannelByName(cmd[1]), true);
-	else if (modeString[0] == '-')
+	else
 		_manageModes(modeString, modeArguments, clientPtr, getChannelByName(cmd[1]), false);
 }
 
@@ -163,6 +165,24 @@ void	Server::_manageInvite(Channel* channelPtr, Client* clientPtr, bool adjustMo
 		channelPtr->setIsOnInvite(false);
 		_sendMessageToAllClients(channelPtr, MODE_MESSAGE_REMOVE_INVITE);
 	}
+}
+
+bool	Server::_isValidModeString(const std::string& modeString)
+{
+	std::string checkDuplicate;
+	std::string allowedChars("lkiot");
+
+	if (modeString[0] != '-' && modeString[0] != '+')
+		return false;
+	for (size_t i = 1; i < modeString.length(); i++) {
+		if (!islower(modeString[i]))
+			return false;
+		else if (allowedChars.find(modeString[i]) != std::string::npos && checkDuplicate.find(modeString[i]) == std::string::npos)
+			checkDuplicate += modeString[i];
+		else
+			return false;
+	}
+	return true;
 }
 
 void	Server::_sendMessageToAllClients(const Channel* channelPtr, const std::string& message) const
