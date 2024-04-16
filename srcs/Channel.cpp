@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Channel.hpp"
+#include "Server.hpp"
 
 // ----- Class clientInfos (used by channel and only channel) ----- //
 
@@ -65,8 +66,6 @@ const std::string&	Channel::getChannelName(void) const { return this->_channelNa
 void				Channel::setModes(const std::string modes) { this->_modes = modes; }
 
 const std::string   &Channel::getTopic(void) const { return this->_topic; }
-
-void    Channel::setTopic(std::string topic) { this->_topic = topic; }
 
 bool    Channel::addClient(Client *client, std::string password)
 {
@@ -167,4 +166,12 @@ bool    Channel::removeClient(std::string nickname)
         this->_clientsDataMap.erase(it);
     }
     return this->_clientsDataMap.empty();
+}
+
+void    Channel::setTopicInfo(const std::string &topic, const std::string &nickname)
+{
+    time_t timestamp = time(NULL);
+    this->_topic = topic;
+    this->topicTime = SSTR(timestamp);
+    this->topicAuth = nickname;
 }

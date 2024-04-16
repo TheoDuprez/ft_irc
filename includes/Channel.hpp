@@ -67,7 +67,7 @@ public:
     void       					privmsg(std::vector<std::string> cmd, Client* client);
 	std::string 				createModesString(void) const;
     const std::string     		&getTopic(void) const;
-    void                  		setTopic(std::string topic);
+    void                        setTopicInfo(const std::string &topic, const std::string &nickname);
     std::string             	topicAuth;
     std::string             	topicTime;
 };

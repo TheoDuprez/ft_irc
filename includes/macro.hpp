@@ -32,6 +32,9 @@
 #define ERR_INVALIDUSERCHAR( NAME )  "USER: \"" + NAME + "\" invalid character"
 #define RPLY_NEWNICKMESSAGE( PASTNICK, NEWNICK ) ":" + PASTNICK + " NICK " + NEWNICK
 #define RPL_INVITED( CLIENT, NICK, CHANNEL ) ":" + CLIENT + " INVITE " + NICK + " " + CHANNEL
+#define RPL_NOTOPIC( CHANNEL ) ":server 331 * " + CHANNEL + " :No topic is set"
+#define RPL_TOPIC( CHANNEL, TOPIC ) ":server 332 * " + CHANNEL + " :" + TOPIC
+#define RPL_TOPICWHOTIME( CHANNEL, AUTH, TIME ) ":server 333 * " + CHANNEL + " " + AUTH + " " + TIME
 
 // RPL
 #define RPL_CHANNELMODEIS( NICKNAME, CHANNELPTR ) ":server 324 " + NICKNAME + " " + CHANNELPTR->getChannelName() + " " + CHANNELPTR->createModesString()

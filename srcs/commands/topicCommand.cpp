@@ -1,6 +1,7 @@
 #include "Server.hpp"
 
 void    newTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, const std::string &topic, const std::string &chan);
+void    clearTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, const std::string &chan);
 
 void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
 {
@@ -13,10 +14,11 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
 
     int cmdSize = cmd.size();
     int fd = client->getClientFd(); // get client's fd for further use
+    std::string clientNick = client->getNickName(); // get client's nickname for further use
 
     /* ERR_NEEDMOREPARAMS (461)  */
     if (cmdSize < 2) {
-        sendMessage(fd, ":server 461 * " + cmd[0] + " :Not enough parameters");
+        sendMessage(fd, ERR_NEEDMOREPARAMS(clientNick, cmd[0]));
         this->printLogMessage("ERR_NEEDMOREPARAMS (461)\n", ERROR);
         return ;
     }
@@ -33,20 +35,19 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
 
     /* ERR_NOSUCHCHANNEL (403) */
     if (chanIt == channels.end()) {
-        sendMessage(fd, ":server 403 * " + cmd[1] + " :No such channel");
+        sendMessage(fd, ERR_NOSUCHCHANNEL(clientNick, cmd[1]));
         this->printLogMessage("ERR_NOSUCHCHANNEL (403)\n", ERROR);
         return ;
     }
 
     /* ↓ Channel exists ↓ */
 
-    std::string clientNick = client->getNickName(); // get client's nickname for further use
     clientsMap chanClients = *(chanIt->second->getClientsList()); // access the Channel's clientsDataMap
     clientsMapIterator chanClientsIt = chanClients.find(clientNick); // create iterator that points to current client in channel
 
     /* ERR_NOTONCHANNEL (442) (this error should only occur when new topic is provided) */
-    if (chanClientsIt == chanClients.end() && cmdSize == 3) {
-        sendMessage(fd, ":server 442 * " + cmd[1] + " :You're not on that channel");
+    if (chanClientsIt == chanClients.end() && cmdSize > 2) {
+        sendMessage(fd, ERR_NOTONCHANNEL(clientNick, cmd[1]));
         this->printLogMessage("ERR_NOTONCHANNEL (442)\n", ERROR);
         return ;
     }
@@ -54,42 +55,38 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
     bool isOp = chanClientsIt->second->getIsOperator();
 
     /* TOPIC with args, set channel's new topic */
-    if (cmdSize == 3) {
-        if (isOp && cmd[2].empty()) {
-            /* Clear topic and reply with 331 */
-            chanIt->second->setTopic("");
-            chanIt->second->topicTime = "";
-            chanIt->second->topicAuth = "";
-            sendMessage(fd, ":server 331 * " + cmd[1] + " :No topic is set");
+    if (cmdSize > 2) {
+        if (cmd[2][0] != ':') {
+            sendMessage(fd, "TOPIC <#channel> :<topic>");
             return ;
         }
+        cmd[2] = cmd[2].substr(1);
         if (isOp) {
-            /* If operator change topic and reply with 332 */
-            std::string newTopic = cmd[2].substr(1);
-            time_t timestamp = time(NULL);
-            chanIt->second->setTopic(newTopic);
-            chanIt->second->topicTime = SSTR(timestamp);
-            chanIt->second->topicAuth = clientNick;
-            newTopicBroadcast(chanClients, clientNick, newTopic, cmd[1]);
+            chanIt->second->setTopicInfo(cmd[2], clientNick);
+            if (cmd[2].empty()) {
+                clearTopicBroadcast(chanClients, clientNick, cmd[1]);
+                return ;
+            }
+            newTopicBroadcast(chanClients, clientNick, cmd[2], cmd[1]);
             return ;
         }
-        sendMessage(fd, ":server 482 * " + cmd[1] + " :You're not channel operator");
+        sendMessage(fd, ERR_CHANOPRIVSNEEDED(clientNick, cmd[1]));
         this->printLogMessage("ERR_CHANOPRIVSNEEDED (482)\n", ERROR);
         return ;
     }
 
     /* TOPIC with no args, view topic of the channel */
-    std::string topic = chanIt->second->getTopic();
+    const std::string &topic = chanIt->second->getTopic();
 
     if (cmdSize == 2) {
         if (topic.empty()) {
             /*  RPL_NOTOPIC (331)  */
-            sendMessage(fd, ":server 331 * " + cmd[1] + " :No topic is set");
+            sendMessage(fd, RPL_NOTOPIC(cmd[1]));
         } else {
             /* RPL_TOPIC (332) */
-            sendMessage(fd, ":server 332 * " + cmd[1] + " :" + topic);
+            sendMessage(fd, RPL_TOPIC(cmd[1], topic));
             /* RPL_TOPICWHOTIME (333) */
-            sendMessage(fd, ":server 333 * " + cmd[1] + " " + chanIt->second->topicAuth + " " + chanIt->second->topicTime);
+            sendMessage(fd, RPL_TOPICWHOTIME(cmd[1], chanIt->second->topicAuth, chanIt->second->topicTime));
         }
     }
 }
@@ -99,5 +96,13 @@ void    newTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, c
     for (clientsMapIterator it = clientsDataMap.begin(); it != clientsDataMap.end(); it++) {
         int fd = it->second->getClient()->getClientFd();
         sendMessage(fd, ":" + nick + " TOPIC " + chan + " :" + topic);
+    }
+}
+
+void    clearTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, const std::string &chan)
+{
+     for (clientsMapIterator it = clientsDataMap.begin(); it != clientsDataMap.end(); it++) {
+        int fd = it->second->getClient()->getClientFd();
+        sendMessage(fd, ":" + nick + " TOPIC " + chan + " :" + "");
     }
 }
