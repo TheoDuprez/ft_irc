@@ -58,6 +58,35 @@ const std::string&	Client::getRealName() const
 {
     return (this->_realName);
 }
+
+const std::vector<std::string>&	Client::getContactedClients(void) const
+{
+	return this->_contactedClients;
+}
+
+void	Client::setContactedClient(std::string nickName, bool setClient)
+{
+	std::vector<std::string>::iterator clientIt = std::find(this->_contactedClients.begin(), this->_contactedClients.end(), nickName);
+
+	if (setClient)
+		this->_contactedClients.push_back(nickName);
+	else if (clientIt != this->_contactedClients.end())
+		this->_contactedClients.erase(clientIt);
+}
+
+const std::string* Client::getContactedClientByNick(const std::string& nickName)
+{
+	std::vector<std::string>::iterator clientIt = std::find(this->_contactedClients.begin(), this->_contactedClients.end(), nickName);
+	for (size_t i = 0; i < this->_contactedClients.size(); i++) {
+		if (this->_contactedClients[i] == nickName)
+			return &this->_contactedClients[i];
+	}
+
+	if (clientIt != this->_contactedClients.end())
+		return new std::string(clientIt->data());
+	return NULL;
+}
+
 void	Client::setIsRegister(bool reg)
 {
     this->_isRegister = reg;

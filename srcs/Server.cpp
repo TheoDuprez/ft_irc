@@ -27,7 +27,6 @@ Server::Server(char* port, std::string password): _password(password)
 		throw (std::runtime_error("Bad port"));
 	this->_port = atoi(port);
 	Server::_isServUp = false;
-	this->_stopInc = false;
 }
 
 Server::~Server(void)
@@ -119,6 +118,8 @@ void	Server::handleCommand(commandsVector commands, Client* client)
 			return ;
 		if (it->at(0) == "JOIN" && client->getIsRegister())
 			joinCommand(*it, client);
+        else if (it->at(0) == "PRIVMSG" && client->getIsRegister())
+            privmsgCommand(*it, client);
         else if (it->at(0) == "MODE")
             modeCommand(*it, client);
 		else if (it->at(0) == "USER")
@@ -135,6 +136,8 @@ void	Server::handleCommand(commandsVector commands, Client* client)
             topicCommand(*it, client);
 		else if (it->at(0) == "INVITE")
             inviteCommand(*it, client);
+		else if (it->at(0) == "PART")
+			partCommand(*it, client);
 		else if (it->at(0) == "QUIT")
             quitCommand(*it, client);
 		else if (it->at(0) == "print")
@@ -197,7 +200,7 @@ void	Server::clientManager(void) {
     int recvReturn;
     char buffer[MESSAGE_SIZE] = {0};
 
-    for (pollVector::iterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end() && this->_pollFds.size() > 1; it++) {
+    for (pollVector::iterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++) {
         if (it->revents & POLLIN) {
             recvReturn = recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG);
             if (recvReturn == -1)
@@ -245,7 +248,7 @@ std::string	const	&Server::getServerName(void) const
 
 void	Server::sendMessageToAllChannelUsers(Client *currentClient, Channel *channel, std::string const &message) const
 {
-	for (clientsListMapIterator clientIt = channel->getClientsList()->begin(); clientIt != channel->getClientsList()->end(); clientIt++) {
+	for (clientsMapIterator clientIt = channel->getClientsList()->begin(); clientIt != channel->getClientsList()->end(); clientIt++) {
         Client const    *targetClient = clientIt->second->getClient();
         if (targetClient->getClientFd() != currentClient->getClientFd())
             sendMessage(targetClient->getClientFd(), message);

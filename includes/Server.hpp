@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hleung <hleung@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/14 14:41:53 by hleung           ###   ########.fr       */
+/*   Updated: 2024/04/12 13:29:46 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,18 @@ class Server
 		void    _nickApplyChange(std::vector<std::string> cmd, Client *currentClient);
 
         // modeCommand methods
-		void						manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode);
-		void						modeCommandChannel(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr);
-		std::vector<std::string>	fillModeArguments(commandTokensVector& cmd);
-		void						manageKey(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
-		void						manageUsersLimit(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
-		void						manageOperator(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
-		void						sendMessageToAllClients(const Channel* channelPtr, const std::string& message) const;
+		void						_manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode);
+		void						_modeCommandChannel(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr);
+		std::vector<std::string>	_fillModeArguments(commandTokensVector& cmd);
+		void						_manageKey(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						_manageUsersLimit(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						_manageOperator(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
+		void						_manageTopic(Channel* channelPtr, Client* client, bool adjustMode);
+		void						_manageInvite(Channel* channelPtr, Client* client, bool adjustMode);
+		void						_sendMessageToAllClients(const Channel* channelPtr, const std::string& message) const;
+
+		// partCommand methods
+		void									_leaveChannel(Client* clientPtr, Channel* channelPtr);
 
 	public:
 		Server(char* port, std::string password);
@@ -112,10 +117,11 @@ class Server
 
 		void									sendMessageToAllChannelUsers(Client *currentClient, Channel *channel, std::string const &message) const;
 		std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);
-		void									handleCommand(std::vector<std::vector<std::string> > cmd, Client* client);
-		void									joinCommand(commandTokensVector cmd, Client* client);
-		void									modeCommand(commandTokensVector cmd, Client* client);
-		void									privmsgCommand(commandTokensVector cmd, Client* client);
+		void									handleCommand(std::vector<std::vector<std::string> > cmd, Client* clientPtr);
+		void									joinCommand(commandTokensVector cmd, Client* clientPtr);
+		void									partCommand(commandTokensVector cmd, Client* clientPtr);
+		void									modeCommand(commandTokensVector cmd, Client* clientPtr);
+		void									privmsgCommand(commandTokensVector cmd, Client* clientPtr);
 		void									clientManager(void);
 		void    								inviteCommand(std::vector<std::string> cmd, Client *currentClient);
 		void									passCommand(std::vector<std::string> cmd, int fd);

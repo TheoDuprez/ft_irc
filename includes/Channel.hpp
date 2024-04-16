@@ -6,6 +6,8 @@
 #include "utils.hpp"
 #include <map>
 #include <vector>
+#include <algorithm>
+#include "macro.hpp"
 
 class ClientInfos {
 private:
@@ -30,6 +32,7 @@ private:
 	bool								_hasUsersLimit;
 	bool								_hasPassword;
 	bool								_isOnInvite;
+	bool								_isTopicOperatorMode;
     std::string                         _channelName;
     std::string                         _password;
     clientsMap                      	_clientsDataMap;
@@ -41,17 +44,18 @@ public:
     ~Channel(void);
 
     //METHOD
-	std::string createModesString(void) const;
-    std::string formatClientsListAsString(void) const;
-    void        privmsg(std::vector<std::string> cmd, Client* client);
-    void        changeInvitedClientNick(std::string oldNick, std::string newNick);
-    void        changeChannelClientNick(std::string oldNick, std::string newNick);
-    
-    bool        addClient(Client* client, std::string password);
+	std::string 					createModesString(void) const;
+    std::string 					formatClientsListAsString(void) const;
+    void        					privmsg(std::vector<std::string> cmd, Client* client);
+    void        					changeInvitedClientNick(std::string oldNick, std::string newNick);
+    void        					changeChannelClientNick(std::string oldNick, std::string newNick);
+
+    void        					addClient(Client* clientPtr, std::string password);
+    bool        					removeClient(std::string nickname);
 
     //Checker
-    bool    isInvitedClient(std::string const & nick) const;
-    bool    isClientExist(const Client* client) const;
+    bool    						isInvitedClient(std::string const & nick) const;
+    bool    						isClientExist(const Client* client) const;
 
     //SETTER
 	void						    setModes(const std::string modes);
@@ -61,6 +65,8 @@ public:
     void        				    setPassword(const std::string& password);
 	void						    setHasUsersLimit(const bool hasUsersLimit);
     void	                        setNewInvitedClient(std::string const &clientNickName);
+    void                  			setTopic(std::string topic);
+    void                        	setTopicInfo(const std::string &topic, const std::string &nickname);
 
     //GETTER
 	const std::string&			    getModes(void) const;
@@ -75,36 +81,12 @@ public:
 	const clientsMap&			    getClientsDataMap(void) const;
     std::vector<std::string>        getInvitedClients(void) const;
     ClientInfos             	    *getClientsInfoByNick(std::string nick);
-    const std::string		    &getChannelName(void) const;
-    ClientInfos             	*getClientsInfoByNick(std::string nick);
-    clientsMap        			*getClientsList(void);
-    void        				setPassword(const std::string& password);
-	void						setUsersLimit(const int usersLimit);
-	void						setHasPassword(const bool hasPassword);
-	void						setHasUsersLimit(const bool hasUsersLimit);
-	void						setIsOnInvite(const bool isOnInvite);
-	const std::string&			getPassword(void) const;
-	size_t						getUsersLimit(void) const;
-	bool						getHasPassword(void) const;
-	bool						getHasUsersLimit(void) const;
-	bool						getIsOnInvite(void) const;
-	const clientsMap&			getClientsDataMap(void) const;
-	const std::string&			getModes(void) const;
-	void						setModes(const std::string modes);
-    void	                    setNewInvitedClient(std::string const &clientNickName);
-    std::vector<std::string>    getInvitedClientVector(void) const;
+    const std::string     			&getTopic(void) const;
 
-    void        				changeClientName(std::string oldNick, std::string newNick);
-    bool        				isClientExist(const Client* client) const;
-    bool        				addClient(Client* client, std::string password);
-    bool                        removeClient(std::string nickname);
-    std::string 				formatClientsListAsString(void) const;
-    void       					privmsg(std::vector<std::string> cmd, Client* client);
-	std::string 				createModesString(void) const;
-    const std::string     		&getTopic(void) const;
-    void                        setTopicInfo(const std::string &topic, const std::string &nickname);
-    std::string             	topicAuth;
-    std::string             	topicTime;
+	void							setIsTopicOperatorMode(const bool isTopicOperatorMode);
+	bool							getIsTopicOperatorMode(void) const;
+    std::string             		topicAuth;
+    std::string             		topicTime;
 };
 
 #endif

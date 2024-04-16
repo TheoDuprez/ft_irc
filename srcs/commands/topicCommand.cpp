@@ -24,6 +24,7 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
     }
 
     /* Not a channel name */
+
     if (cmd[1][0] != '#' && cmd[1][0] != '&') {
         return ;
     }
@@ -44,6 +45,7 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
 
     clientsMap chanClients = *(chanIt->second->getClientsList()); // access the Channel's clientsDataMap
     clientsMapIterator chanClientsIt = chanClients.find(clientNick); // create iterator that points to current client in channel
+	Channel* channel = getChannelByName(cmd[1]);
 
     /* ERR_NOTONCHANNEL (442) (this error should only occur when new topic is provided) */
     if (chanClientsIt == chanClients.end() && cmdSize > 2) {
@@ -52,7 +54,7 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
         return ;
     }
 
-    bool isOp = chanClientsIt->second->getIsOperator();
+    bool isOp = !channel->getIsTopicOperatorMode() || chanClientsIt->second->getIsOperator();
 
     /* TOPIC with args, set channel's new topic */
     if (cmdSize > 2) {
