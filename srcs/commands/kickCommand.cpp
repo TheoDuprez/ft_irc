@@ -59,8 +59,9 @@ void	Server::kickCommand(std::vector<std::string> cmd, Client *currentClient)
             if (i + 1 != cmd.size())
                 message += " ";
         }
-    } else
+    } else {
         message = currentClient->getNickName();
+	}
 
 	std::vector<std::string> targetsUsersVector(split(cmd[2], ','));
 
