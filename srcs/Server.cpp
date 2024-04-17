@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/17 17:47:23 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/17 21:05:04 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,16 +203,16 @@ void	Server::clientManager(void) {
 			currentClient = this->_clients[it->fd];
 			try {
 				finalBuffer = currentClient->receiveMessage(it->fd);
-			} catch (ContinueException) {
+			} catch (const ContinueException& e) {
 				continue;
-			} catch (BreakException) {
+			} catch (const BreakException& e) {
 				close(it->fd);
 				it = this->_pollFds.erase(it);
 				break ;
 			}
 			try {
 				handleCommand(createCommandsVector(finalBuffer), this->_clients.at(it->fd));
-			} catch (QuitClientException) {
+			} catch (const QuitClientException& e) {
 				break ;
 			}
 			currentClient->clearTempBuffer();

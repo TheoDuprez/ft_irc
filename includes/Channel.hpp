@@ -58,6 +58,7 @@ public:
     bool    						isClientExist(const Client* client) const;
 
     //SETTER
+    void                            unsetInvitedClients(std::string const &nick);
 	void						    setModes(const std::string modes);
 	void						    setUsersLimit(const int usersLimit);
 	void						    setIsOnInvite(const bool isOnInvite);

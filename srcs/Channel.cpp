@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:57:26 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/17 19:07:03 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/17 21:03:51 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,4 +218,11 @@ void    Channel::setTopicInfo(const std::string &topic, const std::string &nickn
     this->_topic = topic;
     this->topicTime = SSTR(timestamp);
     this->topicAuth = nickname;
+}
+
+void    Channel::unsetInvitedClients(std::string const &nick)
+{
+    std::vector<std::string>::iterator    it = std::find(this->_invitedVector.begin(), this->_invitedVector.end(), nick);
+    if (it != this->_invitedVector.end())
+        this->_invitedVector.erase(it);
 }
