@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 22:25:29 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/16 23:32:20 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/17 17:33:33 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,43 @@ Client::Client(void)
 Client::~Client(void)
 {
 
+}
+
+bool	Client::isValidBuffer(const std::string tmpBuffer)
+{
+	if (tmpBuffer[tmpBuffer.length() - 1] != '\n')
+		return false;
+	return true;
+}
+
+std::string const&	Client::receiveMessage(int fd)
+{
+    int 		recvReturn;
+    char 		buffer[MESSAGE_SIZE] = {0};
+    
+    recvReturn = recv(fd, &buffer, MESSAGE_SIZE - 2 - this->_tempBuffer.size(), NO_FLAG);
+    if (recvReturn == -1)
+        throw (std::runtime_error(strerror(errno)));
+    else if (recvReturn == 0) {
+        throw BreakException();
+	}
+    else {
+		if (!isValidBuffer(buffer) && std::string(buffer).size() != MESSAGE_SIZE - 2) {
+			this->_tempBuffer += buffer;
+			if (this->_tempBuffer.size() != MESSAGE_SIZE - 2)
+                throw ContinueException();
+		}
+		if (this->_tempBuffer.size() != MESSAGE_SIZE - 2)
+			this->_tempBuffer += buffer;
+		if (this->_tempBuffer.find('\n') == std::string::npos)
+			this->_tempBuffer += "\r\n";
+    }
+    return (_tempBuffer);
+}
+
+void	Client::clearTempBuffer(void)
+{
+    this->_tempBuffer.clear();
 }
 
 const int&          Client::getClientFd(void) const
@@ -107,4 +144,14 @@ void	Client::setuserName(std::string userName)
 void	Client::setrealName(std::string realName)
 {
     this->_realName = realName;
+}
+
+const char* ContinueException::what() const throw()
+{
+	return ("");
+}
+
+const char* BreakException::what() const throw()
+{
+	return ("");
 }

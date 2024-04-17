@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   userCommand.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:02 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/14 12:51:18 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/17 17:48:03 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,12 +97,6 @@ bool	Server::_isValidUserCommand(size_t i, Client  *currentClient, std::vector<s
 
 void	Server::userCommand(std::vector<std::string> cmd, int fd)
 {
-    // --- Debug message ---
-    std::cout << " ----- Input of userCommand ----- " << std::endl;
-    for (size_t i = 0; i < cmd.size(); i++)
-        std::cout << cmd[i] << " ";
-    std::cout << std::endl;
-    // ---------------------
     Client	*currentClient = this->_clients[fd];
 
     if (currentClient->getIsRegister() == true) {

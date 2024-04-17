@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/16 23:32:33 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/17 17:47:23 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,8 +140,6 @@ void	Server::handleCommand(commandsVector commands, Client* client)
 			partCommand(*it, client);
 		else if (it->at(0) == "QUIT")
             quitCommand(*it, client);
-		else if (it->at(0) == "print")
-			printAllChannelClients();
 		else
 			std::cout << "Error: " << it->at(0) << " is not a command. Full cmd is : " << std::endl;
             for (commandTokensVector::iterator itTest = it->begin(); itTest != it->end(); itTest++)
@@ -197,27 +195,27 @@ std::string	const	Server::getCurrentTimeStamp(void)
 }
 
 void	Server::clientManager(void) {
-    int recvReturn;
-    char buffer[MESSAGE_SIZE] = {0};
+	Client		*currentClient;
+	std::string	finalBuffer;
 
     for (pollVector::iterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++) {
         if (it->revents & POLLIN) {
-            recvReturn = recv(it->fd, &buffer, MESSAGE_SIZE, NO_FLAG);
-            if (recvReturn == -1)
-                throw (std::runtime_error(strerror(errno)));
-            else if (recvReturn == 0)
-                break;
-            else {
-				try {
-					handleCommand(createCommandsVector(buffer), this->_clients.at(it->fd));
-				} catch (const std::runtime_error &e) {
-					this->printLogMessage(e.what(), ERROR);
-					break ;
-				}
-				catch (const QuitClientException& e) {
-					it--;
-				}
-            }
+			currentClient = this->_clients[it->fd];
+			try {
+				finalBuffer = currentClient->receiveMessage(it->fd);
+			} catch (ContinueException) {
+				continue;
+			} catch (BreakException) {
+				close(it->fd);
+				it = this->_pollFds.erase(it);
+				break ;
+			}
+			try {
+				handleCommand(createCommandsVector(finalBuffer), this->_clients.at(it->fd));
+			} catch (QuitClientException) {
+				break ;
+			}
+			currentClient->clearTempBuffer();
         }
     }
 }

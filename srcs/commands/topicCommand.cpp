@@ -5,13 +5,6 @@ void    clearTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick,
 
 void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
 {
-    // --- Debug message ---
-    std::cout << std::endl;
-    std::cout << " ----- Input of topicCommand ----- " << std::endl;
-    for (size_t i = 0; i < cmd.size(); i++)
-        std::cout << cmd[i] << " ";
-    std::cout << std::endl;
-
     int cmdSize = cmd.size();
     int fd = client->getClientFd(); // get client's fd for further use
     std::string clientNick = client->getNickName(); // get client's nickname for further use

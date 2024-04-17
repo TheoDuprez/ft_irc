@@ -4,12 +4,6 @@ void    quitBroadcast(const clientsMap &clientsDataMap, const std::string &reaso
 
 void	Server::quitCommand(std::vector<std::string> cmd, Client *client)
 {
-	 // --- Debug message ---
-    std::cout << std::endl;
-    std::cout << " ----- Input of quitCommand ----- " << std::endl;
-    for (size_t i = 0; i < cmd.size(); i++)
-        std::cout << cmd[i] << " ";
-    std::cout << std::endl;
 
 	/* QUIT without arguments */
 	int fd = client->getClientFd(); // get client's fd for further use
@@ -55,23 +49,4 @@ void    quitBroadcast(const clientsMap &clientsDataMap, const std::string &reaso
         int fd = it->second->getClient()->getClientFd();
         sendMessage(fd, QUIT_BROADCAST(nick, reason));
     }
-}
-
-void	Server::printAllChannelClients()
-{
-	for (channelsMap::iterator it = this->_channelsMap.begin(); it != this->_channelsMap.end(); ++it) {
-		std::cout << "Channel is : " << it->second->getChannelName() << std::endl;
-		const clientsMap &clients = it->second->getClientsDataMap();
- 		for (clientsMap::const_iterator j = clients.begin(); j != clients.end(); j++) {
-			std::cout << j->second->getClient()->getNickName() << std::endl;
-		}
-	}
-	std::cout << "server's clients" << std::endl;
-	for (clientMap::iterator it = this->_clients.begin(); it != this->_clients.end(); ++it) {
-		std::cout << it->second->getNickName() << std::endl;
-	}
-	std::cout << "server's pollfd" << std::endl;
-	for (pollVector::iterator it = this->_pollFds.begin(); it != this->_pollFds.end(); it++) {
-		std::cout << it->fd <<std::endl;
-	}
 }

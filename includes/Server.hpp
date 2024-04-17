@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/17 00:39:14 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/17 17:47:32 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 #include <csignal> // For signal function
 #include <cstdlib>
 #include <sstream>
-#include <errno.h>
 #include <limits>
 #include <unistd.h>
 #include <poll.h>
@@ -35,8 +34,6 @@
 #include "macro.hpp"
 
 #define IP 0
-#define NO_FLAG 0
-#define MESSAGE_SIZE 512
 #define PENDING_QUEUE 50
 #define POLL_NO_TIMEOUT -1
 #define USERLEN 12
@@ -62,6 +59,7 @@ typedef std::map<std::string, Channel*>			channelsMap;
 class Server
 {
 	private:
+		std::string		_cmdBuffer;
 		std::ofstream	_logFile;
 		clientMap		_clients;
 		pollVector		_pollFds;
@@ -72,7 +70,6 @@ class Server
 		std::string		_serverName;
 		static bool		_isServUp;
         channelsMap     _channelsMap;
-		std::string 	_tempBuffer;
 
 		bool	_isValidUserName(Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidRealName(Client  *currentClient, std::vector<std::string> *cmd);
@@ -118,6 +115,7 @@ class Server
 		void				printLogMessage(std::string message, bool isError);
 		std::string	const	getCurrentTimeStamp(void);
 
+		bool									isValidBuffer(const std::string tmpBuffer);
 		void									sendMessageToAllChannelUsers(Client *currentClient, Channel *channel, std::string const &message) const;
 		std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);
 		void									handleCommand(std::vector<std::vector<std::string> > cmd, Client* clientPtr);
@@ -134,7 +132,6 @@ class Server
 		void									errorCommand(Client *currentClient);
 		void									topicCommand(std::vector<std::string> cmd, Client *client);
 		void									quitCommand(std::vector<std::string> cmd, Client *client);
-		void	printAllChannelClients(void);
 };
 
 class QuitClientException : public std::exception

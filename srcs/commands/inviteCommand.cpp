@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   inviteCommand.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 12:38:25 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/14 10:48:25 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/17 17:45:04 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,16 +39,9 @@ bool    Server::_isValidInviteCommand(std::vector<std::string> cmd, Client *curr
 
 void    Server::inviteCommand(std::vector<std::string> cmd, Client *currentClient)
 {
-    // --- Debug message ---
-    std::cout << " ----- Input of inviteCommand ----- " << std::endl;
-    for (size_t i = 0; i < cmd.size(); i++)
-        std::cout << cmd[i] << " ";
-    std::cout << std::endl;
-    // ---------------------
     if (cmd.size() <= 2) {
         if (cmd.size() == 1) {
             //check if invite list is not empty here, if not send the invite list
-            // if ()
             sendMessage(currentClient->getClientFd(), INVITE_USAGE);
         } else {
             //Maybe is the bad send here
