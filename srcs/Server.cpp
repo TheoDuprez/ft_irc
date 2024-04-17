@@ -203,16 +203,16 @@ void	Server::clientManager(void) {
 			currentClient = this->_clients[it->fd];
 			try {
 				finalBuffer = currentClient->receiveMessage(it->fd);
-			} catch (ContinueException) {
+			} catch (const ContinueException& e) {
 				continue;
-			} catch (BreakException) {
+			} catch (const BreakException& e) {
 				close(it->fd);
 				it = this->_pollFds.erase(it);
 				break ;
 			}
 			try {
 				handleCommand(createCommandsVector(finalBuffer), this->_clients.at(it->fd));
-			} catch (QuitClientException) {
+			} catch (const QuitClientException& e) {
 				break ;
 			}
 			currentClient->clearTempBuffer();

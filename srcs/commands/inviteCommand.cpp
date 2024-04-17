@@ -50,6 +50,7 @@ void    Server::inviteCommand(std::vector<std::string> cmd, Client *currentClien
         return ;
     }
     Channel *   targetChannel =  this->getChannelByName(cmd[2]);
+
     if (_isValidInviteCommand(cmd, currentClient, targetChannel) == false)
         return ;
     Client const  *targetClient = this->getClientByName(cmd[1]);

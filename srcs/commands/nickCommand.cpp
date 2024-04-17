@@ -24,7 +24,7 @@ bool	Server::_isValidNickCommand(Client  *currentClient, std::vector<std::string
     // Check if nick already exist
     if (this->getClientByName((*cmd)[1])) {
         if (currentClient->getNickName().empty())
-            sendMessage(currentClient->getClientFd(), ERR_NICKNAMEINUSE(this->getServerName(), (*cmd)[1]));
+            sendMessage(currentClient->getClientFd(), ERR_NICKNAMEINUSE((*cmd)[1], this->getServerName()));
         else
             sendMessage(currentClient->getClientFd(), ERR_CHANGENICKNAMEINUSE((*cmd)[1]));
         return false;

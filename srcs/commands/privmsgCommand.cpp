@@ -31,14 +31,18 @@ void                Server::privmsgCommand(commandTokensVector cmd, Client* clie
 			message += " ";
 	}
 
-	if (getClientByName(cmd[1])) {
-		Client *targetClient = clientPtr->getContactedClientByNick(cmd[1]);
-		sendMessage(getClientByName(cmd[1])->getClientFd(), ":" + clientPtr->getNickName() + " PRIVMSG " + getClientByName(cmd[1])->getNickName() + " " + message);
-		if (targetClient == NULL)
-			clientPtr->setContactedClient(getClientByName(cmd[1]), true);
+	std::vector<std::string> targetsName(split(cmd[1], ','));
+
+	for (std::vector<std::string>::iterator targetsIt = targetsName.begin(); targetsIt != targetsName.end(); targetsIt++) {
+		if (getClientByName(*targetsIt)) {
+			Client *targetClient = clientPtr->getContactedClientByNick(*targetsIt);
+			sendMessage(getClientByName(*targetsIt)->getClientFd(), ":" + clientPtr->getNickName() + " PRIVMSG " + getClientByName(*targetsIt)->getNickName() + " " + message);
+			if (targetClient == NULL)
+				clientPtr->setContactedClient(getClientByName(*targetsIt), true);
+		}
+		else if (getChannelByName(*targetsIt))
+			this->_channelsMap.find(*targetsIt)->second->privmsg(cmd, clientPtr);
+		else
+			sendMessage(clientPtr->getClientFd(), ERR_NOSUCHNICK(clientPtr->getNickName(), *targetsIt));
 	}
-	else if (getChannelByName(cmd[1]))
-        this->_channelsMap.find(cmd[1])->second->privmsg(cmd, clientPtr);
-	else
-		sendMessage(clientPtr->getClientFd(), ERR_NOSUCHNICK(clientPtr->getNickName(), cmd[1]));
 }

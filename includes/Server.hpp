@@ -71,11 +71,12 @@ class Server
 		static bool		_isServUp;
         channelsMap     _channelsMap;
 
+
 		bool	_isValidUserName(Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidRealName(Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidUserCommand(size_t i, Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidNickCommand(Client  *currentClient, std::vector<std::string> *cmd);
-		bool    _isValidKickCommand(std::vector<std::string> cmd, Client *currentClient, ClientInfos *&targetOp, ClientInfos *&targetUser, Channel *&targetChannel);
+		bool    _isValidKickCommand(std::vector<std::string> cmd, Client *currentClient, ClientInfos *&targetOp, Channel *&targetChannel);
 		bool    _isValidInviteCommand(std::vector<std::string> cmd, Client *currentClient, Channel *targetChannel);
 		void    _nickApplyChange(std::vector<std::string> cmd, Client *currentClient);
 
