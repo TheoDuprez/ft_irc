@@ -86,6 +86,7 @@ class Server
 		void						_manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode);
 		void						_modeCommandChannel(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr);
 		std::vector<std::string>	_fillModeArguments(commandTokensVector& cmd);
+		bool						_isValidModeString(const std::string& modeString);
 		void						_manageKey(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
 		void						_manageUsersLimit(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
 		void						_manageOperator(Channel* channelPtr, Client* client, std::vector<std::string>::iterator& argumentsIt, bool adjustMode);
@@ -94,7 +95,7 @@ class Server
 		void						_sendMessageToAllClients(const Channel* channelPtr, const std::string& message) const;
 
 		// partCommand methods
-		void									_leaveChannel(Client* clientPtr, Channel* channelPtr);
+		void						_leaveChannel(Client* clientPtr, Channel* channelPtr);
 
 	public:
 		Server(char* port, std::string password);

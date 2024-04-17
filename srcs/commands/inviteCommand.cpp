@@ -30,7 +30,10 @@ bool    Server::_isValidInviteCommand(std::vector<std::string> cmd, Client *curr
         sendMessage(currentClient->getClientFd(), ERR_USERONCHANNEL(currentClient->getNickName(), cmd[1], cmd[2]));
         return false; 
     }
-    //here put a check for know if channel is on mode invite only and currentclient is operator, if not send 'ERR_CHANOPRIVSNEEDED'
+	if (targetChannel->getIsOnInvite() && !targetChannel->getClientsInfoByNick(currentClient->getNickName())->getIsOperator()) {
+		sendMessage(currentClient->getClientFd(), ERR_CHANOPRIVSNEEDED(currentClient->getNickName(), targetChannel->getChannelName()));
+		return false;
+	}
     return true;
 }
 
