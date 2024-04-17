@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:15 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/10 16:28:05 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/17 19:06:46 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	Server::joinCommand(commandTokensVector cmd, Client* clientPtr)
 {
-	std::vector<std::string>			channelsNameList; // Les problemes
+	std::vector<std::string>			channelsNameList;
 	std::vector<std::string>::iterator	nameIt;
 	std::vector<std::string>			channelsPasswordList;
 	std::vector<std::string>::iterator	passwordIt;
@@ -33,8 +33,8 @@ void	Server::joinCommand(commandTokensVector cmd, Client* clientPtr)
 	for (; nameIt != channelsNameList.end(); nameIt++) {
 		password = (passwordIt != channelsPasswordList.end()) ? *(passwordIt++) : "";
 
-		if (nameIt->at(0) != '#') {
-			sendMessage(clientPtr->getClientFd(), ERR_NOSUCHCHANNEL(clientPtr->getNickName(), *nameIt));
+		if (nameIt->at(0) != '#' || nameIt->find(':') != std::string::npos) {
+			sendMessage(clientPtr->getClientFd(), ERR_BADCHANNMASK(*nameIt));
 		}
 		else if (this->_channelsMap.find(*nameIt) == this->_channelsMap.end()) {
 			this->_channelsMap.insert(std::make_pair(*nameIt, new Channel(*nameIt, clientPtr)));

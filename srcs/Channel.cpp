@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:57:26 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/12 14:58:20 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/17 19:07:03 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,6 @@ std::string Channel::formatClientsListAsString(void) const
 
 void        Channel::privmsg(std::vector<std::string> cmd, Client *clientPtr)
 {
-//    sendMessage(client->getClientFd())
     for (clientsMap::iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++) {
         if (it->second->getClient() != clientPtr)
             sendMessage(it->second->getClient()->getClientFd(), ":" + clientPtr->getNickName() + " PRIVMSG " + this->_channelName + " :" +  cmd.at(2).substr(1, cmd.at(2).length()));

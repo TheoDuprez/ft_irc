@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   macro.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 12:46:48 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/14 12:03:42 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/17 19:00:45 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,9 @@
 // ERR_RPL
 #define RPL_WELCOME( CLIENT, USERNAME) ":server 001 " + CLIENT + " :Welcome to the localhost Network, " + CLIENT + "!" + USERNAME + "@localhost"
 #define RPL_INVITING( CLIENT, NICK, CHANNEL ) ":server 341 " + CLIENT + " " + NICK + " " + CHANNEL
-#define ERR_NOSUCHNICK( CLIENT, CHANNEL ) ":server 401 " + CLIENT + " " + CHANNEL + " :No such nick/channel" // Should be error 401 ?
+#define ERR_NOSUCHNICK( CLIENT, CHANNEL ) ":server 401 " + CLIENT + " " + CHANNEL + " :No such nick/channel"
 #define ERR_NOSUCHCHANNEL( CLIENT, CHANNEL ) ":server 403 " + CLIENT + " " + CHANNEL + " :No such channel"
+#define ERR_BADCHANNMASK( CHANNEL ) ":server 476 " + CHANNEL + " :Bad Channel Mask"
 #define ERR_NORECIPIENT( COMMAND ) ":server 411 * :No recipient given (" + COMMAND + ")"
 #define ERR_NONICKNAMEGIVEN( CLIENT ) ":server 431 * "  + CLIENT + " :No nickname given"
 #define ERR_ERRONEUSNICKNAME( CLIENT, NICKNAME ) ":server 432 * " + CLIENT + " " + NICKNAME + " :Erroneus nickname"
