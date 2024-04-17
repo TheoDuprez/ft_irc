@@ -26,6 +26,10 @@ void	Server::quitCommand(std::vector<std::string> cmd, Client *client)
 			i++;
 		}
 	}
+	for (channelsMap::iterator channelIt = this->_channelsMap.begin(); channelIt != this->_channelsMap.end(); channelIt++) {
+		if (channelIt->second->isInvitedClient(client->getNickName()) == true)
+			channelIt->second->unsetInvitedClients(client->getNickName());
+	}
 	//erase currentclient from all mpUsers concerned
 	for (clientMap::iterator clientIt = this->_clients.begin(); clientIt != this->_clients.end(); clientIt++) {
 		if (clientIt->second->getContactedClientByNick(client->getNickName()))
