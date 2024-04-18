@@ -54,7 +54,6 @@ void	Bot::receiveMessage()
 	while (this->_isBotUp)
 	{
 		if (poll(&this->_pollfd, 1, POLL_NO_TIMEOUT) == -1 && this->_isBotUp) {
-			std::cout << "this\n";
 				throw (std::runtime_error(strerror(errno)));
 		}
 		else if (this->_pollfd.revents & POLLIN) {
@@ -69,7 +68,6 @@ void	Bot::receiveMessage()
 				break;
 			}
 			else {
-				std::cout << "Buffer = " << buffer << std::endl;
 				if (std::string(buffer).find("#gigachan") != std::string::npos) {
 					if (std::string(buffer).find("!GIGACHAT") != std::string::npos)
 						sendMessage(this->_pollfd.fd, "PRIVMSG " + this->_channel + " :" + createGigaChatSentence());
