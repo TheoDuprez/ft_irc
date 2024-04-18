@@ -212,7 +212,7 @@ void	Server::clientManager(void) {
 				cmd.push_back(":");
 				try {
 					quitCommand(cmd, this->_clients[it->fd]);
-				} catch (QuitClientException) {
+				} catch (const QuitClientException& e) {
 					break ;
 				}
 				close(it->fd);

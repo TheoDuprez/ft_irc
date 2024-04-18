@@ -17,11 +17,11 @@
 
 ClientInfos::ClientInfos(Client *clientPtr, bool isOperator): _client(clientPtr), _isOperator(isOperator) {}
 
-const Client* ClientInfos::getClient(void) const { return this->_client; }
-
 const bool& ClientInfos::getIsOperator(void) const { return this->_isOperator; }
 
 void ClientInfos::setIsOperator(bool isOperator) { this->_isOperator = isOperator; }
+
+const Client* ClientInfos::getClient(void) const { return this->_client; }
 
 // ----- Class Channel ----- //
 
@@ -38,41 +38,7 @@ Channel::~Channel(void) {
         delete (clientIt->second);
 }
 
-void    			Channel::setPassword(const std::string& password) { this->_password = password; }
-
-void				Channel::setUsersLimit(const int usersLimit) { this->_usersLimit = usersLimit; }
-
-void				Channel::setHasPassword(const bool hasPassword) { this->_hasPassword = hasPassword; }
-
-void				Channel::setHasUsersLimit(const bool hasUsersLimit) { this->_hasUsersLimit = hasUsersLimit; }
-
-void				Channel::setIsOnInvite(const bool isOnInvite) { this->_isOnInvite = isOnInvite; }
-
-void				Channel::setIsTopicOperatorMode(const bool isTopicOperatorMode ) { this->_isTopicOperatorMode = isTopicOperatorMode; }
-
-const std::string&	Channel::getPassword(void) const { return this->_password; }
-
-size_t				Channel::getUsersLimit(void) const { return this->_usersLimit; }
-
-bool				Channel::getHasPassword(void) const { return this->_hasPassword; }
-
-bool				Channel::getHasUsersLimit(void) const { return this->_hasUsersLimit; }
-
-bool				Channel::getIsOnInvite(void) const { return this->_isOnInvite; }
-
-bool				Channel::getIsTopicOperatorMode(void) const { return this->_isTopicOperatorMode; }
-
-const clientsMap&	Channel::getClientsDataMap(void) const { return this->_clientsDataMap; }
-
-const std::string&	Channel::getModes(void) const { return this->_modes; }
-
-const std::string&	Channel::getChannelName(void) const { return this->_channelName; }
-
-void				Channel::setModes(const std::string modes) { this->_modes = modes; }
-
-const std::string   &Channel::getTopic(void) const { return this->_topic; }
-
-void    Channel::setTopic(std::string topic) { this->_topic = topic; }
+// METHODS
 
 void    Channel::addClient(Client *clientPtr, std::string password)
 {
@@ -101,6 +67,18 @@ void    Channel::addClient(Client *clientPtr, std::string password)
 	sendMessage(clientPtr->getClientFd(), JOIN_ENDOFNAMES);
 }
 
+bool    Channel::removeClient(std::string nickname)
+{
+	clientsMapIterator it = this->_clientsDataMap.find(nickname);
+	if (it != this->_clientsDataMap.end()) {
+		delete it->second;
+		this->_clientsDataMap.erase(it);
+	}
+	return this->_clientsDataMap.empty();
+}
+
+// For nick command
+
 void        Channel::changeChannelClientNick(std::string oldNick, std::string newNick)
 {
     clientsMap::iterator  clientIt;
@@ -123,29 +101,9 @@ void        Channel::changeInvitedClientNick(std::string oldNick, std::string ne
     }
 }
 
-bool    Channel::isClientExist(const Client* clientPtr) const
-{
-    for (clientsMap::const_iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++) {
-        if (it->second->getClient() == clientPtr)
-            return true;
-    }
-    return false;
-}
+// For privmsg command
 
-std::string Channel::formatClientsListAsString(void) const
-{
-    std::string retClientsList;
-    for (clientsMap::const_iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end();) {
-        if (it->second->getIsOperator())
-            retClientsList += "@";
-        retClientsList += it->first;
-        if (++it != this->_clientsDataMap.end())
-            retClientsList += " ";
-    }
-    return retClientsList;
-}
-
-void        Channel::privmsg(std::vector<std::string> cmd, Client *clientPtr)
+void        Channel::privmsg(std::vector<std::string> cmd, Client* clientPtr)
 {
 	std::string message;
 
@@ -160,39 +118,22 @@ void        Channel::privmsg(std::vector<std::string> cmd, Client *clientPtr)
     }
 }
 
-void    Channel::setNewInvitedClient(std::string const &clientNickName)
-{
-    this->_invitedVector.push_back(clientNickName);
-}
-std::vector<std::string>    Channel::getInvitedClients(void) const
-{
-    return (this->_invitedVector);
-}
+// For join command
 
-bool    Channel::isInvitedClient(std::string const & nick) const
+std::string Channel::formatClientsListAsString(void) const
 {
-    std::vector<std::string>::const_iterator    clientIt;
-
-    clientIt = std::find(this->_invitedVector.begin(), this->_invitedVector.end(), nick);
-    if (clientIt != this->_invitedVector.end())
-        return (true);
-    return (false);
+    std::string retClientsList;
+    for (clientsMap::const_iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end();) {
+        if (it->second->getIsOperator())
+            retClientsList += "@";
+        retClientsList += it->first;
+        if (++it != this->_clientsDataMap.end())
+            retClientsList += " ";
+    }
+    return retClientsList;
 }
 
-clientsMap  *Channel::getClientsList(void)
-{
-    return (&this->_clientsDataMap);
-}
-
-ClientInfos   *Channel::getClientsInfoByNick(std::string nick)
-{
-    clientsMap::iterator    clientIt;
-
-    clientIt = this->_clientsDataMap.find(nick);
-    if (clientIt != this->_clientsDataMap.end())
-        return (clientIt->second);
-    return (NULL);
-}
+// For mode command
 
 std::string Channel::createModesString(void) const
 {
@@ -209,17 +150,57 @@ std::string Channel::createModesString(void) const
 	return modesString;
 }
 
-bool    Channel::removeClient(std::string nickname)
+// For quit command
+
+void    Channel::unsetInvitedClients(const std::string& nick)
 {
-    clientsMapIterator it = this->_clientsDataMap.find(nickname);
-    if (it != this->_clientsDataMap.end()) {
-        delete it->second;
-        this->_clientsDataMap.erase(it);
-    }
-    return this->_clientsDataMap.empty();
+    std::vector<std::string>::iterator    it = std::find(this->_invitedVector.begin(), this->_invitedVector.end(), nick);
+    if (it != this->_invitedVector.end())
+        this->_invitedVector.erase(it);
 }
 
-void    Channel::setTopicInfo(const std::string &topic, const std::string &nickname)
+// CHECKERS
+
+bool    Channel::isInvitedClient(const std::string& nick) const
+{
+    std::vector<std::string>::const_iterator    clientIt;
+
+    clientIt = std::find(this->_invitedVector.begin(), this->_invitedVector.end(), nick);
+    if (clientIt != this->_invitedVector.end())
+        return (true);
+    return (false);
+}
+
+bool    Channel::isClientExist(const Client* clientPtr) const
+{
+    for (clientsMap::const_iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++) {
+        if (it->second->getClient() == clientPtr)
+            return true;
+    }
+    return false;
+}
+
+// SETTERS
+
+void    Channel::setPassword(const std::string& password) { this->_password = password; }
+
+void	Channel::setUsersLimit(const int usersLimit) { this->_usersLimit = usersLimit; }
+
+void	Channel::setHasPassword(const bool hasPassword) { this->_hasPassword = hasPassword; }
+
+void	Channel::setHasUsersLimit(const bool hasUsersLimit) { this->_hasUsersLimit = hasUsersLimit; }
+
+void	Channel::setIsOnInvite(const bool isOnInvite) { this->_isOnInvite = isOnInvite; }
+
+void	Channel::setIsTopicOperatorMode(const bool isTopicOperatorMode ) { this->_isTopicOperatorMode = isTopicOperatorMode; }
+
+void	Channel::setModes(const std::string modes) { this->_modes = modes; }
+
+void    Channel::setTopic(std::string topic) { this->_topic = topic; }
+
+void    Channel::setNewInvitedClient(const std::string& clientNickName) { this->_invitedVector.push_back(clientNickName); }
+
+void    Channel::setTopicInfo(const std::string& topic, const std::string& nickname)
 {
     time_t timestamp = time(NULL);
     this->_topic = topic;
@@ -227,9 +208,38 @@ void    Channel::setTopicInfo(const std::string &topic, const std::string &nickn
     this->topicAuth = nickname;
 }
 
-void    Channel::unsetInvitedClients(std::string const &nick)
+// GETTERS
+
+const std::string&			Channel::getPassword(void) const { return this->_password; }
+
+size_t						Channel::getUsersLimit(void) const { return this->_usersLimit; }
+
+bool						Channel::getHasPassword(void) const { return this->_hasPassword; }
+
+bool						Channel::getHasUsersLimit(void) const { return this->_hasUsersLimit; }
+
+bool						Channel::getIsOnInvite(void) const { return this->_isOnInvite; }
+
+bool						Channel::getIsTopicOperatorMode(void) const { return this->_isTopicOperatorMode; }
+
+const std::string&			Channel::getModes(void) const { return this->_modes; }
+
+const std::string&			Channel::getTopic(void) const { return this->_topic; }
+
+const clientsMap&			Channel::getClientsDataMap(void) const { return this->_clientsDataMap; }
+
+std::vector<std::string>    Channel::getInvitedClients(void) const { return this->_invitedVector; }
+
+const std::string&			Channel::getChannelName(void) const { return this->_channelName; }
+
+clientsMap*					Channel::getClientsList(void) { return &this->_clientsDataMap; }
+
+ClientInfos*	Channel::getClientsInfoByNick(std::string nick)
 {
-    std::vector<std::string>::iterator    it = std::find(this->_invitedVector.begin(), this->_invitedVector.end(), nick);
-    if (it != this->_invitedVector.end())
-        this->_invitedVector.erase(it);
+    clientsMap::iterator    clientIt;
+
+    clientIt = this->_clientsDataMap.find(nick);
+    if (clientIt != this->_clientsDataMap.end())
+        return (clientIt->second);
+    return (NULL);
 }
