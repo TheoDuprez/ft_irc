@@ -64,6 +64,7 @@ void	Server::launchServer(void)
 		throw (std::runtime_error(strerror(errno)));
 	this->_isServUp = true;
 	std::signal(SIGINT, Server::stopServer);
+	std::signal(SIGPIPE, SIG_IGN);
 	serverLoop();
 }
 
@@ -197,6 +198,7 @@ std::string	const	Server::getCurrentTimeStamp(void)
 void	Server::clientManager(void) {
 	Client		*currentClient;
 	std::string	finalBuffer;
+	std::vector<std::string>	cmd;
 
     for (pollVector::iterator it = this->_pollFds.begin() + 1; it != this->_pollFds.end(); it++) {
         if (it->revents & POLLIN) {
@@ -206,6 +208,13 @@ void	Server::clientManager(void) {
 			} catch (const ContinueException& e) {
 				continue;
 			} catch (const BreakException& e) {
+				cmd.push_back("QUIT");
+				cmd.push_back(":");
+				try {
+					quitCommand(cmd, this->_clients[it->fd]);
+				} catch (QuitClientException) {
+					break ;
+				}
 				close(it->fd);
 				it = this->_pollFds.erase(it);
 				break ;
@@ -249,7 +258,7 @@ void	Server::sendMessageToAllChannelUsers(Client *currentClient, Channel *channe
 	for (clientsMapIterator clientIt = channel->getClientsList()->begin(); clientIt != channel->getClientsList()->end(); clientIt++) {
         Client const    *targetClient = clientIt->second->getClient();
         if (targetClient->getClientFd() != currentClient->getClientFd())
-            sendMessage(targetClient->getClientFd(), message);
+            sendMessage(targetClient->getClientFd(), message);	
     }
 }
 

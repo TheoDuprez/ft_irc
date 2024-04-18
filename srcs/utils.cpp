@@ -17,7 +17,7 @@ std::vector<std::string> split(const std::string& str, char delim)
 void    sendMessage(int fd, std::string msg)
 {
     msg += "\r\n";
-    send(fd, msg.c_str(), msg.size(), 0);
+	send(fd, msg.c_str(), msg.size(), 0);
 }
 
 bool	isStringContainOnlyNumbers(const std::string& str)
