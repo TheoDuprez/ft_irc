@@ -6,7 +6,7 @@
 /*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 12:46:48 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/18 20:49:14 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 00:43:14 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #define ERR_CHANGEERRONEUSNICKNAME( NICKNAME ) NICKNAME + " :Erroneus nickname: Illegal characters"
 #define ERR_CHANGENICKNAMEINUSE( NICKNAME ) NICKNAME + " :Nickname is already in use"
 // ERR_RPL
-#define RPL_WELCOME( CLIENT, USERNAME) ":server 001 " + CLIENT + " :Welcome to the localhost Network, " + CLIENT + "!" + USERNAME + "@localhost"
 #define RPL_INVITING( CLIENT, NICK, CHANNEL ) ":server 341 " + CLIENT + " " + NICK + " " + CHANNEL
 #define ERR_NOSUCHNICK( CLIENT, CHANNEL ) ":server 401 " + CLIENT + " " + CHANNEL + " :No such nick/channel"
 #define ERR_NOSUCHCHANNEL( CLIENT, CHANNEL ) ":server 403 " + CLIENT + " " + CHANNEL + " :No such channel"
@@ -44,6 +43,11 @@
 #define RPL_TOPIC( CHANNEL, TOPIC ) ":server 332 * " + CHANNEL + " :" + TOPIC
 
 // RPL
+#define RPL_WELCOME( CLIENT, USERNAME ) ":server 001 " + CLIENT + " :Welcome to the localhost Network, " + CLIENT + "!" + USERNAME + "@localhost"
+#define RPL_YOURHOST( CLIENT, SERVERNAME ) ":server 002 " + CLIENT + " :Your host is " + SERVERNAME + ", running version 1.0.0"
+#define RPL_CREATED( CLIENT, DATETIME ) ":server 003 " + CLIENT + " :This server was created " + DATETIME
+#define RPL_MYINFO( CLIENT, SERVERNAME ) ":server 004 " + CLIENT + " " + SERVERNAME + " 1.0.0 No available user modes itkol"
+#define RPL_ISUPPORT( CLIENT ) ":server 005 " + CLIENT + " NICKLEN=12 USERLEN=12 CHANNELLEN=12 TOPICLEN=12 NETWORK=ft_irc CASEMAPPING=ascii CHANTYPE=# PREFIX=@ CHANMODE=i,t,k,o,l :are supported by this server"
 #define RPL_CHANNELMODEIS( NICKNAME, CHANNELPTR ) ":server 324 " + NICKNAME + " " + CHANNELPTR->getChannelName() + " " + CHANNELPTR->createModesString()
 
 // JOIN

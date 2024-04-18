@@ -60,10 +60,23 @@ std::string iToString(int valueToConvert)
     return (convertedValue);
 }
 
-// bool    checkExcludedChar(std::string name) {
-//     std::string excluded = "#$&: ";
+std::string	const	getCurrentTimeStamp(void)
+{
+	std::string retTime;
+	std::time_t currentTime = std::time(NULL);
+	std::tm *localTime = std::localtime(&currentTime);
 
-//     if (name.find_first_of(excluded) != std::string::npos)
-//         return false;
-//     return true;
-// }
+	retTime = SSTR(localTime->tm_year + 1900) + "/" + SSTR(localTime->tm_mon) + "/" + SSTR(localTime->tm_mday) + " ";
+	if (localTime->tm_mon < 10)
+		retTime.insert(5, "0");
+	if (localTime->tm_mday < 10)
+		retTime.insert(8, "0");
+	retTime = retTime + SSTR(localTime->tm_hour) + ":" + SSTR(localTime->tm_min) + ":" + SSTR(localTime->tm_sec);
+	if (localTime->tm_hour < 10)
+		retTime.insert(11, "0");
+	if (localTime->tm_min < 10)
+		retTime.insert(14, "0");
+	if (localTime->tm_sec < 10)
+		retTime.insert(17, "0");
+	return retTime;
+}

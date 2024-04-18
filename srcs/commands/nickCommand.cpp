@@ -6,7 +6,7 @@
 /*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:12 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/18 23:17:59 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 00:51:15 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,11 @@ void	Server::nickCommand(std::vector<std::string> cmd, int fd)
     currentClient->setnickName(cmd[1]);
     // Register client if he already set a password and user
     if (!currentClient->getIsRegister() && !currentClient->getServerPassword().empty() && !currentClient->getUserName().empty() && !currentClient->getRealName().empty()) {
-        sendMessage(fd, RPL_WELCOME(currentClient->getNickName(), currentClient->getUserName())); // ajouter les reply manquante en dessous
+        sendMessage(fd, RPL_WELCOME(currentClient->getNickName(), currentClient->getUserName()));
+        sendMessage(fd, RPL_YOURHOST(currentClient->getNickName(), this->getServerName()));
+        sendMessage(fd, RPL_CREATED(currentClient->getNickName(), getCurrentTimeStamp()));
+        sendMessage(fd, RPL_MYINFO(currentClient->getNickName(), this->getServerName()));
+        sendMessage(fd, RPL_ISUPPORT(currentClient->getNickName()));
         currentClient->setIsRegister(true);
     }
 }

@@ -6,7 +6,7 @@
 /*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:02 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/18 21:17:41 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 00:51:03 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,10 @@ void	Server::userCommand(std::vector<std::string> cmd, int fd)
     currentClient->setrealName(cmd[4]);
     if (!currentClient->getServerPassword().empty() && !currentClient->getNickName().empty()) {
         sendMessage(fd, RPL_WELCOME(currentClient->getNickName(), currentClient->getUserName()));
+        sendMessage(fd, RPL_YOURHOST(currentClient->getNickName(), this->getServerName()));
+        sendMessage(fd, RPL_CREATED(currentClient->getNickName(), getCurrentTimeStamp()));
+        sendMessage(fd, RPL_MYINFO(currentClient->getNickName(), this->getServerName()));
+        sendMessage(fd, RPL_ISUPPORT(currentClient->getNickName()));
         currentClient->setIsRegister(true);
     }
 }

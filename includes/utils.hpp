@@ -6,7 +6,7 @@
 /*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:44:47 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/14 09:19:06 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 00:24:00 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,6 @@ size_t						strtost(const std::string& str);
 
 std::string					ullToString(size_t valueToConvert);
 std::string                 iToString(int valueToConvert);
-// bool                        checkExcludedChar(std::string name);
+std::string	const	        getCurrentTimeStamp(void);
 
 #endif

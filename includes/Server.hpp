@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/17 18:44:26 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 00:35:33 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@
 #define PENDING_QUEUE 50
 #define POLL_NO_TIMEOUT -1
 #define USERLEN 12
+#define NICKLEN 12
+#define CHANNELLEN 12
 #define TARGMAX 4
 #define MP_UNSET false
 #define MP_SET true
@@ -118,7 +120,6 @@ class Server
 
 		// Parsing method
 		std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);
-
 
 		// Commands methods
 		void									passCommand(std::vector<std::string> cmd, int fd);
