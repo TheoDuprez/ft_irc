@@ -6,7 +6,7 @@
 /*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:12 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/18 21:05:16 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/18 23:17:59 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 bool	Server::_isValidNickCommand(Client  *currentClient, std::vector<std::string> *cmd)
 {
 	std::locale	loc;
-	std::string excluded = "#&: ";
+	std::string excluded = "#&: ,*?!@.";
+    std::string firstCharExcluded = "~%+";
 
     if ((*cmd).size() != 2 || (*cmd)[1].empty()) {
         sendMessage(currentClient->getClientFd(), ERR_NONICKNAMEGIVEN(this->getServerName()));
@@ -30,8 +31,15 @@ bool	Server::_isValidNickCommand(Client  *currentClient, std::vector<std::string
         return false;
     }
     // Check if nick content is allowed
+    if (std::isdigit((*cmd)[1][0], loc) || firstCharExcluded.find((*cmd)[1][0]) != std::string::npos || (*cmd)[1].find_first_of(excluded) != std::string::npos) {
+        if (currentClient->getNickName().empty())
+            sendMessage(currentClient->getClientFd(), ERR_ERRONEUSNICKNAME((*cmd)[1], this->getServerName()));
+        else
+            sendMessage(currentClient->getClientFd(), ERR_CHANGEERRONEUSNICKNAME((*cmd)[1]));
+        return false;
+    }
     for (stringIterator it = (*cmd)[1].begin(); it != (*cmd)[1].end(); it++) {
-        if ((it == (*cmd)[1].begin() && std::isdigit(*it, loc)) || (*cmd)[1].find_first_of(excluded) != std::string::npos || !std::isprint(*it, loc)) {
+        if (!std::isprint(*it, loc)) {
              if (currentClient->getNickName().empty())
                 sendMessage(currentClient->getClientFd(), ERR_ERRONEUSNICKNAME((*cmd)[1], this->getServerName()));
             else
