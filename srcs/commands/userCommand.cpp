@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   userCommand.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:02 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/17 17:48:03 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/18 21:17:41 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ bool	Server::_isValidUserName(Client  *currentClient, std::vector<std::string> *
     int i = 1;
     
     if ((*cmd)[1].empty()) {
-        sendMessage(currentClient->getClientFd(), ERR_NEEDMOREPARAMS(currentClient->getNickName(), "USER"));
+        sendMessage(currentClient->getClientFd(), ERR_NEEDMOREPARAMS(this->getServerName(), "USER"));
         return false;
     }
     // check if char in username is valid then trunc at USERLEN size if necessary
@@ -52,7 +52,7 @@ bool	Server::_isValidRealName(Client  *currentClient, std::vector<std::string> *
         if (!currentClient->getNickName().empty()) {
             (*cmd)[4] = currentClient->getNickName();
         } else {
-            sendMessage(currentClient->getClientFd(), ERR_NEEDMOREPARAMS(currentClient->getNickName(), "USER"));
+            sendMessage(currentClient->getClientFd(), ERR_NEEDMOREPARAMS(this->getServerName(), "USER"));
             return false;
         }
     }
@@ -100,11 +100,11 @@ void	Server::userCommand(std::vector<std::string> cmd, int fd)
     Client	*currentClient = this->_clients[fd];
 
     if (currentClient->getIsRegister() == true) {
-        sendMessage(currentClient->getClientFd(), ERR_ALREADYREGISTERED(this->_serverName));
+        sendMessage(currentClient->getClientFd(), ERR_ALREADYREGISTERED(this->getServerName()));
         return;
     }
     if (cmd.size() < 5) {
-        sendMessage(fd, ERR_NEEDMOREPARAMS(currentClient->getNickName(), "USER"));
+        sendMessage(fd, ERR_NEEDMOREPARAMS(this->getServerName(), "USER"));
         return;
     }
     for (size_t i = 1; i != cmd.size(); i++) {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nickCommand.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:12 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/17 17:46:14 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/18 21:05:16 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ bool	Server::_isValidNickCommand(Client  *currentClient, std::vector<std::string
     for (stringIterator it = (*cmd)[1].begin(); it != (*cmd)[1].end(); it++) {
         if ((it == (*cmd)[1].begin() && std::isdigit(*it, loc)) || (*cmd)[1].find_first_of(excluded) != std::string::npos || !std::isprint(*it, loc)) {
              if (currentClient->getNickName().empty())
-                sendMessage(currentClient->getClientFd(), ERR_ERRONEUSNICKNAME(this->getServerName(), (*cmd)[1]));
+                sendMessage(currentClient->getClientFd(), ERR_ERRONEUSNICKNAME((*cmd)[1], this->getServerName()));
             else
                 sendMessage(currentClient->getClientFd(), ERR_CHANGEERRONEUSNICKNAME((*cmd)[1]));
             return false;
@@ -78,7 +78,7 @@ void	Server::nickCommand(std::vector<std::string> cmd, int fd)
     currentClient->setnickName(cmd[1]);
     // Register client if he already set a password and user
     if (!currentClient->getIsRegister() && !currentClient->getServerPassword().empty() && !currentClient->getUserName().empty() && !currentClient->getRealName().empty()) {
-        sendMessage(fd, RPL_WELCOME(currentClient->getNickName(), currentClient->getUserName()));
+        sendMessage(fd, RPL_WELCOME(currentClient->getNickName(), currentClient->getUserName())); // ajouter les reply manquante en dessous
         currentClient->setIsRegister(true);
     }
 }

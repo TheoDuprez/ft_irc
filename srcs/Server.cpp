@@ -6,7 +6,7 @@
 /*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/17 21:05:04 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/18 21:20:30 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,7 +212,7 @@ void	Server::clientManager(void) {
 				cmd.push_back(":");
 				try {
 					quitCommand(cmd, this->_clients[it->fd]);
-				} catch (QuitClientException) {
+				} catch (const QuitClientException& e) {
 					break ;
 				}
 				close(it->fd);
