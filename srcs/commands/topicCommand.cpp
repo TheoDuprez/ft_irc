@@ -12,7 +12,6 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
     /* ERR_NEEDMOREPARAMS (461)  */
     if (cmdSize < 2) {
         sendMessage(fd, ERR_NEEDMOREPARAMS(clientNick, cmd[0]));
-        this->printLogMessage("ERR_NEEDMOREPARAMS (461)\n", ERROR);
         return ;
     }
 
@@ -30,7 +29,6 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
     /* ERR_NOSUCHCHANNEL (403) */
     if (chanIt == channels.end()) {
         sendMessage(fd, ERR_NOSUCHCHANNEL(clientNick, cmd[1]));
-        this->printLogMessage("ERR_NOSUCHCHANNEL (403)\n", ERROR);
         return ;
     }
 
@@ -43,7 +41,6 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
     /* ERR_NOTONCHANNEL (442) (this error should only occur when new topic is provided) */
     if (chanClientsIt == chanClients.end() && cmdSize > 2) {
         sendMessage(fd, ERR_NOTONCHANNEL(clientNick, cmd[1]));
-        this->printLogMessage("ERR_NOTONCHANNEL (442)\n", ERROR);
         return ;
     }
 
@@ -66,7 +63,6 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
             return ;
         }
         sendMessage(fd, ERR_CHANOPRIVSNEEDED(clientNick, cmd[1]));
-        this->printLogMessage("ERR_CHANOPRIVSNEEDED (482)\n", ERROR);
         return ;
     }
 

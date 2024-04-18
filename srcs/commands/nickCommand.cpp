@@ -55,7 +55,7 @@ void    Server::_nickApplyChange(std::vector<std::string> cmd, Client *currentCl
     //sendMessage for all channel who currentClient is present
     for (channelsMap::iterator channelIt = this->_channelsMap.begin(); channelIt != this->_channelsMap.end(); channelIt++) {
         if (channelIt->second->isClientExist(currentClient))
-            this->sendMessageToAllChannelUsers(currentClient, channelIt->second, RPLY_NEWNICKMESSAGE(currentClient->getNickName(), cmd[1]));
+            this->_sendMessageToAllChannelUsers(currentClient, channelIt->second, RPLY_NEWNICKMESSAGE(currentClient->getNickName(), cmd[1]));
     }
     //operate changes everywhere currentClient is
     for (channelsMap::iterator channelIt = this->_channelsMap.begin(); channelIt != this->_channelsMap.end(); channelIt++) {

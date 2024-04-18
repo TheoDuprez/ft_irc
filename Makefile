@@ -70,7 +70,7 @@ $(OBJS_DIR)%.o:	%.cpp | $(OBJS_DIR)
 $(BONUS_OBJS_DIR)%.o:	%.cpp | $(BONUS_OBJS_DIR)
 	${CC} ${CFLAGS} -I ${HEADER_PATH} -MMD -c $< -o $@
 
-all : create_file ${NAME}
+all : ${NAME}
 
 bonus	: ${BONUS_OBJS_DIR} ${BONUS}
 
@@ -84,10 +84,6 @@ ${BONUS} : ${BONUS_OBJS}
 	${CC} ${CFLAGS} ${BONUS_OBJS} -o ${BONUS}
 	echo "\033[1;32mSucces !"
 
-
-create_file:
-	touch server.log
-
 clean :
 	echo "\033[1;31mClean: \033[1;36mAll *.o"
 	rm -rf ${OBJS_DIR}
@@ -96,7 +92,6 @@ fclean: clean
 	echo "\033[1;31mClean: \033[1;36mexecutable"
 	rm -rf ${NAME}
 	rm -rf ${BONUS}
-	rm -f server.log
 
 re : fclean all
 
