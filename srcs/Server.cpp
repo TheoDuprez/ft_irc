@@ -6,7 +6,7 @@
 /*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/18 21:20:30 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/18 23:30:13 by shellks          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ Server::Server(char* port, std::string password): _password(password)
 	long double		tempPort;
 	
 	this->_serverName = "ft_irc";
-	this->_logFile.open("server.log", std::ofstream::app);
 	for (size_t i = 0; port[i]; ++i) {
 		if (!isdigit(port[i]))
 			throw (std::runtime_error("Bad port"));
@@ -31,7 +30,6 @@ Server::Server(char* port, std::string password): _password(password)
 
 Server::~Server(void)
 {
-	this->_logFile.close();
 	for (pollVector::iterator it = this->_pollFds.begin(); it != this->_pollFds.end(); it++)
 		close(it->fd);
 	for (clientMap::iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
@@ -40,6 +38,8 @@ Server::~Server(void)
 		delete it->second;
 	}
 }
+
+// --------------------- Server methods --------------------- //
 
 void	Server::initServer(void)
 {
@@ -68,16 +68,10 @@ void	Server::launchServer(void)
 	serverLoop();
 }
 
-void	Server::stopServer(int signum)
-{
-	static_cast<void>(signum);
-	Server::_isServUp = false;
-}
-
 void	Server::createPollFd(int fd)
 {
 	pollfd	fds;
-	
+
 	fds.events = POLLIN;
 	fds.fd = fd;
 	this->_pollFds.push_back(fds);
@@ -98,58 +92,7 @@ void	Server::serverLoop(void)
 	}
 }
 
-commandsVector  Server::createCommandsVector(std::string buffer)
-{
-	commandsVector              retVectorCommands;
-	std::vector<std::string>    commands(split(buffer, '\n'));
-
-	for (std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); it++) {
-		if (it->at(it->length() - 1) != '\r')
-			retVectorCommands.push_back(split(it->substr(0, it->length()), ' '));
-		else
-			retVectorCommands.push_back(split(it->substr(0, it->length() - 1), ' '));
-	}
-    return retVectorCommands;
-}
-
-void	Server::handleCommand(commandsVector commands, Client* client)
-{
-	for (commandsVector::iterator it = commands.begin(); it != commands.end(); it++) {
-		if (it->empty())
-			return ;
-		if (it->at(0) == "JOIN" && client->getIsRegister())
-			joinCommand(*it, client);
-        else if (it->at(0) == "PRIVMSG" && client->getIsRegister())
-            privmsgCommand(*it, client);
-        else if (it->at(0) == "MODE")
-            modeCommand(*it, client);
-		else if (it->at(0) == "USER")
-			userCommand(*it, client->getClientFd());
-		else if (it->at(0) == "NICK")
-			nickCommand(*it, client->getClientFd());
-		else if (it->at(0) == "PASS")
-			passCommand(*it, client->getClientFd());
-		else if (it->at(0) == "KICK")
-            kickCommand(*it, client);
-        else if (it->at(0) == "PRIVMSG" || it->at(0) == "GIGACHAT")
-            privmsgCommand(*it, client);
-        else if (it->at(0) == "TOPIC")
-            topicCommand(*it, client);
-		else if (it->at(0) == "INVITE")
-            inviteCommand(*it, client);
-		else if (it->at(0) == "PART")
-			partCommand(*it, client);
-		else if (it->at(0) == "QUIT")
-            quitCommand(*it, client);
-		else
-			std::cout << "Error: " << it->at(0) << " is not a command. Full cmd is : " << std::endl;
-            for (commandTokensVector::iterator itTest = it->begin(); itTest != it->end(); itTest++)
-                std::cout << *itTest << " ";
-            std::cout << std::endl;
-	}
-}
-
-void	Server::acceptClient(void) 	
+void	Server::acceptClient(void)
 {
 	int		clientFd;
 
@@ -158,41 +101,6 @@ void	Server::acceptClient(void)
 		throw (std::runtime_error(strerror(errno)));
 	createPollFd(clientFd);
 	this->_clients.insert(std::make_pair(clientFd, new Client(clientFd)));
-}
-
-pollfd		&Server::getPollFd(void)
-{
-	return (*(this->_pollFds.end() - 1));
-}
-
-void		Server::printLogMessage(std::string message, bool isError)
-{
-	this->_logFile << "[" << this->getCurrentTimeStamp() << "]" << std::flush;
-	if (isError == ERROR)
-		this->_logFile << " ERROR: " << message << std::flush;
-	else
-		this->_logFile << " " << message << std::flush;
-}
-
-std::string	const	Server::getCurrentTimeStamp(void)
-{
-	std::string retTime;
-	std::time_t currentTime = std::time(NULL);
-	std::tm *localTime = std::localtime(&currentTime);
-
-	retTime = SSTR(localTime->tm_year + 1900) + "/" + SSTR(localTime->tm_mon) + "/" + SSTR(localTime->tm_mday) + " ";
-	if (localTime->tm_mon < 10)
-		retTime.insert(5, "0");
-	if (localTime->tm_mday < 10)
-		retTime.insert(8, "0");
-	retTime = retTime + SSTR(localTime->tm_hour) + ":" + SSTR(localTime->tm_min) + ":" + SSTR(localTime->tm_sec);
-	if (localTime->tm_hour < 10)
-		retTime.insert(11, "0");
-	if (localTime->tm_min < 10)
-		retTime.insert(14, "0");
-	if (localTime->tm_sec < 10)
-		retTime.insert(17, "0");
-	return retTime;
 }
 
 void	Server::clientManager(void) {
@@ -229,6 +137,73 @@ void	Server::clientManager(void) {
     }
 }
 
+void	Server::handleCommand(commandsVector commands, Client* client)
+{
+	for (commandsVector::iterator it = commands.begin(); it != commands.end(); it++) {
+		if (it->empty())
+			return ;
+		if (it->at(0) == "JOIN" && client->getIsRegister())
+			joinCommand(*it, client);
+        else if (it->at(0) == "PRIVMSG" && client->getIsRegister())
+            privmsgCommand(*it, client);
+        else if (it->at(0) == "MODE")
+            modeCommand(*it, client);
+		else if (it->at(0) == "USER")
+			userCommand(*it, client->getClientFd());
+		else if (it->at(0) == "NICK")
+			nickCommand(*it, client->getClientFd());
+		else if (it->at(0) == "PASS")
+			passCommand(*it, client->getClientFd());
+		else if (it->at(0) == "KICK")
+            kickCommand(*it, client);
+        else if (it->at(0) == "PRIVMSG")
+            privmsgCommand(*it, client);
+        else if (it->at(0) == "TOPIC")
+            topicCommand(*it, client);
+		else if (it->at(0) == "INVITE")
+            inviteCommand(*it, client);
+		else if (it->at(0) == "PART")
+			partCommand(*it, client);
+		else if (it->at(0) == "QUIT")
+            quitCommand(*it, client);
+		// ????
+		else
+			std::cout << "Error: " << it->at(0) << " is not a command. Full cmd is : " << std::endl;
+            for (commandTokensVector::iterator itTest = it->begin(); itTest != it->end(); itTest++)
+                std::cout << *itTest << " ";
+            std::cout << std::endl;
+	}
+}
+
+void	Server::stopServer(int signum)
+{
+	static_cast<void>(signum);
+	Server::_isServUp = false;
+}
+
+// --------------------- Parsing method --------------------- //
+
+commandsVector  Server::createCommandsVector(std::string buffer)
+{
+	commandsVector              retVectorCommands;
+	std::vector<std::string>    commands(split(buffer, '\n'));
+
+	for (std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); it++) {
+		if (it->at(it->length() - 1) != '\r')
+			retVectorCommands.push_back(split(it->substr(0, it->length()), ' '));
+		else
+			retVectorCommands.push_back(split(it->substr(0, it->length() - 1), ' '));
+	}
+    return retVectorCommands;
+}
+
+// --------------------- Getters --------------------- //
+
+pollfd		&Server::getPollFd(void)
+{
+	return (*(this->_pollFds.end() - 1));
+}
+
 Channel				*Server::getChannelByName(std::string const &name)
 {
 	channelsMap::iterator	channelIt;
@@ -253,12 +228,14 @@ std::string	const	&Server::getServerName(void) const
 	return (this->_serverName);
 }
 
-void	Server::sendMessageToAllChannelUsers(Client *currentClient, Channel *channel, std::string const &message) const
+// --------------------- Util method --------------------- //
+
+void	Server::_sendMessageToAllChannelUsers(Client *currentClient, Channel *channel, std::string const &message) const
 {
 	for (clientsMapIterator clientIt = channel->getClientsList()->begin(); clientIt != channel->getClientsList()->end(); clientIt++) {
         Client const    *targetClient = clientIt->second->getClient();
         if (targetClient->getClientFd() != currentClient->getClientFd())
-            sendMessage(targetClient->getClientFd(), message);	
+            sendMessage(targetClient->getClientFd(), message);
     }
 }
 

@@ -21,6 +21,5 @@ void	Server::errorCommand(Client *currentClient)
     delete(currentClient);
     for (pollVector::iterator it = this->_pollFds.begin(); it != this->_pollFds.end();)
 		(it->fd == fd) ? it = this->_pollFds.erase(it) : it++;
-    this->printLogMessage("Client '" + iToString(fd) + "' has been closed: Incorrect password\n", ERROR);
 	throw QuitClientException();
 }

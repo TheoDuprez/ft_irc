@@ -71,7 +71,7 @@ void	Server::kickCommand(std::vector<std::string> cmd, Client *currentClient)
 			sendMessage(currentClient->getClientFd(), ERR_USERNOTINCHANNEL(currentClient->getNickName(), *targetsIt, cmd[1]));
 		else {
 			sendMessage(currentClient->getClientFd(), KICK_MESSAGE(*targetsIt, cmd[1], message));
-			sendMessageToAllChannelUsers(currentClient, targetChannel, KICK_MESSAGE(*targetsIt, cmd[1], message));
+			_sendMessageToAllChannelUsers(currentClient, targetChannel, KICK_MESSAGE(*targetsIt, cmd[1], message));
 			targetChannel->getClientsList()->erase(*targetsIt);
 			delete (targetUser);
 		}

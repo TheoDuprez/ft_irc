@@ -59,26 +59,31 @@ typedef std::map<std::string, Channel*>			channelsMap;
 class Server
 {
 	private:
+		unsigned short	_port;
+		static bool		_isServUp;
 		std::string		_cmdBuffer;
-		std::ofstream	_logFile;
 		clientMap		_clients;
 		pollVector		_pollFds;
-		unsigned short	_port;
 		sockaddr_in		_serverAddress;
 		socklen_t		_serverAddressSize;
 		std::string		_password;
 		std::string		_serverName;
-		static bool		_isServUp;
         channelsMap     _channelsMap;
 
+		// nickCommand methods
+		bool	_isValidNickCommand(Client  *currentClient, std::vector<std::string> *cmd);
+		void    _nickApplyChange(std::vector<std::string> cmd, Client *currentClient);
 
+		// userCommand methods
 		bool	_isValidUserName(Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidRealName(Client  *currentClient, std::vector<std::string> *cmd);
 		bool	_isValidUserCommand(size_t i, Client  *currentClient, std::vector<std::string> *cmd);
-		bool	_isValidNickCommand(Client  *currentClient, std::vector<std::string> *cmd);
+
+		// kickCommand method
 		bool    _isValidKickCommand(std::vector<std::string> cmd, Client *currentClient, ClientInfos *&targetOp, Channel *&targetChannel);
+
+		// inviteCommand method
 		bool    _isValidInviteCommand(std::vector<std::string> cmd, Client *currentClient, Channel *targetChannel);
-		void    _nickApplyChange(std::vector<std::string> cmd, Client *currentClient);
 
         // modeCommand methods
 		void						_manageModes(std::string modeString, std::vector<std::string> modeArguments, Client* client, Channel* channelPtr, bool adjustMode);
@@ -94,44 +99,46 @@ class Server
 		// partCommand methods
 		void						_leaveChannel(Client* clientPtr, Channel* channelPtr);
 
+		// Util method
+		void						_sendMessageToAllChannelUsers(Client *currentClient, Channel *channel, std::string const &message) const;
+
 	public:
 		Server(char* port, std::string password);
 		~Server(void);
 
+		// Server methods
 		void				initServer(void);
 		void				launchServer(void);
-		static void			stopServer(int);
 		void				createPollFd(int fd);
 		void				serverLoop(void);
 		void				acceptClient(void);
+		void				clientManager(void);
+		void				handleCommand(std::vector<std::vector<std::string> > cmd, Client* clientPtr);
+		static void			stopServer(int);
 
-		bool				isValidPaquet(std::string buffer);
-
-		std::string const	&getServerName(void) const;
-		Channel				*getChannelByName(std::string const &name);
-		Client				*getClientByName(const std::string& name);
-        // Join methods
-		pollfd				&getPollFd(void);
-		void				printLogMessage(std::string message, bool isError);
-		std::string	const	getCurrentTimeStamp(void);
-
-		bool									isValidBuffer(const std::string tmpBuffer);
-		void									sendMessageToAllChannelUsers(Client *currentClient, Channel *channel, std::string const &message) const;
+		// Parsing method
 		std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);
-		void									handleCommand(std::vector<std::vector<std::string> > cmd, Client* clientPtr);
-		void									joinCommand(commandTokensVector cmd, Client* clientPtr);
-		void									partCommand(commandTokensVector cmd, Client* clientPtr);
-		void									modeCommand(commandTokensVector cmd, Client* clientPtr);
-		void									privmsgCommand(commandTokensVector cmd, Client* clientPtr);
-		void									clientManager(void);
-		void    								inviteCommand(std::vector<std::string> cmd, Client *currentClient);
+
+
+		// Commands methods
 		void									passCommand(std::vector<std::string> cmd, int fd);
 		void									nickCommand(std::vector<std::string> cmd, int fd);
 		void									userCommand(std::vector<std::string> cmd, int fd);
-		void									kickCommand(std::vector<std::string> cmd, Client *currentClient);
-		void									errorCommand(Client *currentClient);
+		void									privmsgCommand(commandTokensVector cmd, Client* clientPtr);
+		void									joinCommand(commandTokensVector cmd, Client* clientPtr);
+		void									partCommand(commandTokensVector cmd, Client* clientPtr);
 		void									topicCommand(std::vector<std::string> cmd, Client *client);
+		void									modeCommand(commandTokensVector cmd, Client* clientPtr);
+		void									kickCommand(std::vector<std::string> cmd, Client *currentClient);
+		void    								inviteCommand(std::vector<std::string> cmd, Client *currentClient);
+		void									errorCommand(Client *currentClient);
 		void									quitCommand(std::vector<std::string> cmd, Client *client);
+
+		// Getters
+		std::string const	&getServerName(void) const;
+		Channel				*getChannelByName(std::string const &name);
+		Client				*getClientByName(const std::string& name);
+		pollfd				&getPollFd(void);
 };
 
 class QuitClientException : public std::exception
