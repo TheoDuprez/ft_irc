@@ -147,9 +147,16 @@ std::string Channel::formatClientsListAsString(void) const
 
 void        Channel::privmsg(std::vector<std::string> cmd, Client *clientPtr)
 {
+	std::string message;
+
+	for (size_t i = 2; i < cmd.size(); i++) {
+		message += cmd[i];
+		if (i + 1 != cmd.size())
+			message += " ";
+	}
     for (clientsMap::iterator it = this->_clientsDataMap.begin(); it != this->_clientsDataMap.end(); it++) {
         if (it->second->getClient() != clientPtr)
-            sendMessage(it->second->getClient()->getClientFd(), ":" + clientPtr->getNickName() + " PRIVMSG " + this->_channelName + " :" +  cmd.at(2).substr(1, cmd.at(2).length()));
+            sendMessage(it->second->getClient()->getClientFd(), ":" + clientPtr->getNickName() + " PRIVMSG " + this->_channelName + " " + message);
     }
 }
 

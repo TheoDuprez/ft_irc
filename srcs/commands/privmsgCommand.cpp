@@ -34,14 +34,17 @@ void                Server::privmsgCommand(commandTokensVector cmd, Client* clie
 	std::vector<std::string> targetsName(split(cmd[1], ','));
 
 	for (std::vector<std::string>::iterator targetsIt = targetsName.begin(); targetsIt != targetsName.end(); targetsIt++) {
+		std::cout << "Name = " << *targetsIt << std::endl;
 		if (getClientByName(*targetsIt)) {
 			Client *targetClient = clientPtr->getContactedClientByNick(*targetsIt);
+			std::cout << "test = " << ":" + clientPtr->getNickName() + " PRIVMSG " + getClientByName(*targetsIt)->getNickName() + " " + message << std::endl;
 			sendMessage(getClientByName(*targetsIt)->getClientFd(), ":" + clientPtr->getNickName() + " PRIVMSG " + getClientByName(*targetsIt)->getNickName() + " " + message);
 			if (targetClient == NULL)
 				clientPtr->setContactedClient(getClientByName(*targetsIt), true);
 		}
-		else if (getChannelByName(*targetsIt))
+		else if (getChannelByName(*targetsIt)) {
 			this->_channelsMap.find(*targetsIt)->second->privmsg(cmd, clientPtr);
+		}
 		else
 			sendMessage(clientPtr->getClientFd(), ERR_NOSUCHNICK(clientPtr->getNickName(), *targetsIt));
 	}

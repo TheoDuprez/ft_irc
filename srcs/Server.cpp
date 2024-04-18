@@ -131,7 +131,7 @@ void	Server::handleCommand(commandsVector commands, Client* client)
 			passCommand(*it, client->getClientFd());
 		else if (it->at(0) == "KICK")
             kickCommand(*it, client);
-        else if (it->at(0) == "PRIVMSG")
+        else if (it->at(0) == "PRIVMSG" || it->at(0) == "GIGACHAT")
             privmsgCommand(*it, client);
         else if (it->at(0) == "TOPIC")
             topicCommand(*it, client);
