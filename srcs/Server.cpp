@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/19 03:54:42 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 04:12:51 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,8 @@ void	Server::handleCommand(commandsVector commands, Client* client)
             lusersCommand(client);
 		else if (it->at(0) == "MOTD")
             motdCommand(client);
+		else if (it->at(0) == "PING")
+            pingCommand(*it, client);
 		// ????
 		else
 			std::cout << "Error: " << it->at(0) << " is not a command. Full cmd is : " << std::endl;
@@ -246,7 +248,6 @@ void	Server::sendInitialMessages(Client *currentClient) const
     sendMessage(currentClient->getClientFd(), RPL_ISUPPORT(currentClient->getNickName()));
 	this->lusersCommand(currentClient);
 	this->motdCommand(currentClient);
-	std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
 }
 
 void	Server::_sendMessageToAllChannelUsers(Client *currentClient, Channel *channel, std::string const &message) const

@@ -6,7 +6,7 @@
 #    By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/03 11:48:15 by acarlott          #+#    #+#              #
-#    Updated: 2024/04/19 03:41:40 by acarlott         ###   ########lyon.fr    #
+#    Updated: 2024/04/19 04:14:58 by acarlott         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,6 +45,8 @@ COMMANDS_LIST = joinCommand.cpp \
 				quitCommand.cpp \
 				lusersCommand.cpp \
 				motdCommand.cpp \
+				pingCommand.cpp \
+				pongCommand.cpp
 
 
 SRCS = $(addprefix $(SRCS_DIR), $(SRCS_LIST))

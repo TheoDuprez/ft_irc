@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/19 03:52:40 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 04:32:50 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,8 @@ class Server
 		std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);
 
 		// Commands methods
+		void									pingCommand(commandTokensVector cmd, Client const *currentClient) const;
+		void									pongCommand(commandTokensVector cmd, Client const *currentClient, time_t start_time) const;
 		void									motdCommand(Client const *currentClient) const;
 		void									lusersCommand(Client const *currentClient) const;
 		void									passCommand(std::vector<std::string> cmd, int fd);
