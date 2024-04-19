@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/19 00:35:33 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 03:52:40 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ typedef std::map<std::string, Channel*>			channelsMap;
 class Server
 {
 	private:
+		size_t			_maxClientConnected;
 		unsigned short	_port;
 		static bool		_isServUp;
 		std::string		_cmdBuffer;
@@ -115,6 +116,7 @@ class Server
 		void				serverLoop(void);
 		void				acceptClient(void);
 		void				clientManager(void);
+		void				sendInitialMessages(Client *currentClient) const;
 		void				handleCommand(std::vector<std::vector<std::string> > cmd, Client* clientPtr);
 		static void			stopServer(int);
 
@@ -122,6 +124,8 @@ class Server
 		std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);
 
 		// Commands methods
+		void									motdCommand(Client const *currentClient) const;
+		void									lusersCommand(Client const *currentClient) const;
 		void									passCommand(std::vector<std::string> cmd, int fd);
 		void									nickCommand(std::vector<std::string> cmd, int fd);
 		void									userCommand(std::vector<std::string> cmd, int fd);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/18 23:30:13 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 03:54:42 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ Server::Server(char* port, std::string password): _password(password)
 	long double		tempPort;
 	
 	this->_serverName = "ft_irc";
+	this->_maxClientConnected = 0;
 	for (size_t i = 0; port[i]; ++i) {
 		if (!isdigit(port[i]))
 			throw (std::runtime_error("Bad port"));
@@ -89,6 +90,8 @@ void	Server::serverLoop(void)
 			acceptClient();
 		else
 			clientManager();
+		if (this->_maxClientConnected < this->_clients.size())
+			this->_maxClientConnected = this->_clients.size();
 	}
 }
 
@@ -166,6 +169,10 @@ void	Server::handleCommand(commandsVector commands, Client* client)
 			partCommand(*it, client);
 		else if (it->at(0) == "QUIT")
             quitCommand(*it, client);
+		else if (it->at(0) == "LUSERS")
+            lusersCommand(client);
+		else if (it->at(0) == "MOTD")
+            motdCommand(client);
 		// ????
 		else
 			std::cout << "Error: " << it->at(0) << " is not a command. Full cmd is : " << std::endl;
@@ -229,6 +236,18 @@ std::string	const	&Server::getServerName(void) const
 }
 
 // --------------------- Util method --------------------- //
+
+void	Server::sendInitialMessages(Client *currentClient) const
+{
+	sendMessage(currentClient->getClientFd(), RPL_WELCOME(currentClient->getNickName(), currentClient->getUserName()));
+    sendMessage(currentClient->getClientFd(), RPL_YOURHOST(currentClient->getNickName(), this->getServerName()));
+    sendMessage(currentClient->getClientFd(), RPL_CREATED(currentClient->getNickName(), getCurrentTimeStamp()));
+    sendMessage(currentClient->getClientFd(), RPL_MYINFO(currentClient->getNickName(), this->getServerName()));
+    sendMessage(currentClient->getClientFd(), RPL_ISUPPORT(currentClient->getNickName()));
+	this->lusersCommand(currentClient);
+	this->motdCommand(currentClient);
+	std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+}
 
 void	Server::_sendMessageToAllChannelUsers(Client *currentClient, Channel *channel, std::string const &message) const
 {

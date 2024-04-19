@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   macro.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 12:46:48 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/19 00:43:14 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 03:14:19 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 #define ERR_CHANGEERRONEUSNICKNAME( NICKNAME ) NICKNAME + " :Erroneus nickname: Illegal characters"
 #define ERR_CHANGENICKNAMEINUSE( NICKNAME ) NICKNAME + " :Nickname is already in use"
 // ERR_RPL
-#define RPL_INVITING( CLIENT, NICK, CHANNEL ) ":server 341 " + CLIENT + " " + NICK + " " + CHANNEL
 #define ERR_NOSUCHNICK( CLIENT, CHANNEL ) ":server 401 " + CLIENT + " " + CHANNEL + " :No such nick/channel"
+#define ERR_NOSUCHSERVER( CLIENT, SERVER_NAME ) ":server 402 " + CLIENT + " " + SERVER_NAME + " :No such server"
 #define ERR_NOSUCHCHANNEL( CLIENT, CHANNEL ) ":server 403 " + CLIENT + " " + CHANNEL + " :No such channel"
 #define ERR_BADCHANNMASK( CHANNEL ) ":server 476 " + CHANNEL + " :Bad Channel Mask"
 #define ERR_NORECIPIENT( COMMAND ) ":server 411 * :No recipient given (" + COMMAND + ")"
@@ -37,18 +37,29 @@
 #define ERR_CHANNELISFULL( CHANNEL ) ":server 471 * " + CHANNEL + " :Cannot join channel (+l)"
 #define ERR_INVITEONLYCHAN( CHANNEL ) ":server 473 * " + CHANNEL + " :Cannot join channel (+i)"
 #define ERR_BADCHANNELKEY( CHANNEL ) ":server 475 * " + CHANNEL + " :Cannot join channel (+k)"
+
 #define RPLY_NEWNICKMESSAGE( PASTNICK, NEWNICK ) ":" + PASTNICK + " NICK " + NEWNICK
 #define RPL_INVITED( CLIENT, NICK, CHANNEL ) ":" + CLIENT + " INVITE " + NICK + " " + CHANNEL
-#define RPL_NOTOPIC( CHANNEL ) ":server 331 * " + CHANNEL + " :No topic is set"
-#define RPL_TOPIC( CHANNEL, TOPIC ) ":server 332 * " + CHANNEL + " :" + TOPIC
-
 // RPL
 #define RPL_WELCOME( CLIENT, USERNAME ) ":server 001 " + CLIENT + " :Welcome to the localhost Network, " + CLIENT + "!" + USERNAME + "@localhost"
 #define RPL_YOURHOST( CLIENT, SERVERNAME ) ":server 002 " + CLIENT + " :Your host is " + SERVERNAME + ", running version 1.0.0"
 #define RPL_CREATED( CLIENT, DATETIME ) ":server 003 " + CLIENT + " :This server was created " + DATETIME
 #define RPL_MYINFO( CLIENT, SERVERNAME ) ":server 004 " + CLIENT + " " + SERVERNAME + " 1.0.0 No available user modes itkol"
 #define RPL_ISUPPORT( CLIENT ) ":server 005 " + CLIENT + " NICKLEN=12 USERLEN=12 CHANNELLEN=12 TOPICLEN=12 NETWORK=ft_irc CASEMAPPING=ascii CHANTYPE=# PREFIX=@ CHANMODE=i,t,k,o,l :are supported by this server"
+#define RPL_LUSERCLIENT( CLIENT, USER_NB ) ":server 251 " + CLIENT + " :There are " + USER_NB + " users and 0 invisible on 1 servers"
+#define RPL_LUSEROP( CLIENT,OP_NB ) ":server 252 " + CLIENT + " " + OP_NB + " :operator(s) online"
+#define RPL_LUSERUNKNOWN( CLIENT, UNKNOWNUSER_NB ) ":server 253 " + CLIENT + " " + UNKNOWNUSER_NB + " :unknown connection(s)"
+#define RPL_LUSERCHANNELS( CLIENT, CHAN_NB ) ":server 254 " + CLIENT + " " + CHAN_NB + " :channels formed"
+#define RPL_LUSERME( CLIENT, USER_NB ) ":server 255 " + CLIENT + " :I have " + USER_NB + " clients and 0 servers"
+#define RPL_LOCALUSERS( CLIENT, USER_NB, USER_NBMAX ) ":server 265 " + CLIENT +   " [" + USER_NB + " " + USER_NBMAX + "] :Current local users " + USER_NB + ", max " + USER_NBMAX
+#define RPL_GLOBALUSERS( CLIENT, USER_NB, USER_NBMAX ) ":server 266 " + CLIENT +   " [" + USER_NB + " " + USER_NBMAX + "] :Current global users " + USER_NB + ", max " + USER_NBMAX
 #define RPL_CHANNELMODEIS( NICKNAME, CHANNELPTR ) ":server 324 " + NICKNAME + " " + CHANNELPTR->getChannelName() + " " + CHANNELPTR->createModesString()
+#define RPL_NOTOPIC( CHANNEL ) ":server 331 * " + CHANNEL + " :No topic is set"
+#define RPL_TOPIC( CHANNEL, TOPIC ) ":server 332 * " + CHANNEL + " :" + TOPIC
+#define RPL_INVITING( CLIENT, NICK, CHANNEL ) ":server 341 " + CLIENT + " " + NICK + " " + CHANNEL
+#define RPL_MOTD( CLIENT, MESSAGE_LINE ) ":server 372 " + CLIENT + " :" + MESSAGE_LINE
+#define RPL_MOTDSTART( CLIENT, SERVER ) ":server 375 " + CLIENT + " :- " + SERVER + " Message of the day - "
+#define RPL_ENDOFMOTD( CLIENT ) ":server 376 " + CLIENT + " :End of /MOTD command."
 
 // JOIN
 #define JOIN_SUCCESS ":" + clientPtr->getNickName() + " JOIN " + this->_channelName

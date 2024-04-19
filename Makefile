@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hleung <hleung@student.42lyon.fr>          +#+  +:+       +#+         #
+#    By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/03 11:48:15 by acarlott          #+#    #+#              #
-#    Updated: 2024/04/13 18:22:32 by hleung           ###   ########.fr        #
+#    Updated: 2024/04/19 03:41:40 by acarlott         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,9 @@ COMMANDS_LIST = joinCommand.cpp \
 				kickCommand.cpp \
 				topicCommand.cpp \
 				inviteCommand.cpp \
-				quitCommand.cpp
+				quitCommand.cpp \
+				lusersCommand.cpp \
+				motdCommand.cpp \
 
 
 SRCS = $(addprefix $(SRCS_DIR), $(SRCS_LIST))
