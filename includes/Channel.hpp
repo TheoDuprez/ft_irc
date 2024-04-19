@@ -9,6 +9,8 @@
 #include <algorithm>
 #include "macro.hpp"
 
+#define TOPICLEN 307
+
 class ClientInfos {
 private:
     Client* _client;

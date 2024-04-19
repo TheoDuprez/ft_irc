@@ -1,8 +1,9 @@
 #include "Server.hpp"
 
-void    newTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, const std::string &topic, const std::string &chan);
-void    clearTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, const std::string &chan);
-void    viewTopic(int fd, const Channel *channel);
+static void     newTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, const std::string &topic, const std::string &chan);
+static void     clearTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, const std::string &chan);
+static void     viewTopic(int fd, const Channel *channel);
+static int      changeTopic(int fd, Channel *channel, const std::string &clientNick, std::vector<std::string> &cmd);
 
 void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
 {
@@ -18,9 +19,8 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
     }
 
     /* Not a channel name */
-    if (cmd[1][0] != '#' && cmd[1][0] != '&') {
+    if (cmd[1][0] != '#' && cmd[1][0] != '&')
         return ;
-    }
 
     /* Arg is channel name (starting with # or &), check if exist */
 	Channel* channel = getChannelByName(cmd[1]); // get channel pointer for further use
@@ -51,31 +51,14 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
         return ;
     }
 
-    bool isOp = !channel->getIsTopicOperatorMode() || chanClientsIt->second->getIsOperator();
-
-    if (cmdSize > 2) {
-        if (cmd[2][0] != ':') {
-            sendMessage(fd, TOPIC_USAGE);
-            return ;
-        }
-        cmd[2] = cmd[2].substr(1);
-        if (isOp) {
-            chanIt->second->setTopicInfo(cmd[2], clientNick);
-            if (cmd[2].empty()) {
-                clearTopicBroadcast(chanClients, clientNick, cmd[1]);
-                return ;
-            }
-            newTopicBroadcast(chanClients, clientNick, cmd[2], cmd[1]);
-            return ;
-        }
+    if (!changeTopic(fd, channel, clientNick, cmd)) {
         sendMessage(fd, ERR_CHANOPRIVSNEEDED(clientNick, cmd[1]));
         this->printLogMessage("ERR_CHANOPRIVSNEEDED (482)\n", ERROR);
-        return ;
     }
-
+    return ;
 }
 
-void    newTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, const std::string &topic, const std::string &chan)
+static void    newTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, const std::string &topic, const std::string &chan)
 {
     for (clientsMapIterator it = clientsDataMap.begin(); it != clientsDataMap.end(); it++) {
         int fd = it->second->getClient()->getClientFd();
@@ -83,7 +66,7 @@ void    newTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, c
     }
 }
 
-void    clearTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, const std::string &chan)
+static void    clearTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick, const std::string &chan)
 {
      for (clientsMapIterator it = clientsDataMap.begin(); it != clientsDataMap.end(); it++) {
         int fd = it->second->getClient()->getClientFd();
@@ -91,7 +74,7 @@ void    clearTopicBroadcast(clientsMap &clientsDataMap, const std::string &nick,
     }
 }
 
-void    viewTopic(int fd, const Channel *channel)
+static void    viewTopic(int fd, const Channel *channel)
 {
     const std::string &topic = channel->getTopic();
     const std::string &chanName = channel->getChannelName();
@@ -107,7 +90,32 @@ void    viewTopic(int fd, const Channel *channel)
     }
 }
 
-void    changeTopic(int fd, const Channel *channel)
+static int    changeTopic(int fd, Channel *channel, const std::string &clientNick, std::vector<std::string> &cmd)
 {
-    
+    clientsMap chanClients = *(channel->getClientsList()); // access the Channel's clientsDataMap
+    clientsMapIterator chanClientsIt = chanClients.find(clientNick); // create iterator that points to current client in channel
+
+    std::string topic = cmd[2];
+
+    bool isOp = !channel->getIsTopicOperatorMode() || chanClientsIt->second->getIsOperator();
+
+     if (topic[0] != ':') {
+        sendMessage(fd, TOPIC_USAGE);
+        return 1;
+    }
+    topic = topic.substr(1);
+    for (std::vector<std::string>::iterator it = cmd.begin() + 3; it != cmd.end(); it++)
+        topic += " " + *it;
+    if (topic.length() > TOPICLEN)
+        topic = topic.substr(0, 307);
+    if (isOp) {
+        channel->setTopicInfo(topic, clientNick);
+        if (topic.empty()) {
+            clearTopicBroadcast(chanClients, clientNick, cmd[1]);
+            return 1;
+        }
+        newTopicBroadcast(chanClients, clientNick, topic, cmd[1]);
+        return 1;
+    }
+    return 0;
 }
