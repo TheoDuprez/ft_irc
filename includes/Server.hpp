@@ -36,8 +36,8 @@
 #define IP 0
 #define PENDING_QUEUE 50
 #define POLL_NO_TIMEOUT -1
-#define USERLEN 12
-#define NICKLEN 12
+#define USERLEN 30
+#define NICKLEN 30
 #define TARGMAX 4
 #define MP_UNSET false
 #define MP_SET true

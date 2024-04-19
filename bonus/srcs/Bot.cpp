@@ -59,7 +59,7 @@ void	Bot::receiveMessage()
 		else if (this->_pollfd.revents & POLLIN) {
 			char	buffer[MESSAGE_SIZE] = {0};
 			int		recvReturn = 0;
-			recvReturn = recv(this->_pollfd.fd, &buffer, MESSAGE_SIZE, NO_FLAG);
+			recvReturn = recv(this->_pollfd.fd, &buffer, MESSAGE_SIZE - 2, NO_FLAG);
 			if (recvReturn == -1)
         		throw (std::runtime_error(strerror(errno)));
     		else if (recvReturn == 0) {
