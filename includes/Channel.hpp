@@ -10,6 +10,7 @@
 #include "macro.hpp"
 
 #define TOPICLEN 307
+#define CHANNELLEN 50
 
 class ClientInfos {
 private:

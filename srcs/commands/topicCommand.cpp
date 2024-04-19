@@ -19,8 +19,9 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
     }
 
     /* Not a channel name */
-    if (cmd[1][0] != '#' && cmd[1][0] != '&')
+    if (cmd[1][0] != '#' && cmd[1][0] != '&') {
         return ;
+    }
 
     /* Arg is channel name (starting with # or &), check if exist */
 	Channel* channel = getChannelByName(cmd[1]); // get channel pointer for further use

@@ -37,6 +37,8 @@ void	Server::joinCommand(commandTokensVector cmd, Client* clientPtr)
 			sendMessage(clientPtr->getClientFd(), ERR_BADCHANNMASK(*channelIt));
 		}
 		else if (this->_channelsMap.find(*channelIt) == this->_channelsMap.end()) {
+			if ((*channelIt).length() > CHANNELLEN)
+				*channelIt = (*channelIt).substr(0, 50);
 			this->_channelsMap.insert(std::make_pair(*channelIt, new Channel(*channelIt, clientPtr)));
 		}
 		else if (this->_channelsMap.find(*channelIt) != this->_channelsMap.end()) {
