@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/19 12:42:41 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 12:45:56 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@
 #define POLL_NO_TIMEOUT -1
 #define USERLEN 12
 #define NICKLEN 12
-#define CHANNELLEN 12
 #define TARGMAX 4
 #define MP_UNSET false
 #define MP_SET true

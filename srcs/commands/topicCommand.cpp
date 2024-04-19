@@ -51,7 +51,6 @@ void    Server::topicCommand(std::vector<std::string> cmd, Client *client)
 
     if (!changeTopic(fd, channel, clientNick, cmd)) {
         sendMessage(fd, ERR_CHANOPRIVSNEEDED(clientNick, cmd[1]));
-        this->printLogMessage("ERR_CHANOPRIVSNEEDED (482)\n", ERROR);
     }
     return ;
 }

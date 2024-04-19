@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 12:46:48 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/19 11:42:49 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 12:47:52 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@
 #define RPL_YOURHOST( CLIENT, SERVERNAME ) ":server 002 " + CLIENT + " :Your host is " + SERVERNAME + ", running version 1.0.0"
 #define RPL_CREATED( CLIENT, DATETIME ) ":server 003 " + CLIENT + " :This server was created " + DATETIME
 #define RPL_MYINFO( CLIENT, SERVERNAME ) ":server 004 " + CLIENT + " " + SERVERNAME + " 1.0.0 No available user modes itkol"
-#define RPL_ISUPPORT( CLIENT ) ":server 005 " + CLIENT + " NICKLEN=12 USERLEN=12 CHANNELLEN=12 TOPICLEN=12 NETWORK=ft_irc CASEMAPPING=ascii CHANTYPE=# PREFIX=@ CHANMODE=i,t,k,o,l :are supported by this server"
+#define RPL_ISUPPORT( CLIENT ) ":server 005 " + CLIENT + " NICKLEN=12 USERLEN=12 CHANNELLEN=50 TOPICLEN=307 NETWORK=ft_irc CASEMAPPING=ascii CHANTYPE=# PREFIX=@ CHANMODE=i,t,k,o,l :are supported by this server"
 #define RPL_LUSERCLIENT( CLIENT, USER_NB ) ":server 251 " + CLIENT + " :There are " + USER_NB + " users and 0 invisible on 1 servers"
 #define RPL_LUSEROP( CLIENT ) ":server 252 " + CLIENT + " 0 :operator(s) online"
 #define RPL_LUSERUNKNOWN( CLIENT, UNKNOWNUSER_NB ) ":server 253 " + CLIENT + " " + UNKNOWNUSER_NB + " :unknown connection(s)"

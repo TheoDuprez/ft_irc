@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 13:03:12 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/19 03:55:02 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 12:53:01 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ bool	Server::_isValidNickCommand(Client  *currentClient, std::vector<std::string
         sendMessage(currentClient->getClientFd(), ERR_NONICKNAMEGIVEN(this->getServerName()));
         return false;
     }
+    if ((*cmd)[1].size() > NICKLEN)
+        (*cmd)[1] = (*cmd)[1].substr(0, NICKLEN);
     // Check if nick already exist
     if (this->getClientByName((*cmd)[1])) {
         if (currentClient->getNickName().empty())
