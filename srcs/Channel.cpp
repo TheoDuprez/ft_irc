@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shellks <shellks@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:57:26 by acarlott          #+#    #+#             */
-/*   Updated: 2024/04/17 21:03:51 by shellks          ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 12:29:11 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ Channel::Channel(std::string channelName, Client* clientPtr): _hasUsersLimit(fal
 Channel::~Channel(void) {
     for (clientsMap::iterator clientIt = this->_clientsDataMap.begin(); clientIt != this->_clientsDataMap.end(); clientIt++)
         delete (clientIt->second);
+    this->_clientsDataMap.clear();
 }
 
 // METHODS

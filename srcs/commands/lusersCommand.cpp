@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 01:37:48 by shellks           #+#    #+#             */
-/*   Updated: 2024/04/19 02:56:29 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 11:42:37 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,23 +16,16 @@ void	Server::lusersCommand(Client const *currentClient) const
 {
     if (currentClient->getIsRegister() == false)
         return ;
-    int         opNb = 0;
     int         unknownConnectionNb = 0;
     std::string userNb = iToString(this->_clients.size());
     std::string channelNb = iToString(this->_channelsMap.size());
 
-    for (channelsMap::const_iterator channelIt = this->_channelsMap.begin(); channelIt != this->_channelsMap.end(); channelIt++) {
-        for (clientsMap::const_iterator clientIt = channelIt->second->getClientsList()->begin(); clientIt != channelIt->second->getClientsList()->end(); clientIt++) {
-            if (clientIt->second->getIsOperator() == true)
-                opNb++;
-        }
-    }
     for (clientMap::const_iterator clientIt = this->_clients.begin(); clientIt != this->_clients.end(); clientIt++) {
         if (clientIt->second->getIsRegister() == false)
             unknownConnectionNb++;
     }
     sendMessage(currentClient->getClientFd(), RPL_LUSERCLIENT(currentClient->getNickName(), userNb));
-    sendMessage(currentClient->getClientFd(), RPL_LUSEROP(currentClient->getNickName(), iToString(opNb)));
+    sendMessage(currentClient->getClientFd(), RPL_LUSEROP(currentClient->getNickName()));
     sendMessage(currentClient->getClientFd(), RPL_LUSERUNKNOWN(currentClient->getNickName(), iToString(unknownConnectionNb)));
     sendMessage(currentClient->getClientFd(), RPL_LUSERCHANNELS(currentClient->getNickName(), channelNb));
     sendMessage(currentClient->getClientFd(), RPL_LUSERME(currentClient->getNickName(), userNb));
