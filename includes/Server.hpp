@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:08:15 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/19 04:32:50 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 12:42:41 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ class Server
 		void				sendInitialMessages(Client *currentClient) const;
 		void				handleCommand(std::vector<std::vector<std::string> > cmd, Client* clientPtr);
 		static void			stopServer(int);
+		void				removeClientFromServer(int fd);
 
 		// Parsing method
 		std::vector<std::vector<std::string> >	createCommandsVector(std::string buffer);

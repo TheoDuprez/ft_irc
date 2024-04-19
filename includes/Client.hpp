@@ -36,6 +36,7 @@ class Client
 		std::string					_serverPassword;
 		std::vector<Client *>		_contactedClients;
 		std::string 				_tempBuffer;
+		std::vector<int>			_quitMessageSentFd;
 		// Client(const Client& obj);
 		Client& operator=(const Client& obj);
 	public:
@@ -53,6 +54,7 @@ class Client
 		const std::string&					getServerPassword(void) const;
 		const std::vector<Client*>&			getContactedClients(void) const;
 		Client* 							getContactedClientByNick(const std::string& nickName) const;
+		std::vector<int>&					getQuitMessageSentFd();
 		void								setContactedClient(Client* targetClient, bool setClient);
 		bool								getIsRegister(void) const;
 		void								setIsRegister(bool reg);

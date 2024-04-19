@@ -6,7 +6,7 @@
 /*   By: acarlott <acarlott@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 15:18:42 by tduprez           #+#    #+#             */
-/*   Updated: 2024/04/19 12:25:33 by acarlott         ###   ########lyon.fr   */
+/*   Updated: 2024/04/19 12:42:58 by acarlott         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,6 +207,13 @@ commandsVector  Server::createCommandsVector(std::string buffer)
 }
 
 // --------------------- Getters --------------------- //
+
+void	Server::removeClientFromServer(int fd)
+{
+	close(fd); // close the fd of the current client and disconnect the socket
+	delete this->_clients.at(fd); // delete the client object
+	this->_clients.erase(fd);
+}
 
 pollfd		&Server::getPollFd(void)
 {
