@@ -121,6 +121,8 @@ Client* Client::getContactedClientByNick(const std::string& nickName) const
 	return NULL;
 }
 
+std::vector<int>&   Client::getQuitMessageSentFd() {return this->_quitMessageSentFd;}
+
 void	Client::setIsRegister(bool reg)
 {
     this->_isRegister = reg;

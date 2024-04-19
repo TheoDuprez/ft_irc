@@ -160,6 +160,13 @@ void	Server::acceptClient(void)
 	this->_clients.insert(std::make_pair(clientFd, new Client(clientFd)));
 }
 
+void	Server::removeClientFromServer(int fd)
+{
+	close(fd); // close the fd of the current client and disconnect the socket
+	delete this->_clients.at(fd); // delete the client object
+	this->_clients.erase(fd);
+}
+
 pollfd		&Server::getPollFd(void)
 {
 	return (*(this->_pollFds.end() - 1));

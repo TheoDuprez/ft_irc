@@ -104,6 +104,7 @@ class Server
 		void				createPollFd(int fd);
 		void				serverLoop(void);
 		void				acceptClient(void);
+		void				removeClientFromServer(int fd);
 
 		bool				isValidPaquet(std::string buffer);
 
